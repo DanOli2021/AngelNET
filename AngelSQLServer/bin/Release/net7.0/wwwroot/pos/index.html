@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>POS - Inicio de sesión</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/scripts.js"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>POS</h1>
+
+        <img src="./images/pos_1.png" alt="logo" class="logo" width="50%">
+
+        <form action="/login" method="post">
+            <label for="uname"><b>Usuario</b></label>
+            <input type="text" placeholder="Introduce tu usuario" id="username" required>
+            
+            <label for="psw"><b>Contraseña</b></label>
+            <input type="password" placeholder="Introduce tu contraseña" id="password" required>
+            
+            <input type="submit" class="button" value="Iniciar Sesión">
+        </form>
+    </div>
+
+    <script>
+
+        function Login() 
+        {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var valid = false;
+
+            let message = 
+            {
+                OperationType: "GetTokenFromUser",
+                User: username,
+                Password: password
+            };
+
+            let api = {
+                api: "pos/admintokens",
+                message: JSON.stringify(message), 
+                language: "C#" 
+            };
+
+            let result = enviarAPost("https://localhost:7170/AngelPOST", api);
+
+        }       
+ 
+
+        document.getElementById("username").focus();
+
+    </script>
+
+</body>
+</html>

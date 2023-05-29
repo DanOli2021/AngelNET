@@ -1,0 +1,117 @@
+﻿body {
+    background-color: white;
+    font-family: "Courier New", monospace;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 100vh;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+input, textarea {
+    background-color: black;
+    color: #33ff33;
+    border: 1px solid #33ff33;
+    padding: 5px;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    overflow: auto;
+}
+
+#sqlCommand {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#resultsContainer {
+    width: 100%;
+    height: calc(100% - 110px);
+    overflow: auto;
+    margin-bottom: 20px;
+}
+
+.resultBlock {
+    border-bottom: 1px solid #33ff33;
+    padding: 5px;
+}
+
+.resultBlock:nth-child(odd) {
+    background-color: rgba(51, 255, 51, 0.1);
+}
+
+.resultCommand, .resultOutput {
+    width: 100%;
+    white-space: pre-wrap;
+    margin-bottom: 10px;
+}
+
+.resultDate {
+    font-weight: bold;
+}
+
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+    .btn:hover {
+        color: #fff;
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn:focus,
+    .btn.focus {
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+.btn-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+    .btn-container .btn {
+        margin: 5px;
+    }
+
+.resultBlock {
+    position: relative;
+}
+
+.copyBtn {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.resultOutput {
+    white-space: pre; /* Para preservar los espacios y saltos de línea en el código */
+}
+
+@media (max-width: 768px) {
+    .btn-container .btn {
+        flex-basis: 100%;
+    }
+}

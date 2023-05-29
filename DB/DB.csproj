@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+ </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Data.Tables" Version="12.8.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
+    <PackageReference Include="Azure.Storage.Common" Version="12.15.0" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.14.0" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="DocumentFormat.OpenXmlSDK" Version="2.0.0" />
+    <PackageReference Include="IronPython" Version="3.4.0" />
+    <PackageReference Include="IronPython.StdLib" Version="3.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.6.0-1.final" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.6.0-1.final" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="OpenAI" Version="1.7.2" />
+    <PackageReference Include="pythonnet" Version="3.0.1" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
+    <PackageReference Include="System.IO.Packaging" Version="8.0.0-preview.3.23174.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="py/*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content> 
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="AzureSQL.cs" />
+    <Compile Remove="AzureTableStorage.cs" />
+    <Compile Remove="Globo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Accounts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="login.angel">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="py\pos\skus.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TablaZ.jSon">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="tables.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

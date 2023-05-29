@@ -1,0 +1,73 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\css\\sql_commands.css",
+      "PackagePath": "staticwebassets\\css\\sql_commands.css"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\css\\styles.css",
+      "PackagePath": "staticwebassets\\css\\styles.css"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\images\\AngelSQL.png",
+      "PackagePath": "staticwebassets\\images\\AngelSQL.png"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\js\\AngelSQL.js",
+      "PackagePath": "staticwebassets\\js\\AngelSQL.js"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\js\\index.js",
+      "PackagePath": "staticwebassets\\js\\index.js"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\pos\\css\\styles.css",
+      "PackagePath": "staticwebassets\\pos\\css\\styles.css"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\pos\\images\\pos.png",
+      "PackagePath": "staticwebassets\\pos\\images\\pos.png"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\pos\\images\\pos_.png",
+      "PackagePath": "staticwebassets\\pos\\images\\pos_.png"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\pos\\images\\pos_1.png",
+      "PackagePath": "staticwebassets\\pos\\images\\pos_1.png"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\pos\\index.html",
+      "PackagePath": "staticwebassets\\pos\\index.html"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\pos\\js\\scripts.js",
+      "PackagePath": "staticwebassets\\pos\\js\\scripts.js"
+    },
+    {
+      "Id": "C:\\Desarrollo2030\\AngelSQL\\AngelSQLServer\\wwwroot\\sql_commands.html",
+      "PackagePath": "staticwebassets\\sql_commands.html"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.AngelSQLServer.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.build.AngelSQLServer.props",
+      "PackagePath": "build\\AngelSQLServer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildMultiTargeting.AngelSQLServer.props",
+      "PackagePath": "buildMultiTargeting\\AngelSQLServer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildTransitive.AngelSQLServer.props",
+      "PackagePath": "buildTransitive\\AngelSQLServer.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>DB</id>
+    <version>1.0.0</version>
+    <authors>DB</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="IronPython" version="3.4.0-alpha1" exclude="Build,Analyzers" />
+        <dependency id="IronPython.StdLib" version="3.4.0-alpha1" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
+        <dependency id="System.Data.SQLite" version="1.0.115.5" exclude="Build,Analyzers" />
+        <dependency id="WindowsAzure.Storage" version="9.3.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <contentFiles>
+      <files include="any/net6.0/py/applyaccounting.py" buildAction="Content" />
+      <files include="any/net6.0/py/copy_table.py" buildAction="Content" />
+      <files include="any/net6.0/py/import_from.py" buildAction="Content" />
+      <files include="any/net6.0/py/main.py" buildAction="Content" />
+      <files include="any/net6.0/py/samples.py" buildAction="Content" />
+      <files include="any/net6.0/py/sat.py" buildAction="Content" />
+      <files include="any/net6.0/py/universal.py" buildAction="Content" />
+    </contentFiles>
+  </metadata>
+  <files>
+    <file src="D:\My\DB\DB\bin\Debug\net6.0\DB.runtimeconfig.json" target="lib\net6.0\DB.runtimeconfig.json" />
+    <file src="D:\My\DB\DB\bin\Debug\net6.0\DB.dll" target="lib\net6.0\DB.dll" />
+    <file src="D:\My\DB\DB\py\applyaccounting.py" target="content\py\applyaccounting.py" />
+    <file src="D:\My\DB\DB\py\applyaccounting.py" target="contentFiles\any\net6.0\py\applyaccounting.py" />
+    <file src="D:\My\DB\DB\py\copy_table.py" target="content\py\copy_table.py" />
+    <file src="D:\My\DB\DB\py\copy_table.py" target="contentFiles\any\net6.0\py\copy_table.py" />
+    <file src="D:\My\DB\DB\py\import_from.py" target="content\py\import_from.py" />
+    <file src="D:\My\DB\DB\py\import_from.py" target="contentFiles\any\net6.0\py\import_from.py" />
+    <file src="D:\My\DB\DB\py\main.py" target="content\py\main.py" />
+    <file src="D:\My\DB\DB\py\main.py" target="contentFiles\any\net6.0\py\main.py" />
+    <file src="D:\My\DB\DB\py\samples.py" target="content\py\samples.py" />
+    <file src="D:\My\DB\DB\py\samples.py" target="contentFiles\any\net6.0\py\samples.py" />
+    <file src="D:\My\DB\DB\py\sat.py" target="content\py\sat.py" />
+    <file src="D:\My\DB\DB\py\sat.py" target="contentFiles\any\net6.0\py\sat.py" />
+    <file src="D:\My\DB\DB\py\universal.py" target="content\py\universal.py" />
+    <file src="D:\My\DB\DB\py\universal.py" target="contentFiles\any\net6.0\py\universal.py" />
+  </files>
+</package>

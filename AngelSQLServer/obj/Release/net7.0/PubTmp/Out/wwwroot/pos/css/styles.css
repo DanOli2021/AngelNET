@@ -1,0 +1,128 @@
+        /* Block for users with presbyopia or visual impairment */
+        body {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+          }
+          
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: #333333;
+        }
+
+        a {
+            color: #0066CC;
+        }
+
+        .button {
+            background-color: #FF0000;
+            color: #FFFFFF;
+            font-size: 20px;
+            padding: 10px;
+        }
+
+        /* End of Block for users with presbyopia or visual impairment */
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 400px;
+            padding: 16px;
+            background-color: white;
+            margin: 0 auto;
+            margin-top: 20px;
+            border: 1px solid #4a90e2;
+            border-radius: 4px;
+            box-shadow: 0px 0px 10px #4a90e2;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        label {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        input[type=text],
+        input[type=password] {
+            width: 92%;
+            padding: 15px;
+            margin: 5px 0 22px 0;
+            border: none;
+            border-radius: 4px;
+            border: 1px solid #4a90e2;
+            font-size: large;
+            font-weight: bold;
+        }
+
+        input[type=submit] {
+            background-color: #4a90e2;
+            color: black;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            opacity: 0.9;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .button {
+            font-size: 24px; /* Tamaño de letra grande para facilitar la lectura */
+            padding: 15px 30px; /* Espaciado interior para un botón más grande */
+            color: #FFFFFF; /* Letra de color blanco */
+            background-color: #007BFF; /* Color de fondo azul */
+            border: none; /* Sin borde */
+            border-radius: 5px; /* Bordes redondeados */
+            box-shadow: 0 10px #0056b3; /* Sombra de caja para efecto 3D */
+            transition: all 0.2s ease; /* Transición suave para los cambios de estado del botón */
+            text-decoration: none; /* Elimina la subrayación del enlace */
+            display: inline-block;
+        }
+        
+        .button:hover {
+            background-color: #0056b3; /* Color de fondo más oscuro al pasar el ratón */
+            box-shadow: 0 5px #003d80; /* Sombra de caja más corta al pasar el ratón */
+            transform: translateY(5px); /* Mueve ligeramente el botón hacia abajo */
+        }
+
+        @media screen and (max-width: 400px) {
+            .container {
+                width: 100%;
+                margin-top: 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            label {
+                font-size: 1.2em;
+            }
+
+            input[type=text],
+            input[type=password],
+            input[type=submit] {
+                padding: 10px;
+            }
+        }
