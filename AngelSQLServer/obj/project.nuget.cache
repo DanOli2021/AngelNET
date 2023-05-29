@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "orAoegvqyGllJs5m31+YOH2kjpuAOTQyUpY5dDRKgr44h8LHvrsX9hLW+X7+009NCDvHAd1RdwwuIOtMWFpIEw==",
+  "dgSpecHash": "rZ/uG2i7nPGn41YfZANaIBmZ1sIoz1C6jY05gx0XzA+twwuc4MFCsI1yhW/V/60WiJoqq5Rb8EYxpBysztkZ/Q==",
   "success": true,
-  "projectFilePath": "C:\\Desarrollo2040\\AngelSQLServer\\AngelSQLServer.csproj",
+  "projectFilePath": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\AngelSQLServer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Daniel Oliver Rojas\\.nuget\\packages\\azure.core\\1.31.0\\azure.core.1.31.0.nupkg.sha512",
     "C:\\Users\\Daniel Oliver Rojas\\.nuget\\packages\\azure.data.tables\\12.8.0\\azure.data.tables.12.8.0.nupkg.sha512",

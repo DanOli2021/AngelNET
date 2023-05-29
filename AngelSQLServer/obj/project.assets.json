@@ -7448,11 +7448,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Desarrollo2040\\AngelSQLServer\\AngelSQLServer.csproj",
+      "projectUniqueName": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\AngelSQLServer.csproj",
       "projectName": "AngelSQLServer",
-      "projectPath": "C:\\Desarrollo2040\\AngelSQLServer\\AngelSQLServer.csproj",
+      "projectPath": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\AngelSQLServer.csproj",
       "packagesPath": "C:\\Users\\Daniel Oliver Rojas\\.nuget\\packages\\",
-      "outputPath": "C:\\Desarrollo2040\\AngelSQLServer\\obj\\",
+      "outputPath": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -7474,8 +7474,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Desarrollo2040\\DB\\DB.csproj": {
-              "projectPath": "C:\\Desarrollo2040\\DB\\DB.csproj"
+            "C:\\Desarrollo\\AngelNET\\DB\\DB.csproj": {
+              "projectPath": "C:\\Desarrollo\\AngelNET\\DB\\DB.csproj"
             }
           }
         }

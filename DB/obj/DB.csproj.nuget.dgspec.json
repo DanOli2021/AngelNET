@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Desarrollo2040\\DB\\DB.csproj": {}
+    "C:\\Desarrollo\\AngelNET\\DB\\DB.csproj": {}
   },
   "projects": {
-    "C:\\Desarrollo2040\\DB\\DB.csproj": {
+    "C:\\Desarrollo\\AngelNET\\DB\\DB.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Desarrollo2040\\DB\\DB.csproj",
+        "projectUniqueName": "C:\\Desarrollo\\AngelNET\\DB\\DB.csproj",
         "projectName": "DB",
-        "projectPath": "C:\\Desarrollo2040\\DB\\DB.csproj",
+        "projectPath": "C:\\Desarrollo\\AngelNET\\DB\\DB.csproj",
         "packagesPath": "C:\\Users\\Daniel Oliver Rojas\\.nuget\\packages\\",
-        "outputPath": "C:\\Desarrollo2040\\DB\\obj\\",
+        "outputPath": "C:\\Desarrollo\\AngelNET\\DB\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
