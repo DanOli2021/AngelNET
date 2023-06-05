@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>POS - Inicio de sesión</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/scripts.js"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>POS</h1>
+
+        <img src="./images/pos_1.png" alt="logo" class="logo" width="50%">
+
+        <form action="/login" method="post">
+            <label for="username"><b>Usuario</b></label>
+            <input type="text" placeholder="Enter your username" id="username" required>
+            
+            <label for="password"><b>Contraseña</b></label>
+            <input type="password" placeholder="Enter your password" id="password" required>
+            
+            <input type="button" class="button" onclick="tryLogin()" value="Log in" >
+        </form>
+    </div>
+
+    <dialog id="myDialog">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton">Cerrar</button>
+    </dialog>
+
+
+    <script>
+
+        function tryLogin() {
+
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            let responce = login(username, password);
+
+            responce.then(function(query) {
+                let responce_query = JSON.parse(query);
+
+                if( responce_query.result.startsWith("Error:") ) {
+                    showDialog("Alert", responce_query.result);
+                } else {
+                    sessionStorage.setItem('Tocken', responce_query.result);
+                    window.location.href = "menu.html";
+                }
+
+            });
+
+        }
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function() {
+            document.querySelector('#myDialog').close();
+        });
+
+        document.getElementById("username").focus();
+
+    </script>
+
+</body>
+</html>

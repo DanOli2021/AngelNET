@@ -1,0 +1,79 @@
+// Angel SQL POS API reference
+
+// Groups options
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "CreateGroup", 
+"UserGroup": "SALES",
+"Name": "SALES GROUP",
+"Permissions": "{ \"Sales\": true, \"Sales_POS\": true, \"Sales_Kiosk\": true,\"Sales_Customers\": false, \"Sales_X_Report\": true, \"Sales_Z_Report\": false, \"Sales_cash_reconciliation\": false, \"Sales_counting_bills_and_coins\": false, \"Sales_giving_a_refund\": false, \"Sales_void_transaction\": false, \"Sales_tender_the_transaction\": false, \"Sales_void_item\": false, \"Purchases\": false, \"Inventory\": false, \"BusinessManager\": false, \"Configuration\": false }",
+"db_user": "db",
+"db_password": "db" }																   
+																   
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetGroups", 
+"Where": "id = 'SALES'",
+"db_user": "db",
+"db_password": "db" }	
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetGroups", 
+"UserGroup": "SALES",
+"db_user": "db",
+"db_password": "db" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "DeleteGroup", 
+"UserGroup": "SALES",
+"db_user": "db",
+"db_password": "db" }																   
+//End Group Options
+
+
+// Users options
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "CreateUser", 
+"User": "myposuser",
+"UserGroup": "SALES",
+"Name": "My User Name",
+"Password": "mysecret",
+"Organization": "My Organization Name",
+"Email": "myemail@mycompany.name",
+"Phone": "55 55055555",
+"db_user": "db",
+"db_password": "db" }		
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "DeleteUser", 
+"User": "myposuser",
+"db_user": "db",
+"db_password": "db" }	
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetUsers", 
+"User": "myposuser",
+"db_user": "db",
+"db_password": "db" }	
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetUsers", 
+"Where": "id = 'myposuser'",
+"db_user": "db",
+"db_password": "db" }
+//End User Options
+
+// Tocken options
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "CreateNewToken", 
+"User": "myposuser",
+"expiry_days": 30,
+"db_user": "db",
+"db_password": "db" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "DeleteToken", 
+"Tocken": "9b937029-2edf-43b1-bd95-8303406b982a",
+"db_user": "db",
+"db_password": "db" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "ValidateToken", 
+"Token": "9b937029-2edf-43b1-bd95-8303406b982a" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetTokenFromUser", 
+"User": "myposuser",
+"Password": "mysecret" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetPermisionsUsingTocken", 
+"Token": "4726e9a8-ad82-4023-acfc-9d99af657479" }
+
+
+//End Tockens Options

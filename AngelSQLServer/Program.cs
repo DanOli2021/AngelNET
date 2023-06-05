@@ -166,7 +166,7 @@ app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod(
 //    app.UseSwaggerUI();
 //}
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 

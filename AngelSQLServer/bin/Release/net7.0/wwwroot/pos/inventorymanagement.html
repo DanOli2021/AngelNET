@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>POS - Inicio de sesión</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+
+    <script src="./js/scripts.js"></script>
+
+    <script>
+        const Tocken = sessionStorage.getItem("Tocken");
+
+        if (Tocken == null) {
+            window.location.href = "index.html";
+        }
+
+    </script>
+
+
+</head>
+
+<body>
+    <div class="container">
+
+        <a href="#">
+            <span style="float: left;">
+                <img src="images/icons/brilliant_computergadgets_barcode_scanner_256.png" alt="logo" class="logo" style="width:128px">
+            </span>
+            <h1>Inventory Management</h1>
+        </a>
+
+        <a href="menu.html" class="anchor_button3">
+            <span style="float: left;">
+                <img src="images/icons/beta_general_back_128.png" alt="logo" class="logo" style="width:24px">
+            </span>
+            Menu
+        </a>
+
+        <script>
+
+            let responce = getPermissions(Tocken);
+
+            responce.then(function (query) {
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Alert", responce_query.result);
+                } else {
+                    sessionStorage.setItem('Permissions', responce_query.result);
+                }
+
+            });
+
+            if (sessionStorage.getItem("Permissions") != null) {
+                let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
+
+                if (permissions.Inventory_skus_create == true) {
+                    document.write('<a href="sku.html" class="anchor_button1">');
+                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
+                    document.write('<img src="images/icons/diamond_business_market_128.png" style="width:96px">');
+                    document.write('</span>');
+                    document.write('SKU (Stock Keeping Unit)');
+                    document.write('</a>');
+                }
+
+                if (permissions.Inventory_inbound_outbound == true) {
+                    document.write('<a href="inbound.html" class="anchor_button2">');
+                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
+                    document.write('<img src="images/icons/brilliant_shopping_product_display_128.png" style="width:96px">');
+                    document.write('</span>');
+                    document.write('Inbound / Outbound');
+                    document.write('</a>');
+                }
+
+                if (permissions.Physical_inventory == true) {
+                    document.write('<a href="physical_Inventory.html" class="anchor_button1">');
+                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
+                    document.write('<img src="images/icons/diamond_business_report_128.png" style="width:96px">');
+                    document.write('</span>');
+                    document.write('Physical Inventory Count');
+                    document.write('</a>');
+                }
+
+                if (permissions.Physical_inventory_shrinkage == true) {
+                    document.write('<a href="Shrinkage.html" class="anchor_button2">');
+                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
+                    document.write('<img src="images/icons/brilliant_shopping_checkout_128.png" style="width:96px">');
+                    document.write('</span>');
+                    document.write('Shrinkage');
+                    document.write('</a>');
+                }
+
+            }
+
+
+        </script>
+
+    </div>
+
+    <dialog id="myDialog">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton">Cerrar</button>
+    </dialog>
+
+
+    <script>
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+
+
+    </script>
+
+</body>
+
+</html>

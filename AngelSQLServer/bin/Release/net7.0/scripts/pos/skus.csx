@@ -13,7 +13,6 @@ public class Skus_Catalog
     public decimal consumption_tax1 { get; set; }
     public decimal consumption_tax2 { get; set; }
     public string currency { get; set; }
-    public string clasificacion { get; set; }
     public string maker { get; set; }
     public string location { get; set; }
     public bool requires_inventory { get; set; }
@@ -38,7 +37,7 @@ public class Skus_Catalog
     public bool deleted { get; set; }
 }
 
-public class Clasificacions
+public class Clasifications
 {
     public string id { get; set; }
     public string description { get; set; }

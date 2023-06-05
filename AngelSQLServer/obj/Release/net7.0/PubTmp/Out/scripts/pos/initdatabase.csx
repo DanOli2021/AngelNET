@@ -28,7 +28,7 @@ result = db.CreateTable(component);
 Console.WriteLine(result);
 
 Console.WriteLine("Creating Clasificacions catalog...");
-Clasificacions clasificacion = new Clasificacions();
+Clasifications clasificacion = new Clasifications();
 result = db.CreateTable(clasificacion);
 Console.WriteLine(result);
 

@@ -436,7 +436,7 @@ namespace AngelDB
                 string account_database_table_partition = mainClass.account + "-" + mainClass.database + "-" + d["insert_into"] + "-" + d["partition_key"];
                 string table_type = "";
 
-                if (!mainClass.partitions.ContainsKey(account_database_table_partition))
+                if (mainClass.partitions.ContainsKey(account_database_table_partition))
                 {
                     string result_update = mainClass.partitions[account_database_table_partition].UpdateTimeStamp();
 

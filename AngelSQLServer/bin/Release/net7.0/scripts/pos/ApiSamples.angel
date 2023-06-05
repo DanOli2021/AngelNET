@@ -1,0 +1,112 @@
+// Angel SQL POS API reference
+
+// Groups options
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "CreateGroup", 
+"UserGroup": "SALES",
+"Name": "SALES GROUP",
+"Permissions": "{ 
+                  \"Sales\": true, 
+				  \"Sales_Customers\": true, 
+				  \"Sales_X_Report\": true, 
+				  \"Sales_Z_Report\": true, 
+				  \"Sales_cash_reconciliation\": true, 
+				  \"Sales_counting_bills_and_coins\": true, 
+				  \"Sales_giving_a_refund\": true, 
+				  \"Sales_void_transaction\": true, 
+				  \"Sales_tender_the_transaction\": true, 
+				  \"Sales_void_item\": true, 
+				  \"Purchases\": true, 
+				  \"Inventory\": true, 
+                  \"Inventory_skus_create\": true,
+				  \"Inventory_skus_modify\": true,
+				  \"Inventory_skus_delete\": true,
+				  \"Inventory_skus_offers\": true,
+				  \"Inventory_skus_offers_create\": true,
+				  \"Inventory_skus_offers_modify\": true,
+				  \"Inventory_skus_offers_delete\": true,
+				  \"Inventory_inbound_outbound\": true,
+				  \"Inventory_inbound_outbound_create\": true,
+				  \"Inventory_inbound_outbound_modify\": true,
+				  \"Inventory_inbound_outbound_delete\": true,
+				  \"Inventory_inbound_outbound_apply\": true,
+				  \"Physical_inventory\": true,
+				  \"Physical_inventory_create\": true,
+				  \"Physical_inventory_modify\": true,
+				  \"Physical_inventory_delete\": true,
+				  \"Physical_inventory_apply\": true,
+				  \"Physical_inventory_shrinkage\": true,
+				  \"BusinessManager\": true, 
+				  \"Configuration\": true 
+				 }",
+"db_user": "db",
+"db_password": "db" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetGroups", 
+"Where": "id = 'SALES'",
+"db_user": "db",
+"db_password": "db" }	
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetGroups", 
+"UserGroup": "SALES",
+"db_user": "db",
+"db_password": "db" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "DeleteGroup", 
+"UserGroup": "SALES",
+"db_user": "db",
+"db_password": "db" }																   
+//End Group Options
+
+
+// Users options
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "CreateUser", 
+"User": "myposuser",
+"UserGroup": "SALES",
+"Name": "My User Name",
+"Password": "mysecret",
+"Organization": "My Organization Name",
+"Email": "myemail@mycompany.name",
+"Phone": "55 55055555",
+"db_user": "db",
+"db_password": "db" }		
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "DeleteUser", 
+"User": "myposuser",
+"db_user": "db",
+"db_password": "db" }	
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetUsers", 
+"User": "myposuser",
+"db_user": "db",
+"db_password": "db" }	
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetUsers", 
+"Where": "id = 'myposuser'",
+"db_user": "db",
+"db_password": "db" }
+//End User Options
+
+// Tocken options
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "CreateNewToken", 
+"User": "myposuser",
+"expiry_days": 30,
+"db_user": "db",
+"db_password": "db" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "DeleteToken", 
+"Tocken": "9b937029-2edf-43b1-bd95-8303406b982a",
+"db_user": "db",
+"db_password": "db" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "ValidateToken", 
+"Token": "9b937029-2edf-43b1-bd95-8303406b982a" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetTokenFromUser", 
+"User": "myposuser",
+"Password": "mysecret" }
+
+POST http://localhost:5000/AngelPOST API pos/admintokens MESSAGE {"OperationType": "GetPermisionsUsingTocken", 
+"Token": "4726e9a8-ad82-4023-acfc-9d99af657479" }
+
+
+//End Tockens Options

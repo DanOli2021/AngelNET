@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>POS - Inicio de sesión</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/scripts.js"></script>
+
+    <script>
+        const Tocken = sessionStorage.getItem("Tocken");
+
+        if (Tocken == null) {
+            window.location.href = "index.html";
+        }
+
+    </script>
+
+
+</head>
+
+<body>
+    <div class="container">
+
+        <a href="#">
+            <span style="float: left;">
+                <img src="images/icons/brilliant_shopping_departmental_store_256.png" alt="logo" class="logo" style="width:128px">
+            </span>
+            <h1>Sales</h1>
+        </a>
+
+        <a href="menu.html" class="anchor_button3">
+            <span style="float: left;">
+                <img src="images/icons/beta_general_back_128.png" alt="logo" class="logo" style="width:24px">
+            </span>
+            Menu
+        </a>
+
+        <script>
+
+            let responce = getPermissions(Tocken);
+
+            responce.then(function (query) {
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Alert", responce_query.result);
+                } else {
+                    sessionStorage.setItem('Permissions', responce_query.result);
+                }
+
+            });
+
+            if (sessionStorage.getItem("Permissions") != null) {
+                let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
+
+                if (permissions.Sales_POS == true) {
+                    document.write('<a href="pos.html" class="anchor_button1">');
+                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
+                    document.write('<img src="images/icons/beta_accounting_cashbox_128.png" style="width:96px"/>');
+                    document.write('</span>');
+                    document.write('POS (Point of sale)');
+                    document.write('</a>');
+                }
+
+                if (permissions.Sales_Kiosk == true) {
+                    document.write('<a href="kiosk.html" class="anchor_button2">');
+                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
+                    document.write('<img src="images/icons/brilliant_shopping_kiosk_128.png" style="width:96px"/>');
+                    document.write('</span>');
+                    document.write('Kiosk');
+                    document.write('</a>');
+                }
+
+            }
+
+
+        </script>
+
+    </div>
+
+    <dialog id="myDialog">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton">Cerrar</button>
+    </dialog>
+
+
+    <script>
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+
+
+    </script>
+
+</body>
+
+</html>

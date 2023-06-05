@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>POS - Inicio de sesión</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/scripts.js"></script>
+
+    <script>
+        const Tocken = sessionStorage.getItem("Tocken");
+
+        if (Tocken == null) {
+            window.location.href = "index.html";
+        }
+
+    </script>
+
+
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>POS</h1>
+
+        <img src="./images/pos_1.png" alt="logo" class="logo" width="50%">
+
+        <script>
+
+            let responce = getPermissions(Tocken);
+
+            responce.then(function (query) {
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Alert", responce_query.result);
+                } else {
+                    sessionStorage.setItem('Permissions', responce_query.result);
+                }
+
+            });
+
+            if (sessionStorage.getItem("Permissions") != null) {
+                let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
+
+                if (permissions.Sales == true) {
+                    document.write('<a href="sales.html" class="anchor_button1">Ventas</a>');
+                }
+
+                if (permissions.Purchases == true) {
+                    document.write('<a href="purchases.html" class="anchor_button2">Purchases</a>');
+                }
+
+                if (permissions.Inventory == true) {
+                    document.write('<a href="inventory.html" class="anchor_button1">Inventario</a>');
+                }
+
+                if (permissions.BusinessManager == true) {
+                    document.write('<a href="businessManager.html" class="anchor_button2">Business Manager</a>');
+                }
+
+                if (permissions.Configuration == true) {
+                    document.write('<a href="configuration.html" class="anchor_button1">Configuration</a>');
+                }
+            }
+
+
+        </script>
+
+    </div>
+
+    <dialog id="myDialog">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton">Cerrar</button>
+    </dialog>
+
+
+    <script>
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+
+
+    </script>
+
+</body>
+
+</html>

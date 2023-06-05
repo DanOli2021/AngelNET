@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\publish\</_PublishTargetUrl>
+    <History>True|2023-06-05T18:11:41.4823995Z;True|2023-06-05T12:11:09.5421714-06:00;True|2023-06-05T12:05:33.2494905-06:00;True|2023-06-05T12:03:54.2981051-06:00;True|2023-05-29T09:08:50.4344770-06:00;True|2023-05-29T08:52:30.4907231-06:00;True|2023-05-29T08:35:54.1378169-06:00;True|2023-05-28T20:55:27.3450859-06:00;True|2023-05-28T20:53:44.7459545-06:00;True|2023-05-28T20:53:39.2309193-06:00;True|2023-05-28T20:46:37.7211967-06:00;True|2023-05-28T20:37:41.1425306-06:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>
