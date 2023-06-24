@@ -5,8 +5,7 @@
     <title>POS - Inicio de sesión</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="../bootstrap-5.3.0/css/bootstrap.min.css">
     <script src="./js/scripts.js"></script>
 
     <script>
@@ -18,97 +17,100 @@
 
     </script>
 
-
 </head>
 
 <body>
+
     <div class="container">
 
-        <a href="#">
-            <span style="float: left;">
-                <img src="images/icons/brilliant_shopping_departmental_store_256.png" alt="logo" class="logo" style="width:128px">
-            </span>
-            <h1>Sales</h1>
-        </a>
+        <div "row justify-content-center">
 
-        <a href="menu.html" class="anchor_button3">
-            <span style="float: left;">
-                <img src="images/icons/beta_general_back_128.png" alt="logo" class="logo" style="width:24px">
-            </span>
-            Menu
-        </a>
+            <nav class="navbar">
+                <div class="container-fluid">
+                  <a class="btn btn-primary btn-block" href="menu.html"  style="width: 100%;">
+                    <span style="float: left;">
+                        <img src="images/icons/beta_general_back_128.png" alt="logo" class="logo" style="width:24px">
+                    </span>
+        
+                    Menu
+                </a>
+                </div>
+            </nav>
+              
+            <img src="./images/icons/brilliant_shopping_departmental_store_128.png" alt="logo" class="img-fluid mx-auto d-block" width="170px" style="margin-top: 20px;">
 
-        <script>
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;">Sales</h1>
 
-            let responce = getPermissions(Tocken);
+            <div class="col-md-12">
 
-            responce.then(function (query) {
-                let responce_query = JSON.parse(query);
+                <script>
 
-                if (responce_query.result.startsWith("Error:")) {
-                    showDialog("Alert", responce_query.result);
-                } else {
-                    sessionStorage.setItem('Permissions', responce_query.result);
-                }
+                    let responce = getPermissions(Tocken);
 
-            });
+                    responce.then(function (query) {
+                        let responce_query = JSON.parse(query);
 
-            if (sessionStorage.getItem("Permissions") != null) {
-                let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
+                        if (responce_query.result.startsWith("Error:")) {
+                            showDialog("Alert", responce_query.result);
+                        } else {
+                            sessionStorage.setItem('Permissions', responce_query.result);
+                            generateButtons();
+                        }
 
-                if (permissions.Sales_POS == true) {
-                    document.write('<a href="pos.html" class="anchor_button1">');
-                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
-                    document.write('<img src="images/icons/beta_accounting_cashbox_128.png" style="width:96px"/>');
-                    document.write('</span>');
-                    document.write('POS (Point of sale)');
-                    document.write('</a>');
-                }
+                    });
 
-                if (permissions.Sales_Kiosk == true) {
-                    document.write('<a href="kiosk.html" class="anchor_button2">');
-                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
-                    document.write('<img src="images/icons/brilliant_shopping_kiosk_128.png" style="width:96px"/>');
-                    document.write('</span>');
-                    document.write('Kiosk');
-                    document.write('</a>');
-                }
+                    function generateButtons() {
+                        if (sessionStorage.getItem("Permissions") != null) {
+                            let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
 
-            }
+                            if (permissions.Sales_POS.includes("Create")) {
+                                generateButton("pos.html", "beta_accounting_cashbox_128.png", "POS (Point of sale)", "btn btn-primary btn-block btn-lg form-control");
+                            }
+
+                            if (permissions.Sales_Kiosk.includes("Create")) {
+                                generateButton("kiosk.html", "brilliant_shopping_kiosk_128.png", "Kiosk", "btn btn-info btn-block btn-lg form-control");
+                            }
+                        }
+                    }
 
 
-        </script>
+                </script>
+
+            </div>
+
+        </div>
 
     </div>
 
     <dialog id="myDialog">
-        <h1 id="dialogTittle">Title</h1>
-        <p id="dialogMessage">Message</p>
-        <button id="closeButton">Cerrar</button>
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
     </dialog>
-
 
     <script>
 
-        function showDialog(title, message) {
+            function showDialog(title, message) {
 
-            document.getElementById('dialogTittle').innerText = title;
-            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+                document.getElementById('dialogTittle').innerText = title;
+                document.getElementById('dialogMessage').innerText = '⚠️' + message;
 
-            document.getElementById('myDialog').showModal();
-        }
+                document.getElementById('myDialog').showModal();
+            }
 
-        function closeDialog() {
-            document.getElementById('myDialog').close();
-        }
+            function closeDialog() {
+                document.getElementById('myDialog').close();
+            }
 
-        document.querySelector('#closeButton').addEventListener('click', function () {
-            document.querySelector('#myDialog').close();
-        });
-
-
+            document.querySelector('#closeButton').addEventListener('click', function () {
+                document.querySelector('#myDialog').close();
+            });
 
     </script>
+
+    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

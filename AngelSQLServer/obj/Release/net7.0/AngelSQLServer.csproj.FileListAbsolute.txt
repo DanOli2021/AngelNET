@@ -1786,3 +1786,15 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\pos\inventoryma
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\pos\menu.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\pos\sales.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\scripts\pos\shared.csx
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\bootstrap-5.3.0\css\bootstrap.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\bootstrap-5.3.0\css\bootstrap-grid.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\bootstrap-5.3.0\css\bootstrap-reboot.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\bootstrap-5.3.0\css\bootstrap-utilities.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\bootstrap-5.3.0\js\bootstrap.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\css\jquery.dataTables.min.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\css\responsive.dataTables.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\js\code.jquery.com_jquery-3.7.0.min.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\js\dataTables.responsive.min.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\js\jquery.dataTables.min.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\pos\images\cafe_de_olla_recipe-500x375.jpg
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\pos\skus.html

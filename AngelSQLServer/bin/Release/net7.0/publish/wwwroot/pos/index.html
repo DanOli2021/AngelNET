@@ -5,6 +5,9 @@
     <title>POS - Inicio de sesión</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../bootstrap-5.3.0/css/bootstrap.min.css">
+
     <link rel="stylesheet" href="./css/styles.css">
     <script src="./js/scripts.js"></script>
 </head>
@@ -12,27 +15,44 @@
 <body>
     <div class="container">
 
-        <img src="./images/pos_1.png" alt="logo" class="logo" width="40%">
+        <div class="row justify-content-center">
+            <img src="./images/pos_1.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px; width: 30%">
 
-        <h1>POS</h1>
+            <h1 class="text-center">POS</h1>
+            
+            <div class="col-md-12">
+                <form action="/login" method="post">
 
-        <form action="/login" method="post">
-            <label for="username"><b>Usuario</b></label>
-            <input type="text" placeholder="Enter your username" id="username" required>
+                    <div class="form-group">
+                        <label for="username"><b>Usuario</b></label>
+                        <input type="text" class="form-control" placeholder="Enter your username" id="username" required>
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="password"><b>Contraseña</b></label>
+                        <input type="password" class="prymary form-control" placeholder="Enter your password" id="password" required style="margin-bottom: 20px;">
+                    </div>
+    
+                    <div class="form-group">
+                        <input type="button" class="btn btn-primary btn-lg form-control" onclick="tryLogin()" value="Log in (F2)" style="margin-bottom: 20px;">    
+                    </div>
+    
+                </form>
+    
+            </div>
 
-            <label for="password"><b>Contraseña</b></label>
-            <input type="password" placeholder="Enter your password" id="password" required>
 
-            <input type="button" class="button" onclick="tryLogin()" value="Log in (F2)" style="margin-bottom: 20px;">
-        </form>
+        </div>
+
     </div>
 
     <dialog id="myDialog">
-        <h1 id="dialogTittle">Title</h1>
-        <p id="dialogMessage">Message</p>
-        <button id="closeButton">Cerrar</button>
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
     </dialog>
-
 
     <script>
 
@@ -43,10 +63,10 @@
 
             let responce = login(username, password);
 
-            responce.then(function(query) {
+            responce.then(function (query) {
                 let responce_query = JSON.parse(query);
 
-                if( responce_query.result.startsWith("Error:") ) {
+                if (responce_query.result.startsWith("Error:")) {
                     showDialog("Alert", responce_query.result);
                 } else {
                     sessionStorage.setItem('Tocken', responce_query.result);
@@ -69,7 +89,7 @@
             document.getElementById('myDialog').close();
         }
 
-        document.querySelector('#closeButton').addEventListener('click', function() {
+        document.querySelector('#closeButton').addEventListener('click', function () {
             document.querySelector('#myDialog').close();
         });
 
@@ -85,5 +105,8 @@
 
     </script>
 
+    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
 </body>
+
 </html>

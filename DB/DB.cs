@@ -1421,11 +1421,13 @@ namespace AngelDB
         }
 
 
-        public string CreateTable(object o)
+        public string CreateTable(object o, string table_name = "", bool search_table = false)
         {
             try
             {
-                string table_name = o.GetType().Name;
+
+                if( string.IsNullOrEmpty(table_name)) table_name = o.GetType().Name;
+
                 string sql = "CREATE TABLE " + table_name + " FIELD LIST ";
                 foreach (var prop in o.GetType().GetProperties())
                 {
@@ -1445,31 +1447,44 @@ namespace AngelDB
                         continue;
                     }
 
-
-                    switch (prop.PropertyType.Name)
+                    if (search_table == false)
                     {
-                        case "String":
-                            sql += prop.Name + " TEXT, ";
-                            break;
-                        case ("Int32"):
-                            sql += prop.Name + " INTEGER, ";
-                            break;
-                        case ("Decimal"):
-                            sql += prop.Name + " NUMERIC, ";
-                            break;
-                        case ("Boolean"):
-                            sql += prop.Name + " BOOLEAN, ";
-                            break;
-                        case ("DateTime"):
-                            sql += prop.Name + " TEXT, ";
-                            break;
-                        default:
-                            sql += prop.Name + ", ";
-                            break;
+                        switch (prop.PropertyType.Name)
+                        {
+                            case "String":
+                                sql += prop.Name + " TEXT, ";
+                                break;
+                            case ("Int32"):
+                                sql += prop.Name + " INTEGER, ";
+                                break;
+                            case ("Decimal"):
+                                sql += prop.Name + " NUMERIC, ";
+                                break;
+                            case ("Boolean"):
+                                sql += prop.Name + " BOOLEAN, ";
+                                break;
+                            case ("DateTime"):
+                                sql += prop.Name + " TEXT, ";
+                                break;
+                            default:
+                                sql += prop.Name + ", ";
+                                break;
+                        }
+
+                    }
+                    else 
+                    {
+                        sql += prop.Name + ", ";
                     }
                 }
 
                 sql = sql.Substring(0, sql.Length - 2);
+
+                if (search_table) 
+                {
+                    sql += " TYPE SEARCH";
+                }
+
                 string result = this.Prompt(sql);
 
                 if( result.StartsWith("Error:"))

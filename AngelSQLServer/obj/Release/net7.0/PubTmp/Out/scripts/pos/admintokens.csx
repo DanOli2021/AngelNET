@@ -137,7 +137,7 @@ public class AdminAuth
 
         if (result == "[]")
         {
-            return $"Error: CreateNewToken() User not found {to.User}";
+            return $"Error: User not found {to.User}";
         }
 
         Tokens t = new Tokens();
@@ -241,7 +241,7 @@ public class AdminAuth
 
         if (dt.Rows.Count == 0)
         {
-            return "Error: GetPermisionsUsingTocken() User not found";
+            return "Error: User not found";
         }
 
         result = db.Prompt($"SELECT * FROM UsersGroup WHERE id = '{dt.Rows[0]["UserGroup"]}'");
@@ -305,14 +305,14 @@ public class AdminAuth
 
         if (result == "[]")
         {
-            return "Error: GetTokenFromUser() User not found";
+            return "Error: User not found";
         }
 
         Users[] u = JsonConvert.DeserializeObject<Users[]>(result);
 
         if (u[0].Password.Trim() != to.Password.Trim())
         {
-            return "Error: GetTokenFromUser() Invalid password";
+            return "Error: Invalid password";
         }
 
         result = db.Prompt($"SELECT * FROM tokens WHERE user = '{to.User}'");
@@ -469,55 +469,42 @@ public class AdminAuth
             return result;
         }
 
-        Dictionary<string, bool> permissions = new Dictionary<string, bool>();
-        permissions.Add("Sales", false);
-        permissions.Add("Sales_POS", false);
-        permissions.Add("Sales_Kiosk", false);
-        permissions.Add("Sales_Customers", false);
-        permissions.Add("Sales_X_Report", false);
-        permissions.Add("Sales_Z_Report", false);
-        permissions.Add("Sales_cash_reconciliation", false);
-        permissions.Add("Sales_counting_bills_and_coins", false);
-        permissions.Add("Sales_giving_a_refund", false);
-        permissions.Add("Sales_void_transaction", false);
-        permissions.Add("Sales_tender_the_transaction", false);
-        permissions.Add("Sales_void_item", false);
-        permissions.Add("Purchases", false);
-        permissions.Add("Inventory", false);
-        permissions.Add("Inventory_skus", false);
-        permissions.Add("Inventory_skus_create", false);
-        permissions.Add("Inventory_skus_modify", false);
-        permissions.Add("Inventory_skus_delete", false);
-        permissions.Add("Inventory_skus_offers", false);
-        permissions.Add("Inventory_skus_offers_create", false);
-        permissions.Add("Inventory_skus_offers_modify", false);
-        permissions.Add("Inventory_skus_offers_delete", false);
-        permissions.Add("Inventory_skus_clasificacions", false);
-        permissions.Add("Inventory_skus_clasificacions_create", false);
-        permissions.Add("Inventory_skus_clasificacions_modify", false);
-        permissions.Add("Inventory_skus_clasificacions_delete", false);
-        permissions.Add("Inventory_inbound_outbound", false);
-        permissions.Add("Inventory_inbound_outbound_create", false);
-        permissions.Add("Inventory_inbound_outbound_modify", false);
-        permissions.Add("Inventory_inbound_outbound_delete", false);
-        permissions.Add("Inventory_inbound_outbound_apply", false);
-        permissions.Add("Physical_inventory", false);
-        permissions.Add("Physical_inventory_create", false);
-        permissions.Add("Physical_inventory_modify", false);
-        permissions.Add("Physical_inventory_delete", false);
-        permissions.Add("Physical_inventory_apply", false);
-        permissions.Add("Physical_inventory_shrinkage", false);
-        permissions.Add("BusinessManager", false);
-        permissions.Add("Configuration", false);
+        Dictionary<string, string> permissions = new Dictionary<string, string>();
+        permissions.Add("Sales", "Create, Modify, Delete, Consult");
+        permissions.Add("Sales_POS", "Create, Modify, Delete, Consult");
+        permissions.Add("Sales_Kiosk", "Create, Modify, Delete, Consult");
+        permissions.Add("Customers", "Create, Modify, Delete, Consult");
+        permissions.Add("Sales_X_Report", "true");
+        permissions.Add("Sales_Z_Report", "true");
+        permissions.Add("Sales_cash_reconciliation", "true");
+        permissions.Add("Sales_giving_a_refund", "true");
+        permissions.Add("Sales_void_transaction", "true");
+        permissions.Add("Sales_tender_the_transaction", "true");
+        permissions.Add("Sales_void_item", "true");
+        permissions.Add("Sales_change_price", "true");
+        permissions.Add("Purchases", "Create, Modify, Delete, Consult");
+        permissions.Add("Inventory", "Create, Modify, Delete, Consult");
+        permissions.Add("Skus", "Create, Modify, Delete, Consult");
+        permissions.Add("Skus_offers", "Create, Modify, Delete, Consult");
+        permissions.Add("Currencies", "Create, Modify, Delete, Consult");
+        permissions.Add("PriceCodes", "Create, Modify, Delete, Consult");
+        permissions.Add("Clasifications", "Create, Modify, Delete, Consult");
+        permissions.Add("Makers", "Create, Modify, Delete, Consult");
+        permissions.Add("Locations", "Create, Modify, Delete, Consult");
+        permissions.Add("Inventory_inbound_outbound", "Create, Modify, Delete, Consult");
+        permissions.Add("Physical_inventory", "Create, Modify, Delete, Consult, Apply");
+        permissions.Add("Physical_inventory_shrinkage", "Create, Modify, Delete, Consult");
+        permissions.Add("BusinessManager", "Reports, CEO Reports");
+        permissions.Add("Configuration", "Modify");
 
         result = db.Prompt($"SELECT * FROM UsersGroup WHERE id = '{go.UserGroup}'");
 
-        Dictionary<string, bool> getPermissions = new Dictionary<string, bool>();
+        Dictionary<string, string> getPermissions = new Dictionary<string, string>();
 
         if (result != "[]")
         {
             DataTable g = JsonConvert.DeserializeObject<DataTable>(result);
-            getPermissions = JsonConvert.DeserializeObject<Dictionary<string, bool>>(g.Rows[0]["Permissions"].ToString());
+            getPermissions = JsonConvert.DeserializeObject<Dictionary<string, string>>(g.Rows[0]["Permissions"].ToString());
         }
 
         foreach (string key in permissions.Keys)
@@ -528,7 +515,7 @@ public class AdminAuth
             }
         }
 
-        Dictionary<string, bool> NewPermissions = JsonConvert.DeserializeObject<Dictionary<string, bool>>(go.Permissions);
+        Dictionary<string, string> NewPermissions = JsonConvert.DeserializeObject<Dictionary<string, string>>(go.Permissions);
 
         foreach (string key in NewPermissions.Keys)
         {

@@ -83,11 +83,11 @@
             },
             "Microsoft.CodeAnalysis.CSharp": {
               "target": "Package",
-              "version": "[4.6.0-1.final, )"
+              "version": "[4.6.0, )"
             },
             "Microsoft.CodeAnalysis.CSharp.Scripting": {
               "target": "Package",
-              "version": "[4.6.0-1.final, )"
+              "version": "[4.6.0, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -99,7 +99,7 @@
             },
             "System.Data.SQLite": {
               "target": "Package",
-              "version": "[1.0.117, )"
+              "version": "[1.0.118, )"
             },
             "System.IO.Packaging": {
               "target": "Package",
@@ -126,7 +126,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
         }
       }
     }

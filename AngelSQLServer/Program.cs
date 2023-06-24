@@ -1,12 +1,63 @@
 //AngelSQLServer
 
 using AngelDB;
+using AngelSQL;
 using AngelSQLServer;
-using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using Newtonsoft.Json;
 using System.Globalization;
 using System.Text;
+
+string commandLine = string.Join(" ", args);
+string api_file = Environment.CurrentDirectory + "/config/AngelAPI.csx";
+string config_file = Environment.CurrentDirectory + "/config/AngelSQL.csx";
+
+if (!string.IsNullOrEmpty(commandLine))
+{
+    DbLanguage language = new DbLanguage();
+    language.SetCommands(AngelSQL.AngelSQLCommands.DbCommands());
+    Dictionary<string, string> d = language.Interpreter(commandLine.Trim());
+
+    if (d is null)
+    {
+        LogFile.Log(language.errorString);
+    }
+    else
+    {
+        if (d.First().Value == "START PARAMETERS")
+        {
+            if (d["api_file"] != "null") 
+            {
+                api_file = d["api_file"];
+            }
+
+            config_file = d["config_file"];
+
+            if (d["config_file"] != "null")
+            {
+                config_file = d["config_file"];
+            }
+
+            if (!File.Exists(api_file)) 
+            {
+                LogFile.Log($"Error: api file {api_file} does not exists");
+                Environment.Exit(0);
+                return;
+            }
+
+            if (!File.Exists(config_file))
+            {
+                LogFile.Log($"Error: config file {config_file} does not exists");
+                Environment.Exit(0);
+                return;
+            }
+
+        }
+    }
+
+}
 
 // Using dot as decimal separator
 NumberFormatInfo nfi = new NumberFormatInfo();
@@ -60,7 +111,7 @@ AngelDB.DB main_db = new AngelDB.DB();
 
 builder.Services.AddSingleton<AngelDB.DB>(main_db);
 
-string result = main_db.Prompt("SCRIPT FILE config/AngelSQL.csx ON APPLICATION DIRECTORY");
+string result = main_db.Prompt($"SCRIPT FILE {config_file}");
 
 if (!result.StartsWith("Error:"))
 {
@@ -85,67 +136,67 @@ if (parameters["cors"] == "true")
         options.AddPolicy("AllowAll",
                        builder =>
                        {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            });
+                           builder.AllowAnyOrigin()
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader();
+                       });
     });
 }
 
 
-    builder.WebHost.ConfigureKestrel(options =>
+builder.WebHost.ConfigureKestrel(options =>
+{
+
+    // Establece tu tiempo límite deseado aquí (en milisegundos)
+
+    if (!parameters.ContainsKey("request_timeout"))
     {
+        parameters.Add("request_timeout", "10");
+    }
 
-        // Establece tu tiempo límite deseado aquí (en milisegundos)
+    int request_timeout = 10;
+    int.TryParse(parameters["request_timeout"], out request_timeout);
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(10);
 
-        if( !parameters.ContainsKey("request_timeout") )
+    // Add pfx certificate
+    if (!string.IsNullOrEmpty(parameters["certificate"]))
+    {
+        try
         {
-            parameters.Add("request_timeout", "10");
-        }
-
-        int request_timeout = 10;
-        int.TryParse(parameters["request_timeout"], out request_timeout);
-        options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(10);
-
-        // Add pfx certificate
-        if (!string.IsNullOrEmpty(parameters["certificate"]))
-        {
-            try
+            if (!string.IsNullOrEmpty(parameters["bind_port"]))
             {
-                if (!string.IsNullOrEmpty(parameters["bind_port"]))
-                {
-                    parameters["bind_port"] = "443";
-                }
-
-                if (!string.IsNullOrEmpty(parameters["bind_ip"]))
-                {
-                    options.Listen(System.Net.IPAddress.Parse(parameters["bind_ip"]), int.Parse(parameters["bind_port"]), listenOptions =>
-                    {
-                        listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
-                    });
-                }
-                else
-                {
-
-                    if (string.IsNullOrEmpty(parameters["bind_ip"]))
-                    {
-                        parameters["bind_ip"] = "443";
-                    }
-
-                    options.Listen(System.Net.IPAddress.Any, int.Parse(parameters["bind_port"]), listenOptions =>
-                    {
-                        listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
-                    });
-
-                }
+                parameters["bind_port"] = "443";
             }
-            catch (Exception e)
+
+            if (!string.IsNullOrEmpty(parameters["bind_ip"]))
             {
-                LogFile.Log($"Error: {e}");
+                options.Listen(System.Net.IPAddress.Parse(parameters["bind_ip"]), int.Parse(parameters["bind_port"]), listenOptions =>
+                {
+                    listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
+                });
+            }
+            else
+            {
+
+                if (string.IsNullOrEmpty(parameters["bind_ip"]))
+                {
+                    parameters["bind_ip"] = "443";
+                }
+
+                options.Listen(System.Net.IPAddress.Any, int.Parse(parameters["bind_port"]), listenOptions =>
+                {
+                    listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
+                });
+
             }
         }
+        catch (Exception e)
+        {
+            LogFile.Log($"Error: {e}");
+        }
+    }
 
-    });
+});
 
 
 // Add services to the container.
@@ -167,12 +218,41 @@ app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod(
 //}
 
 //app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
+//app.UseAuthorization();
+//app.MapControllers();
 
 //Using html static pages
-app.UseDefaultFiles();
-app.UseStaticFiles();
+var defaultFilesOptions = new DefaultFilesOptions();
+defaultFilesOptions.DefaultFileNames.Clear();
+defaultFilesOptions.DefaultFileNames.Add("index.html");
+
+app.UseDefaultFiles(defaultFilesOptions);
+
+string wwww_directory = Path.Combine(Environment.CurrentDirectory, "wwwroot");
+
+if (parameters.ContainsKey("wwwroot"))
+{
+    if (!string.IsNullOrEmpty(parameters["wwwroot"])) 
+    {
+        wwww_directory = parameters["wwwroot"];
+    }
+}
+
+if(!Directory.Exists(wwww_directory))
+{
+    Directory.CreateDirectory(wwww_directory);
+
+    string index_html = Path.Combine(wwww_directory, "index.html");
+    string content = "<html><head><title>AngelSQLServer</title></head><body><h1>AngelSQLServer</h1><p>AngelSQLServer is running</p></body></html>";
+    File.WriteAllText(index_html, content);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        wwww_directory),
+    RequestPath = ""
+});
 
 Dictionary<string, AngelSQL.DBConnections> connections = new Dictionary<string, AngelSQL.DBConnections>();
 
@@ -182,7 +262,7 @@ string Identification(AngelSQL.Query query)
     AngelDB.DB db_local = new AngelDB.DB();
     db_local.NewDatabases = false;
 
-    if (string.IsNullOrEmpty(query.data_directory) )
+    if (string.IsNullOrEmpty(query.data_directory))
     {
         query.data_directory = parameters["data_directory"];
     }
@@ -326,10 +406,23 @@ app.MapGet("/AngelAPI", (string data) =>
         }
         else
         {
-            ApiCommand = Environment.CurrentDirectory + "/config/AngelAPI.csx";
+            ApiCommand = api_file;
         }
-        
-        return angel_api_db.Prompt("SCRIPT FILE config/AngelAPI.csx ON APPLICATION DIRECTORY MESSAGE " + data);
+
+        ApiCommand = ApiCommand.Trim();
+
+        if (ApiCommand.EndsWith(".cxs")) 
+        {
+            return angel_api_db.Prompt($"SCRIPT FILE {ApiCommand} MESSAGE " + data);
+        }
+
+        if (ApiCommand.EndsWith(".py"))
+        {
+            return angel_api_db.Prompt($"PY FILE {ApiCommand} MESSAGE " + data);
+        }
+
+        return "Error: Invalid API file.";
+
     }
     catch (Exception e)
     {
@@ -357,10 +450,10 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
             string jsonstring = await reader.ReadToEndAsync();
             AngelSQL.AngelPOST api = JsonConvert.DeserializeObject<AngelSQL.AngelPOST>(jsonstring);
 
-            if (string.IsNullOrEmpty(api.language)) 
+            if (string.IsNullOrEmpty(api.language))
             {
                 result = angel_post_db.Prompt($"SCRIPT FILE scripts/{api.api}.csx ON APPLICATION DIRECTORY MESSAGE " + api.message, true);
-            } 
+            }
             else
             {
                 switch (api.language)
@@ -473,13 +566,11 @@ if (!string.IsNullOrEmpty(parameters["urls"]))
             try
             {
                 app.Urls.Add(url);
-
             }
             catch (Exception e)
             {
-                LogFile.Log( $"Error: Add urls {e}" );
+                LogFile.Log($"Error: Add urls {e}");
             }
-
         }
     }
 }
@@ -488,6 +579,7 @@ if (!string.IsNullOrEmpty(parameters["urls"]))
 // Remove garbage
 int garbage_cicle = 0;
 
+#pragma warning disable CS4014 // Dado que no se esperaba esta llamada, la ejecución del método actual continuará antes de que se complete la llamada
 Task.Run(() =>
 {
     try
@@ -529,10 +621,8 @@ Task.Run(() =>
     }
 
 });
-// End of removing garbage
 
 
-//Running Tasks script
 Task.Run(() =>
 {
 

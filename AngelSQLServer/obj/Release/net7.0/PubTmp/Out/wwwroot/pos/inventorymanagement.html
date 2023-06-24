@@ -5,10 +5,8 @@
     <title>POS - Inicio de sesión</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="./css/styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-
+    <link rel="stylesheet" href="../bootstrap-5.3.0/css/bootstrap.min.css">
+    
     <script src="./js/scripts.js"></script>
 
     <script>
@@ -24,87 +22,78 @@
 </head>
 
 <body>
+
     <div class="container">
 
-        <a href="#">
-            <span style="float: left;">
-                <img src="images/icons/brilliant_computergadgets_barcode_scanner_256.png" alt="logo" class="logo" style="width:128px">
-            </span>
-            <h1>Inventory Management</h1>
-        </a>
+        <div class="row justify-content-center">
 
-        <a href="menu.html" class="anchor_button3">
-            <span style="float: left;">
-                <img src="images/icons/beta_general_back_128.png" alt="logo" class="logo" style="width:24px">
-            </span>
-            Menu
-        </a>
+            <nav class="navbar">
+                <div class="container-fluid">
+                    <a class="btn btn-primary btn-block" href="menu.html" style="width: 100%;">
+                        <span style="float: left;">
+                            <img src="images/icons/beta_general_back_128.png" alt="logo" class="logo"
+                                style="width:24px">
+                        </span>
+                        Menu
+                    </a>
+                </div>
+            </nav>
 
-        <script>
+            <img src="./images/icons/brilliant_computergadgets_barcode_scanner_256.png" alt="logo"
+                 class="img-fluid mx-auto d-block" style="margin-top: 20px;width:170px">
 
-            let responce = getPermissions(Tocken);
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;">Inventory Management</h1>
+            <div class="col-md-12">
 
-            responce.then(function (query) {
-                let responce_query = JSON.parse(query);
+                <script>
 
-                if (responce_query.result.startsWith("Error:")) {
-                    showDialog("Alert", responce_query.result);
-                } else {
-                    sessionStorage.setItem('Permissions', responce_query.result);
-                }
+                    let responce = getPermissions(Tocken);
 
-            });
+                    responce.then(function (query) {
+                        let responce_query = JSON.parse(query);
 
-            if (sessionStorage.getItem("Permissions") != null) {
-                let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
+                        if (responce_query.result.startsWith("Error:")) {
+                            showDialog("Alert", responce_query.result);
+                        } else {
+                            sessionStorage.setItem('Permissions', responce_query.result);
+                            generateButtons();
+                        }
 
-                if (permissions.Inventory_skus_create == true) {
-                    document.write('<a href="sku.html" class="anchor_button1">');
-                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
-                    document.write('<img src="images/icons/diamond_business_market_128.png" style="width:96px">');
-                    document.write('</span>');
-                    document.write('SKU (Stock Keeping Unit)');
-                    document.write('</a>');
-                }
+                    });
 
-                if (permissions.Inventory_inbound_outbound == true) {
-                    document.write('<a href="inbound.html" class="anchor_button2">');
-                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
-                    document.write('<img src="images/icons/brilliant_shopping_product_display_128.png" style="width:96px">');
-                    document.write('</span>');
-                    document.write('Inbound / Outbound');
-                    document.write('</a>');
-                }
+                    function generateButtons() {
+                        if (sessionStorage.getItem("Permissions") != null) {
+                            let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
 
-                if (permissions.Physical_inventory == true) {
-                    document.write('<a href="physical_Inventory.html" class="anchor_button1">');
-                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
-                    document.write('<img src="images/icons/diamond_business_report_128.png" style="width:96px">');
-                    document.write('</span>');
-                    document.write('Physical Inventory Count');
-                    document.write('</a>');
-                }
+                            if (permissions.Skus.includes("Query")) {
+                                generateButton("skus.html", "diamond_business_market_128.png", "SKU (Stock Keeping Unit)", "btn btn-primary btn-block btn-lg form-control");
+                            }
 
-                if (permissions.Physical_inventory_shrinkage == true) {
-                    document.write('<a href="Shrinkage.html" class="anchor_button2">');
-                    document.write('<span class="material-symbols-outlined"  style="float: left;">');
-                    document.write('<img src="images/icons/brilliant_shopping_checkout_128.png" style="width:96px">');
-                    document.write('</span>');
-                    document.write('Shrinkage');
-                    document.write('</a>');
-                }
+                            if (permissions.Inventory_inbound_outbound.includes("Query")) {
+                                generateButton("inbound.html", "brilliant_shopping_product_display_128.png", "Inbound / Outbound", "btn btn-info btn-block btn-lg form-control");
+                            }
 
-            }
+                            if (permissions.Physical_inventory.includes("Query")) {
+                                generateButton("physical_Inventory.html", "diamond_business_report_128.png", "Physical Inventory Count", "btn btn-primary btn-block btn-lg form-control");
+                            }
 
+                            if (permissions.Physical_inventory_shrinkage.includes("Query")) {
+                                generateButton("Shrinkage.html", "brilliant_shopping_checkout_128.png", "Shrinkage", "btn btn-info btn-block btn-lg form-control");
+                            }
+                        }
+                    }
 
-        </script>
-
+                </script>
+            </div>
+        </div>
     </div>
 
     <dialog id="myDialog">
-        <h1 id="dialogTittle">Title</h1>
-        <p id="dialogMessage">Message</p>
-        <button id="closeButton">Cerrar</button>
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
     </dialog>
 
 
@@ -129,6 +118,8 @@
 
 
     </script>
+
+    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

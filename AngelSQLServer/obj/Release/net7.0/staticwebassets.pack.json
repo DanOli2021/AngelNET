@@ -1,6 +1,190 @@
 {
   "Files": [
     {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\bootstrap-5.3.0\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\bootstrap-5.3.0\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\css\\jquery.dataTables.min.css",
+      "PackagePath": "staticwebassets\\css\\jquery.dataTables.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\css\\responsive.dataTables.css",
+      "PackagePath": "staticwebassets\\css\\responsive.dataTables.css"
+    },
+    {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\css\\sql_commands.css",
       "PackagePath": "staticwebassets\\css\\sql_commands.css"
     },
@@ -29,12 +213,28 @@
       "PackagePath": "staticwebassets\\js\\AngelSQL.js"
     },
     {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\js\\code.jquery.com_jquery-3.7.0.min.js",
+      "PackagePath": "staticwebassets\\js\\code.jquery.com_jquery-3.7.0.min.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\js\\dataTables.responsive.min.js",
+      "PackagePath": "staticwebassets\\js\\dataTables.responsive.min.js"
+    },
+    {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\js\\index.js",
       "PackagePath": "staticwebassets\\js\\index.js"
     },
     {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\js\\jquery.dataTables.min.js",
+      "PackagePath": "staticwebassets\\js\\jquery.dataTables.min.js"
+    },
+    {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\pos\\css\\styles.css",
       "PackagePath": "staticwebassets\\pos\\css\\styles.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\pos\\images\\cafe_de_olla_recipe-500x375.jpg",
+      "PackagePath": "staticwebassets\\pos\\images\\cafe_de_olla_recipe-500x375.jpg"
     },
     {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\pos\\images\\icons\\beta_accounting_cashbox_128.png",
@@ -579,6 +779,10 @@
     {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\pos\\sales.html",
       "PackagePath": "staticwebassets\\pos\\sales.html"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\pos\\skus.html",
+      "PackagePath": "staticwebassets\\pos\\skus.html"
     },
     {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\sql_commands.html",
