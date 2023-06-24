@@ -18,12 +18,13 @@ d.Add("urls", "");
 d.Add("cors", "https://localhost:11000");
 d.Add("master_user", "db" );
 d.Add("master_password", "db");
-d.Add("data_directory", "c:/posdata" );
+d.Add("data_directory", "" );
 d.Add("account","account1");
 d.Add("account_user", "angelsql");
 d.Add("account_password", "angelsql123");
 d.Add("database", "database1");
 d.Add("request_timeout", "4");
+d.Add("wwwroot", "");
 
 Environment.SetEnvironmentVariable("ANGELSQL_PARAMETERS", JsonConvert.SerializeObject(d, Formatting.Indented));
 

@@ -26,14 +26,12 @@ if (!string.IsNullOrEmpty(commandLine))
     }
     else
     {
-        if (d.First().Value == "START PARAMETERS")
+        if (d.First().Key == "start_parameters")
         {
             if (d["api_file"] != "null") 
             {
                 api_file = d["api_file"];
             }
-
-            config_file = d["config_file"];
 
             if (d["config_file"] != "null")
             {
@@ -243,7 +241,7 @@ if(!Directory.Exists(wwww_directory))
     Directory.CreateDirectory(wwww_directory);
 
     string index_html = Path.Combine(wwww_directory, "index.html");
-    string content = "<html><head><title>AngelSQLServer</title></head><body><h1>AngelSQLServer</h1><p>AngelSQLServer is running</p></body></html>";
+    string content = $"<html><head><title>AngelSQLServer</title></head><body><h1>AngelSQLServer</h1><p>AngelSQLServer is running</p><p>{index_html}</p></body></html>";
     File.WriteAllText(index_html, content);
 }
 
@@ -450,30 +448,39 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
             string jsonstring = await reader.ReadToEndAsync();
             AngelSQL.AngelPOST api = JsonConvert.DeserializeObject<AngelSQL.AngelPOST>(jsonstring);
 
+            string scripts_directory = Path.Combine( Environment.CurrentDirectory, "scripts" );
+
+            if( parameters.ContainsKey("scripts_directory"))
+            {
+                if(!string.IsNullOrEmpty(parameters["scripts_directory"]))
+                {
+                    scripts_directory = parameters["scripts_directory"];
+                }
+            }
+
             if (string.IsNullOrEmpty(api.language))
             {
-                result = angel_post_db.Prompt($"SCRIPT FILE scripts/{api.api}.csx ON APPLICATION DIRECTORY MESSAGE " + api.message, true);
+                result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true);
             }
             else
             {
                 switch (api.language)
                 {
                     case "C#":
-                        result = angel_post_db.Prompt($"SCRIPT FILE scripts/{api.api}.csx ON APPLICATION DIRECTORY LANGUAGE {api.language} MESSAGE " + api.message, true);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true);
                         break;
                     case "CSHARP":
-                        result = angel_post_db.Prompt($"SCRIPT FILE scripts/{api.api}.csx ON APPLICATION DIRECTORY LANGUAGE {api.language} MESSAGE " + api.message, true);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true);
                         break;
                     case "null":
-                        result = angel_post_db.Prompt($"SCRIPT FILE scripts/{api.api}.csx ON APPLICATION DIRECTORY LANGUAGE {api.language} MESSAGE " + api.message, true);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true);
                         break;
                     case "PYTHON":
-                        result = angel_post_db.Prompt($"SCRIPT FILE scripts/{api.api}.py ON APPLICATION DIRECTORY LANGUAGE {api.language} MESSAGE " + api.message, true);
+                        result = angel_post_db.Prompt($"PY FILE {scripts_directory}/{api.api}.py MESSAGE " + api.message, true);
                         break;
                     default:
                         break;
                 }
-
             }
 
             AngelSQL.Responce responce = new AngelSQL.Responce
