@@ -11,16 +11,15 @@
     <script src="./js/scripts.js"></script>
 
     <script>
-        const Tocken = sessionStorage.getItem("Tocken");
+        const Token = sessionStorage.getItem("Token");
 
-        if (Tocken == null) {
-            window.location.href = "index.html";
+        if (Token == null) {
+            //window.location.href = "index.html";
         }
 
     </script>
 
-
-</head>
+</head> 
 
 <body>
     <div class="container">
@@ -29,12 +28,12 @@
         <div class="row justify-content-center">
             <img src="./images/pos_1.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px;width:256px">
 
-            <h1 class=" text-center" style="font-size: 40px; font-weight: bolder;">POS</h1>
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;">POS</h1>
 
             <div class="col-md-12">
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
-                        let response = getPermissions(Tocken);
+                        let response = getPermissions(Token);
 
                         response.then(function (query) {
                             let response_query = JSON.parse(query);
@@ -42,7 +41,7 @@
                             if (response_query.result.startsWith("Error:")) {
                                 showDialog("Alert", response_query.result);
                             } else {
-                                sessionStorage.setItem('Permissions', response_query.result);
+                                sessionStorage.setItem('Group', response_query.result);
                                 generateButtons();
                             }
                         });
@@ -50,7 +49,17 @@
 
                     function generateButtons() {
                         if (sessionStorage.getItem("Permissions") != null) {
-                            let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
+
+                            let Group = JSON.parse(sessionStorage.getItem("Group"));
+
+                            if( Group.id != "SALES") 
+                            {
+                                window.location.href = "index.html";
+                            }
+
+                            let permissions = JSON.parse(Group.permissions);
+
+                            console.log(Permissions);
 
                             if (permissions.Sales.includes("Query")) {
                                 generateButton("sales.html", "brilliant_shopping_departmental_store_128.png", "Sales", "btn btn-primary btn-block btn-lg form-control");

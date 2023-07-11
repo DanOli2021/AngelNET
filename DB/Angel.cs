@@ -31,7 +31,7 @@ namespace AngelDB
                 return angelResponce.result;
             }
 
-            mainClass.angel_tocken = angelResponce.tocken;
+            mainClass.angel_token = angelResponce.token;
             mainClass.angel_url = d["connect"];
             mainClass.angel_user = d["user"];
 
@@ -44,16 +44,16 @@ namespace AngelDB
         {
 
             string url = d["url"];
-            string tocken = d["tocken"];
+            string token = d["token"];
 
             if (url == "null")
             {
                 url = mainClass.angel_url;
             }
 
-            if (tocken == "null")
+            if (token == "null")
             {
-                tocken = mainClass.angel_tocken;
+                token = mainClass.angel_token;
             }
 
             if (string.IsNullOrEmpty(url)) 
@@ -61,14 +61,14 @@ namespace AngelDB
                 return "Error: You have not indicated the URL to which you see to connect, please use ANGEL CONNECT first";
             }
 
-            if (string.IsNullOrEmpty(tocken))
+            if (string.IsNullOrEmpty(token))
             {
-                return "Error: You have not indicated the TOCKEN to which you see to connect, please use ANGEL CONNECT first";
+                return "Error: You have not indicated the token to which you see to connect, please use ANGEL CONNECT first";
             }
 
             AngelQuery query = new AngelQuery();
             query.type = "QUERY";
-            query.tocken = tocken;
+            query.token = token;
             query.command = d["command"];
             string result = WebTools.SendJsonToUrl(url, JsonConvert.SerializeObject(query));
 
@@ -85,16 +85,16 @@ namespace AngelDB
         {
 
             string url = mainClass.angel_url;
-            string tocken = mainClass.angel_tocken;
+            string token = mainClass.angel_token;
 
             if (url == "null")
             {
                 url = mainClass.angel_url;
             }
 
-            if (tocken == "null")
+            if (token == "null")
             {
-                tocken = mainClass.angel_tocken;
+                token = mainClass.angel_token;
             }
 
             if (string.IsNullOrEmpty(url))
@@ -102,14 +102,14 @@ namespace AngelDB
                 return "Error: You have not indicated the URL to which you see to connect, please use ANGEL CONNECT first";
             }
 
-            if (string.IsNullOrEmpty(tocken))
+            if (string.IsNullOrEmpty(token))
             {
-                return "Error: You have not indicated the TOCKEN to which you see to connect, please use ANGEL CONNECT first";
+                return "Error: You have not indicated the token to which you see to connect, please use ANGEL CONNECT first";
             }
 
             AngelQuery query = new AngelQuery();
             query.type = "DISCONNECT";
-            query.tocken = tocken;
+            query.token = token;
             query.command = "DISCONNECT";
             string result = WebTools.SendJsonToUrl(url, JsonConvert.SerializeObject(query));
 
@@ -126,16 +126,16 @@ namespace AngelDB
         {
 
             string url = mainClass.angel_url;
-            string tocken = mainClass.angel_tocken;
+            string token = mainClass.angel_token;
 
             if (url == "null")
             {
                 url = mainClass.angel_url;
             }
 
-            if (tocken == "null")
+            if (token == "null")
             {
-                tocken = mainClass.angel_tocken;
+                token = mainClass.angel_token;
             }
 
             if (string.IsNullOrEmpty(url))
@@ -143,14 +143,14 @@ namespace AngelDB
                 return "Error: You have not indicated the URL to which you see to connect, please use ANGEL CONNECT first";
             }
 
-            if (string.IsNullOrEmpty(tocken))
+            if (string.IsNullOrEmpty(token))
             {
-                return "Error: You have not indicated the TOCKEN to which you see to connect, please use ANGEL CONNECT first";
+                return "Error: You have not indicated the token to which you see to connect, please use ANGEL CONNECT first";
             }
 
             AngelQuery query = new AngelQuery();
             query.type = "SERVERCOMMAND";
-            query.tocken = tocken;
+            query.token = token;
             query.command = command;
             string result = WebTools.SendJsonToUrl(url, JsonConvert.SerializeObject(query));
 
@@ -173,7 +173,7 @@ namespace AngelDB
         public string account { get; set; } = "";
         public string database { get; set; } = "";
         public string data_directory { get; set; } = "";
-        public string tocken { get; set; } = "";
+        public string token { get; set; } = "";
         public bool on_iis { get; set; } = false;        
         public string command { get; set; } = "";
 
@@ -183,13 +183,14 @@ namespace AngelDB
     public class AngelResponce
     {
         public string type { get; set; } = "";
-        public string tocken { get; set; } = "";
+        public string token { get; set; } = "";
         public string result { get; set; } = "";
     }
 
     public class AngelPOST
     {
         public string api = "";
+        public string account = "";
         public string message = "";
         public string language = "";
     }

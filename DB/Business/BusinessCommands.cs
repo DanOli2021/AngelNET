@@ -28,7 +28,7 @@ namespace AngelDB
                 { @"SET PERIOD", @"SET PERIOD#free;ACTIVE#free" },
                 { @"CLOSE PERIOD", @"CLOSE PERIOD#free" },
                 { @"DELETE PERIOD", @"DELETE PERIOD#free" },
-                { @"VAR", @"VAR#SystemTocken;=#free" },
+                { @"VAR", @"VAR#Systemtoken;=#free" },
                 { @"DB", @"DB#code" },
                 { @"SET OWNER", @"SET OWNER#free;NAME#free;INVOICE IDENTIFIER#free" },
                 { @"GET OWNER", @"GET OWNER#free" },

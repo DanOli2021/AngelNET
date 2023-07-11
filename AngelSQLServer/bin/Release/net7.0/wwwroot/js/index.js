@@ -31,7 +31,7 @@ function StartAngelSQL(user, password, url) {
       return result;
     }
 
-    sessionStorage.setItem('AngelSQLTocken', angelSql.GetTocken());
+    sessionStorage.setItem('AngelSQLToken', angelSql.GetToken());
     return "Ok.";
 
   }

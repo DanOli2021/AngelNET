@@ -16,7 +16,7 @@ namespace AngelDB
         TableServiceClient serviceClient;
         TableClient tableClient;
         Pageable<TableEntity> queryResultsFilter;
-        string ContinuationTocken = "";
+        string Continuationtoken = "";
         public string ConnectionString = null;
         private bool stop_querying = false;
 
@@ -124,7 +124,7 @@ namespace AngelDB
             {
                 List<TableEntity> entityList = JsonConvert.DeserializeObject<List<TableEntity>>(json);
                 List<TableTransactionAction> addEntitiesBatch = new List<TableTransactionAction>();
-                addEntitiesBatch.AddRange(entityList.Select(e => new TableTransactionAction(TableTransactionActionType.Add, e)));
+                addEntitiesBatch.AddRange(entityList.Select(e => new TableTransactionAction(TableTransactionActionType.UpsertReplace, e)));
                 tableClient.SubmitTransaction(addEntitiesBatch);
                 return "Ok.";
             }
@@ -142,7 +142,7 @@ namespace AngelDB
             {
                 stop_querying = false;
                 this.queryResultsFilter = tableClient.Query<TableEntity>(filter: filter);
-                this.ContinuationTocken = null;
+                this.Continuationtoken = null;
                 return "Ok.";
             }
             catch (Exception e)
@@ -163,7 +163,7 @@ namespace AngelDB
                     return "[]";
                 }
 
-                foreach (var p in this.queryResultsFilter.AsPages(this.ContinuationTocken, limit))
+                foreach (var p in this.queryResultsFilter.AsPages(this.Continuationtoken, limit))
                 {
 
                     JsonSerializerSettings microsoftDateFormatSettings = new JsonSerializerSettings
@@ -171,7 +171,7 @@ namespace AngelDB
                         DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
                     };
 
-                    this.ContinuationTocken = p.ContinuationToken;
+                    this.Continuationtoken = p.ContinuationToken;
 
                     if (p.ContinuationToken is null) 
                     {

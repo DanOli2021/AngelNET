@@ -80,7 +80,7 @@ namespace AngelDB
 
         }
 
-        public string EvalFile(Dictionary<string, string> d, AngelDB.DB db, bool use_memory = false)
+        public string EvalFile(Dictionary<string, string> d, AngelDB.DB db, DB main_db = null)
         {
 
             FileInfo fileInfo = null;
@@ -123,12 +123,30 @@ namespace AngelDB
                 }
 
                 Globals g = new Globals();
-                g.db = db;
+                g.main_db = db;
+
+                if (main_db is not null)
+                {
+                    g.db = main_db;
+                }
+                else 
+                {
+                    g.db = db;
+                }
+
                 g.data = d["data"];
                 g.message = d["message"];
 
                 db.script_file_datetime = File.GetLastWriteTime(file);
                 db.script_file = file;
+
+                if (d["recompile"] == "true") 
+                {
+                    if (Compiled_scripts.ContainsKey(file)) 
+                    {
+                        Compiled_scripts.Remove(file);
+                    }                     
+                }
 
                 if (Compiled_scripts.ContainsKey(file))
                 {
@@ -452,6 +470,7 @@ namespace AngelDB
 public class Globals
 {
     public AngelDB.DB db;
+    public AngelDB.DB main_db;
     public string return_result = "";
     public string data = "";
     public string message = "";

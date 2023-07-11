@@ -13,7 +13,7 @@ namespace AngelSQL
     public class Angel
     {
 
-        string angel_tocken = "";
+        string angel_token = "";
         string angel_url = "";
         string angel_user = "";
 
@@ -40,7 +40,7 @@ namespace AngelSQL
                 return angelResponce.result;
             }
 
-            this.angel_tocken = angelResponce.tocken;
+            this.angel_token = angelResponce.token;
             this.angel_url = server;
             this.angel_user = user;
 
@@ -57,14 +57,14 @@ namespace AngelSQL
                 return "Error: You have not indicated the URL to which you see to connect, please use ANGEL CONNECT first";
             }
 
-            if (string.IsNullOrEmpty(this.angel_tocken))
+            if (string.IsNullOrEmpty(this.angel_token))
             {
-                return "Error: You have not indicated the TOCKEN to which you see to connect, please use ANGEL CONNECT first";
+                return "Error: You have not indicated the token to which you see to connect, please use ANGEL CONNECT first";
             }
 
             AngelQuery query = new AngelQuery();
             query.type = "QUERY";
-            query.tocken = this.angel_tocken;
+            query.token = this.angel_token;
             query.command = command;
             string result = WebTools.SendJsonToUrl(this.angel_url, JsonConvert.SerializeObject(query));
 
@@ -133,7 +133,7 @@ namespace AngelSQL
         public string type { get; set; } = "";
         public string User { get; set; } = "";
         public string password { get; set; } = "";
-        public string tocken { get; set; } = "";
+        public string token { get; set; } = "";
         public bool on_iis { get; set; } = false;
         public string command { get; set; } = "";
 
@@ -143,7 +143,7 @@ namespace AngelSQL
     public class AngelResponce
     {
         public string type { get; set; } = "";
-        public string tocken { get; set; } = "";
+        public string token { get; set; } = "";
         public string result { get; set; } = "";
     }
 

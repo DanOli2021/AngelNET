@@ -24,12 +24,12 @@
                 <form action="/login" method="post">
 
                     <div class="form-group">
-                        <label for="username"><b>Usuario</b></label>
+                        <label for="username"><b>User</b></label>
                         <input type="text" class="form-control" placeholder="Enter your username" id="username" required>
                     </div>
     
                     <div class="form-group">
-                        <label for="password"><b>Contraseña</b></label>
+                        <label for="password"><b>Password</b></label>
                         <input type="password" class="prymary form-control" placeholder="Enter your password" id="password" required style="margin-bottom: 20px;">
                     </div>
     
@@ -69,7 +69,7 @@
                 if (responce_query.result.startsWith("Error:")) {
                     showDialog("Alert", responce_query.result);
                 } else {
-                    sessionStorage.setItem('Tocken', responce_query.result);
+                    sessionStorage.setItem('Token', responce_query.result);
                     window.location.href = "menu.html";
                 }
 

@@ -315,7 +315,7 @@ namespace AngelDB {
 
                 switch (item.Value)
                 {
-                    case "SystemTocken":
+                    case "Systemtoken":
 
                         if (!command_dictionary.ContainsKey(valueKey))
                         {

@@ -9,9 +9,9 @@
     <script src="./js/scripts.js"></script>
 
     <script>
-        const Tocken = sessionStorage.getItem("Tocken");
+        const Token = sessionStorage.getItem("Token");
 
-        if (Tocken == null) {
+        if (Token == null) {
             window.location.href = "index.html";
         }
 
@@ -45,7 +45,7 @@
 
                 <script>
 
-                    let responce = getPermissions(Tocken);
+                    let responce = getPermissions(Token);
 
                     responce.then(function (query) {
                         let responce_query = JSON.parse(query);
@@ -61,7 +61,15 @@
 
                     function generateButtons() {
                         if (sessionStorage.getItem("Permissions") != null) {
-                            let permissions = JSON.parse(sessionStorage.getItem("Permissions"));
+
+                            let Group = JSON.parse(sessionStorage.getItem("Group"));
+
+                            if( Group.id != "SALES") 
+                            {
+                                window.location.href = "index.html";
+                            }
+
+                            let permissions = JSON.parse(Group.permissions);
 
                             if (permissions.Sales_POS.includes("Create")) {
                                 generateButton("pos.html", "beta_accounting_cashbox_128.png", "POS (Point of sale)", "btn btn-primary btn-block btn-lg form-control");

@@ -3,11 +3,14 @@
 using AngelDB;
 using AngelSQL;
 using AngelSQLServer;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using Newtonsoft.Json;
+using System.Data;
 using System.Globalization;
+using System.Net;
 using System.Text;
 
 string commandLine = string.Join(" ", args);
@@ -28,7 +31,7 @@ if (!string.IsNullOrEmpty(commandLine))
     {
         if (d.First().Key == "start_parameters")
         {
-            if (d["api_file"] != "null") 
+            if (d["api_file"] != "null")
             {
                 api_file = d["api_file"];
             }
@@ -38,7 +41,7 @@ if (!string.IsNullOrEmpty(commandLine))
                 config_file = d["config_file"];
             }
 
-            if (!File.Exists(api_file)) 
+            if (!File.Exists(api_file))
             {
                 LogFile.Log($"Error: api file {api_file} does not exists");
                 Environment.Exit(0);
@@ -126,6 +129,8 @@ main_db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
 main_db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
 main_db.Prompt($"USE DATABASE {parameters["database"]}", true);
 
+main_db.Prompt($"CREATE TABLE accounts FIELD LIST db_user, name, email, connection_string, db_password, database, data_directory, account, super_user, super_user_password, active, created", true);
+
 // Add cors support
 if (parameters["cors"] == "true")
 {
@@ -144,6 +149,33 @@ if (parameters["cors"] == "true")
 
 builder.WebHost.ConfigureKestrel(options =>
 {
+
+    try
+    {
+        if (!string.IsNullOrEmpty(parameters["urls"]))
+        {
+            string[] urls = parameters["urls"].Split(',');
+            foreach (string url in urls)
+            {
+                var uri = new Uri(url);
+
+                if (uri.Host.ToLower().Trim() == "localhost")
+                {
+                    options.ListenLocalhost(uri.Port);
+                }
+                else
+                {
+                    options.Listen(IPAddress.Parse(uri.Host), uri.Port);
+                }
+
+            }
+        }
+
+    }
+    catch (Exception e)
+    {
+        LogFile.Log($"Error: {e.Message}");
+    }
 
     // Establece tu tiempo límite deseado aquí (en milisegundos)
 
@@ -187,6 +219,32 @@ builder.WebHost.ConfigureKestrel(options =>
                 });
 
             }
+
+            //if(!string.IsNullOrEmpty(parameters["urls"]) )
+            //{
+            //    string[] urls = parameters["urls"].Split(',');
+            //    foreach (string url in urls)
+            //    {
+            //        string[] url_parts = url.Split(':');
+            //        if (url_parts.Length == 2)
+            //        {
+            //            options.Listen(System.Net.IPAddress.Parse(url_parts[0]), int.Parse(url_parts[1]), listenOptions =>
+            //            {
+            //                if (!string.IsNullOrEmpty(parameters["certificate"]))
+            //                {
+            //                    listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
+            //                }
+            //                else 
+            //                {
+
+            //                }
+            //            });
+            //        }
+            //    }
+            //}
+
+
+
         }
         catch (Exception e)
         {
@@ -230,13 +288,13 @@ string wwww_directory = Path.Combine(Environment.CurrentDirectory, "wwwroot");
 
 if (parameters.ContainsKey("wwwroot"))
 {
-    if (!string.IsNullOrEmpty(parameters["wwwroot"])) 
+    if (!string.IsNullOrEmpty(parameters["wwwroot"]))
     {
         wwww_directory = parameters["wwwroot"];
     }
 }
 
-if(!Directory.Exists(wwww_directory))
+if (!Directory.Exists(wwww_directory))
 {
     Directory.CreateDirectory(wwww_directory);
 
@@ -271,7 +329,7 @@ string Identification(AngelSQL.Query query)
 
     if (result.StartsWith("Error:"))
     {
-        responce.tocken = "";
+        responce.token = "";
         responce.result = result;
         responce.type = "ERROR";
         return JsonConvert.SerializeObject(responce);
@@ -284,11 +342,11 @@ string Identification(AngelSQL.Query query)
     connection.User = query.User;
     connection.db = db_local;
 
-    string tocken = Guid.NewGuid().ToString();
+    string token = Guid.NewGuid().ToString();
 
-    connections.Add(tocken, connection);
+    connections.Add(token, connection);
 
-    responce.tocken = tocken;
+    responce.token = token;
     responce.result = result;
     responce.type = "SUCCESS";
     return JsonConvert.SerializeObject(responce);
@@ -301,20 +359,20 @@ string QueryResponce(AngelSQL.Query query)
 
     AngelSQL.Responce responce = new AngelSQL.Responce();
 
-    if (!connections.ContainsKey(query.tocken))
+    if (!connections.ContainsKey(query.token))
     {
-        responce.tocken = "";
-        responce.result = "Error: You need to identify yourself first.";
+        responce.token = "";
+        responce.result = $"Error: You need to identify yourself first. {query.token}";
         responce.type = "ERROR";
         return JsonConvert.SerializeObject(responce);
     }
 
-    responce.tocken = query.tocken;
-    connections[query.tocken].date_of_last_access = DateTime.Now;
+    responce.token = query.token;
+    connections[query.token].date_of_last_access = DateTime.Now;
 
     if (query.type == "SERVERCOMMAND")
     {
-        if (connections[query.tocken].db.Prompt("MY LEVEL") == "MASTER")
+        if (connections[query.token].db.Prompt("MY LEVEL") == "MASTER")
         {
 
             DbLanguage language = new DbLanguage();
@@ -331,7 +389,7 @@ string QueryResponce(AngelSQL.Query query)
 
             foreach (string key in connections.Keys)
             {
-                if (connections[key].db.BaseDirectory == connections[query.tocken].db.BaseDirectory)
+                if (connections[key].db.BaseDirectory == connections[query.token].db.BaseDirectory)
                 {
                     local.Add(key, connections[key].db);
                 }
@@ -372,7 +430,7 @@ string QueryResponce(AngelSQL.Query query)
 
     }
 
-    responce.result = connections[query.tocken].db.Prompt(query.command);
+    responce.result = connections[query.token].db.Prompt(query.command);
 
     if (responce.result.StartsWith("Error:"))
     {
@@ -409,7 +467,7 @@ app.MapGet("/AngelAPI", (string data) =>
 
         ApiCommand = ApiCommand.Trim();
 
-        if (ApiCommand.EndsWith(".cxs")) 
+        if (ApiCommand.EndsWith(".cxs"))
         {
             return angel_api_db.Prompt($"SCRIPT FILE {ApiCommand} MESSAGE " + data);
         }
@@ -439,6 +497,9 @@ angel_post_db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
 angel_post_db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
 angel_post_db.Prompt($"USE DATABASE {parameters["database"]}", true);
 
+Dictionary<string, AngelDB.DB> post_databases = new Dictionary<string, AngelDB.DB>();
+string session_guid = Guid.NewGuid().ToString();
+
 app.MapPost("/AngelPOST", async delegate (HttpContext context)
 {
     using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
@@ -447,36 +508,163 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
         {
             string jsonstring = await reader.ReadToEndAsync();
             AngelSQL.AngelPOST api = JsonConvert.DeserializeObject<AngelSQL.AngelPOST>(jsonstring);
+            string scripts_directory = Path.Combine(Environment.CurrentDirectory, "scripts");
 
-            string scripts_directory = Path.Combine( Environment.CurrentDirectory, "scripts" );
-
-            if( parameters.ContainsKey("scripts_directory"))
+            if (parameters.ContainsKey("scripts_directory"))
             {
-                if(!string.IsNullOrEmpty(parameters["scripts_directory"]))
+                if (!string.IsNullOrEmpty(parameters["scripts_directory"]))
                 {
                     scripts_directory = parameters["scripts_directory"];
                 }
             }
 
+            AngelDB.DB main_db;
+
+            if (string.IsNullOrEmpty(api.account))
+            {
+                api.account = "default: " + session_guid;
+            }
+
+
+            if (!post_databases.ContainsKey(api.account))
+            {
+                main_db = new AngelDB.DB();
+
+                if (api.account.StartsWith("default: "))
+                {
+                    if (!parameters.ContainsKey("connection_string"))
+                    {
+                        main_db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
+                    }
+                    else
+                    {
+                        main_db.Prompt($"{parameters["connection_string"]}", true);
+
+                        if (parameters["connection_string"].StartsWith("ANGEL"))
+                        {
+                            main_db.Prompt($"ALWAYS USE ANGELSQL", true);
+                        }
+
+                    }
+
+                    main_db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
+                    main_db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
+                    main_db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
+                    main_db.Prompt($"USE DATABASE {parameters["database"]}", true);
+
+                    api.db_user = parameters["master_user"];
+                    api.db_password = parameters["master_password"];
+
+                    main_db.Prompt($"VAR db_user = '{parameters["master_user"]}'", true);
+                    main_db.Prompt($"VAR db_password = '{parameters["master_password"]}'", true);
+                    main_db.Prompt($"VAR db_account = ''", true);
+
+                }
+                else
+                {
+                    string result = angel_post_db.Prompt($"SELECT * FROM accounts WHERE id = '{api.account.Trim().ToLower()}'", true);
+
+                    if (result.StartsWith("Error:"))
+                    {
+                        return result;
+                    }
+
+                    if (result == "[]")
+                    {
+                        return $"Error: Account {api.account} not found.";
+                    }
+
+                    DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
+
+                    if (dt.Rows[0]["active"].ToString() == "false")
+                    {
+                        return $"Account is The account is not active: {api.account}";
+                    }
+
+                    string connection_string = dt.Rows[0]["connection_string"].ToString();
+                    string db_user = dt.Rows[0]["db_user"].ToString();
+                    string db_password = dt.Rows[0]["db_password"].ToString();
+                    string db_database = dt.Rows[0]["database"].ToString();
+                    string data_directory = dt.Rows[0]["data_directory"].ToString();
+                    string account = dt.Rows[0]["account"].ToString();
+                    string super_user = dt.Rows[0]["super_user"].ToString();
+                    string super_user_password = dt.Rows[0]["super_user_password"].ToString();
+
+                    if (!string.IsNullOrEmpty(connection_string))
+                    {
+                        result = main_db.Prompt(connection_string);
+
+                        if (connection_string.StartsWith("ANGEL"))
+                        {
+                            result = main_db.Prompt("ALWAYS USE ANGELSQL");
+                        }
+
+                        if (result.StartsWith("Error:"))
+                        {
+                            return result;
+                        }
+
+                    }
+                    else
+                    {
+                        result = main_db.Prompt($"DB USER db PASSWORD db DATA DIRECTORY {data_directory}");
+
+                        if (result.StartsWith("Error:"))
+                        {
+                            result = main_db.Prompt($"DB USER {db_user} PASSWORD {db_password} DATA DIRECTORY {data_directory}");
+                        }
+                        else
+                        {
+                            result = main_db.Prompt($"CHANGE MASTER TO USER {db_user} PASSWORD {db_password}");
+                        }
+
+                        if (result.StartsWith("Error:"))
+                        {
+                            return result;
+                        }
+
+                    }
+
+
+                    main_db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
+                    main_db.Prompt($"USE ACCOUNT {account}", true);
+                    main_db.Prompt($"CREATE DATABASE {db_database}", true);
+                    main_db.Prompt($"USE DATABASE {db_database}", true);
+
+                    main_db.Prompt($"VAR db_user = '{db_user}'", true);
+                    main_db.Prompt($"VAR db_password = '{db_password}'", true);
+                    main_db.Prompt($"VAR db_account = '{api.account}'", true);
+
+                }
+
+                post_databases.Add(api.account, main_db);
+
+            }
+            else
+            {
+                main_db = post_databases[api.account];
+            }
+
+
             if (string.IsNullOrEmpty(api.language))
             {
-                result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true);
+                result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true, main_db);
             }
             else
             {
                 switch (api.language)
                 {
                     case "C#":
-                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true, main_db);
                         break;
                     case "CSHARP":
-                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true, main_db);
                         break;
                     case "null":
-                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true, main_db);
                         break;
                     case "PYTHON":
-                        result = angel_post_db.Prompt($"PY FILE {scripts_directory}/{api.api}.py MESSAGE " + api.message, true);
+                        result = angel_post_db.Prompt($"PY FILE {scripts_directory}/{api.api}.py MESSAGE " + api.message, true, main_db);
                         break;
                     default:
                         break;
@@ -527,13 +715,13 @@ app.MapPost("/AngelSQL", async delegate (HttpContext context)
 
                 case "disconnect":
 
-                    if (connections.ContainsKey(query.tocken))
+                    if (connections.ContainsKey(query.token))
                     {
-                        connections.Remove(query.tocken);
+                        connections.Remove(query.token);
                     }
 
                     AngelSQL.Responce responce = new AngelSQL.Responce();
-                    responce.tocken = "";
+                    responce.token = "";
                     responce.result = "Disconnected";
                     responce.type = "SUCCESS";
                     return JsonConvert.SerializeObject(responce);
@@ -775,7 +963,7 @@ else
             continue;
         }
 
-        string result_db = main_db.Prompt(line);
+        string result_db = main_db.Prompt("BATCH " + line + " SHOW IN CONSOLE");
 
         if (result_db.StartsWith("Error:"))
         {

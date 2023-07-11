@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SUPERVISORS - Menu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../bootstrap-5.3.0/css/bootstrap.min.css">
+
+    <script src="./js/scripts.js"></script>
+
+    <script>
+        const Token = sessionStorage.getItem("Token");
+
+        if (Token == null) {
+            window.location.href = "index.html";
+        }
+
+    </script>
+
+
+</head>
+
+<body>
+    <div class="container">
+
+
+        <div class="row justify-content-center">
+            <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block"
+                style="margin-top: 20px;width:256px">
+
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;" id="supervisor_name">Supervisor</h1>
+
+            <div class="col-md-12">
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        let response = getPermissions(Token);
+
+                        response.then(function (query) {
+                            let response_query = JSON.parse(query);
+
+                            if (response_query.result.startsWith("Error:")) {
+                                showDialog("Alert", response_query.result);
+                            } else {
+                                sessionStorage.setItem('Group', response_query.result);
+                                let Group = JSON.parse(sessionStorage.getItem("Group"));
+
+                                if (Group.id != "SUPERVISORS") {
+                                    window.location.href = "index.html";
+                                    return;
+                                }
+
+                                var supervisor_name = document.getElementById("supervisor_name");
+                                supervisor_name.innerText = "Supervisor: " + Group.user + " " + Group.user_name;
+
+                                generateButtons();
+                            }
+                        });
+                    });
+
+                    function generateButtons() {
+
+                        let responce = getBranchStoresUsingtoken(Token);
+
+                        responce.then(function (query) {
+                            let response_query = JSON.parse(query);
+
+                            if (response_query.result.startsWith("Error:")) {
+                                showDialog("Alert", response_query.result);
+                            } else {
+                                let BranchStores = JSON.parse(response_query.result);
+
+                                let event_row = false;
+
+                                BranchStores.forEach(element => {
+
+                                    let event_string = "";
+
+                                    if (event_row == false) {
+                                        event_row = true;
+                                        event_string = "btn-primary";
+                                    }
+                                    else {
+                                        event_row = false;
+                                        event_string = "btn-secondary";
+                                    }
+
+                                    generateButton("create_authorization.html?branchstore=" + element.id, "brilliant_shopping_fish_shop_128.png", element.id, "btn " + event_string + " btn-block btn-lg form-control");
+                                });
+                            }
+                        });
+                    }
+
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <dialog id="myDialog">
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
+    </dialog>
+
+    <script>
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+    </script>
+
+    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

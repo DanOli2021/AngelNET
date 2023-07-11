@@ -8,17 +8,17 @@ class AngelSQL {
             type: 'identification',
             user: user,
             password: password,
-            tocken: '',
+            token: '',
             command: '',
         };
     }
 
-    async SetToken(tocken) {
-        this.angelQuery.tocken = tocken;
+    async SetToken(token) {
+        this.angelQuery.token = token;
     }
 
-    async GetTocken() {
-        return this.angelQuery.tocken;
+    async Gettoken() {
+        return this.angelQuery.token;
     }
 
     async start() {
@@ -29,7 +29,7 @@ class AngelSQL {
         });
 
         const angelResponse = await response.json();
-        this.angelQuery.tocken = angelResponse.tocken;
+        this.angelQuery.token = angelResponse.token;
         return angelResponse.result;
 
     }

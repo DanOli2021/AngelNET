@@ -15,6 +15,7 @@ using System.Globalization;
 using AngelDBTools;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Security.Policy;
+using System.Data.SqlClient;
 
 namespace AngelDB
 {
@@ -106,11 +107,11 @@ namespace AngelDB
 
         public WebForms web = new WebForms();
         public Dictionary<string, AzureTable> Azure = new Dictionary<string, AzureTable>();
-        public Dictionary<string, string> SQLServer = new Dictionary<string, string>();
+        public Dictionary<string, SQLServerInfo> SQLServer = new Dictionary<string, SQLServerInfo>();
 
         public MemoryDb Grid = new MemoryDb();
         public bool speed_up = false;
-        public string angel_tocken = "";
+        public string angel_token = "";
         public string angel_url = "";
         public string angel_user = "";
 
@@ -446,15 +447,15 @@ namespace AngelDB
         }
 
 
-        public Dictionary<string, string> NormalizeData(string normalize_level, string tocken1, string tocken2)
+        public Dictionary<string, string> NormalizeData(string normalize_level, string token1, string token2)
         {
             if (normalize_level.IndexOf("ddha()/%$%$$%232232244545") <= 0)
             {
                 return null;
             }
 
-            if (tocken1 != "904ffjj") return null;
-            if (tocken2 != "234aslfdf") return null;
+            if (token1 != "904ffjj") return null;
+            if (token2 != "234aslfdf") return null;
 
             Dictionary<string, string> config = new Dictionary<string, string>();
             config = JsonConvert.DeserializeObject<Dictionary<string, string>>(AngelDBTools.CryptoString.Decrypt(File.ReadAllText(Environment.CurrentDirectory + "/Data/db.webmidb"), "hbjklios", "iuybncsa"));
@@ -558,7 +559,7 @@ namespace AngelDB
             return new DbLanguage();
         }
 
-        public string Prompt(string command, bool ThrowError = false)
+        public string Prompt(string command, bool ThrowError = false, DB main_db = null)
         {
 
             string Command = command;
@@ -1061,7 +1062,12 @@ namespace AngelDB
 
                 case "script_file":
 
-                    return script.EvalFile(d, this);
+                    if(main_db == null)
+                    {
+                        return script.EvalFile(d, this);
+                    }
+
+                    return script.EvalFile(d, this, main_db);
 
                 case "set_script_message":
 
@@ -1382,6 +1388,13 @@ namespace AngelDB
                     api.api = d["api"];
                     api.message = d["message"];
                     api.language = d["language"];
+
+                    if (d["account"] == "null") 
+                    {
+                        d["account"] = "";
+                    }
+
+                    api.account = d["account"];
 
                     result = WebTools.SendJsonToUrl(d["post"], JsonConvert.SerializeObject(api));
                     break;
@@ -2060,16 +2073,16 @@ namespace AngelDB
                     Angel.Disconnect(d, this);
                     this.always_use_AngelSQL = false;
                     this.angel_url = "";
-                    this.angel_tocken = "";
+                    this.angel_token = "";
                     return "Ok.";
 
-                case "get_tocken":
+                case "get_token":
 
-                    return this.angel_url + "," + this.angel_tocken;
+                    return this.angel_url + "," + this.angel_token;
 
-                case "set_tocken":
+                case "set_token":
 
-                    return SetTocken(d["set_tocken"]);
+                    return Settoken(d["set_token"]);
 
                 case "server":
 
@@ -2085,15 +2098,15 @@ namespace AngelDB
         }
 
 
-        string SetTocken(string tocken)
+        string Settoken(string token)
         {
 
-            string[] parts = tocken.Split(',');
+            string[] parts = token.Split(',');
 
             if (parts.Length < 2) return "Error: Url and token are needed";
 
             this.angel_url = parts[0];
-            this.angel_tocken = parts[1];
+            this.angel_token = parts[1];
 
             return "Ok.";
         }
@@ -2175,7 +2188,22 @@ namespace AngelDB
 
                     return AngelDBTools.StringFunctions.GetAccount(d["get_container_from"]);
 
-                case "save_to_table":
+                case "upsert_into":
+
+                    if (!this.Azure.ContainsKey(d["connection_alias"]))
+                    {
+                        return "Error: It is necessary to first start the Azure connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                    }
+
+                    this.Azure[d["connection_alias"]].CreateTable(d["upsert_into"]);
+                    result = this.Azure[d["connection_alias"]].InsertValues(d["values"]);
+
+                    if (result.StartsWith("Error:"))
+                    {
+                        return result;
+                    }
+
+                    return result;
 
                 case "clear_connectios":
 
@@ -2203,18 +2231,19 @@ namespace AngelDB
             {
                 case "connect":
 
-                    if (!this.SQLServer.ContainsKey(d["alias"]))
+                    if (this.SQLServer.ContainsKey(d["alias"]))
                     {
-                        try
-                        {
-                            this.SQLServer.Add(d["alias"], d["connect"]);
-                        }
-                        catch (Exception e)
-                        {
-                            return $"Error: {e.ToString()}";
-                        }
-
+                        this.SQLServer.Remove(d["alias"]);
                     }
+
+                    SQLServerInfo sql = new SQLServerInfo();
+                    sql.ConnectionString = d["connect"];
+                    sql.SQLTools = new SQLServerTools(sql.ConnectionString);
+
+                    sql.SQLTools.Connection = new SqlConnection(d["connect"]);
+                    sql.SQLTools.Connection.Open();
+                    sql.SQLTools.SQLCommand = sql.SQLTools.Connection.CreateCommand();
+                    this.SQLServer.Add(d["alias"], sql);
 
                     return "Ok.";
 
@@ -2237,14 +2266,175 @@ namespace AngelDB
 
                 case "show_connections":
 
-                    return ShowAzureConnections();
+                    return ShowSQLServerConnections();
+
+                case "insert_into":
+
+                    return SQLServerInsert(d);
+
+                case "update":
+
+                    return SQLServerUpdate(d);
+
+                case "begin_transaction":
+
+                    return SQLServerBenginTransaction(d);
+
+                case "commit_transaction":
+
+                    return SQLServerCommitTransaction(d);
+
+                case "rollback_transaction":
+
+                    return SQLServerRollbackTransaction(d);
+
+                case "exec":
+
+                    if (!this.SQLServer.ContainsKey(d["connection_alias"]))
+                    {
+                        return "Error: It is necessary to first start the SQL SERVER connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                    }
+
+                    return this.SQLServer[d["connection_alias"]].SQLTools.DirectExec(d["exec"]);
+
 
                 default:
                     break;
 
             }
 
-            return $"Error: Not Azure Command found {command}";
+            return $"Error: Not SQL Server Command found {command}";
+        }
+
+        public string SQLServerInsert(Dictionary<string, string> d)
+        {
+
+            try
+            {
+                if (!this.SQLServer.ContainsKey(d["connection_alias"]))
+                {
+                    return "Error: It is necessary to first start the SQL Server connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                }
+
+                if (this.SQLServer[d["connection_alias"]].SQLTools is null) 
+                {
+                    this.SQLServer[d["connection_alias"]].SQLTools = new SQLServerTools(this.SQLServer[d["connection_alias"]].ConnectionString);
+                }
+
+                return this.SQLServer[d["connection_alias"]].SQLTools.Insert(d);
+
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.ToString()}";
+            }
+
+        }
+
+        public string SQLServerUpdate(Dictionary<string, string> d)
+        {
+
+            try
+            {
+                if (!this.SQLServer.ContainsKey(d["connection_alias"]))
+                {
+                    return "Error: It is necessary to first start the SQL Server connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                }
+
+                if (this.SQLServer[d["connection_alias"]].SQLTools is null)
+                {
+                    this.SQLServer[d["connection_alias"]].SQLTools = new SQLServerTools(this.SQLServer[d["connection_alias"]].ConnectionString);
+                }
+
+                return this.SQLServer[d["connection_alias"]].SQLTools.Update(d);
+
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.ToString()}";
+            }
+
+        }
+
+        public string SQLServerBenginTransaction(Dictionary<string, string> d) 
+        {
+            try
+            {
+                if (!this.SQLServer.ContainsKey(d["connection_alias"]))
+                {
+                    return "Error: It is necessary to first start the SQL Server connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                }
+
+                if (!(this.SQLServer[d["connection_alias"]].SQLTools.Connection.State == ConnectionState.Open)) 
+                {
+                    this.SQLServer[d["connection_alias"]].SQLTools.Connection.Open();
+                }
+
+                this.SQLServer[d["connection_alias"]].SQLTools.SQLCommand = this.SQLServer[d["connection_alias"]].SQLTools.Connection.CreateCommand();
+                this.SQLServer[d["connection_alias"]].SQLTools.transaction = this.SQLServer[d["connection_alias"]].SQLTools.Connection.BeginTransaction();
+                this.SQLServer[d["connection_alias"]].SQLTools.SQLCommand.Transaction = this.SQLServer[d["connection_alias"]].SQLTools.transaction;
+
+                return "Ok.";
+
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.ToString()}";
+            }
+
+        }
+
+
+        public string SQLServerCommitTransaction(Dictionary<string, string> d)
+        {
+            try
+            {
+                if (!this.SQLServer.ContainsKey(d["connection_alias"]))
+                {
+                    return "Error: It is necessary to first start the SQL Server connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                }
+
+                if (!(this.SQLServer[d["connection_alias"]].SQLTools.Connection.State == ConnectionState.Open))
+                {
+                    return "Error: The connection to the database is not open, there is no transaction that can be committed";
+                }
+
+                this.SQLServer[d["connection_alias"]].SQLTools.transaction.Commit();
+
+                return "Ok.";
+
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.ToString()}";
+            }
+
+        }
+
+        public string SQLServerRollbackTransaction(Dictionary<string, string> d)
+        {
+            try
+            {
+                if (!this.SQLServer.ContainsKey(d["connection_alias"]))
+                {
+                    return "Error: It is necessary to first start the SQL Server connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                }
+
+                if (!(this.SQLServer[d["connection_alias"]].SQLTools.Connection.State == ConnectionState.Open))
+                {
+                    return "Error: The connection to the database is not open, there is no transaction that can be RollOut";
+                }
+
+                this.SQLServer[d["connection_alias"]].SQLTools.transaction.Rollback();
+
+                return "Ok.";
+
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.ToString()}";
+            }
+
         }
 
 
@@ -2258,15 +2448,13 @@ namespace AngelDB
                     return "Error: It is necessary to first start the SQL Server connection use the command CONNECT <connection_string> ALIAS <alias_name>";
                 }
 
-                SQLServerTools sql = new SQLServerTools(this.SQLServer[alias]);
-
                 if (command.Trim().ToUpper().StartsWith("SELECT"))
                 {
-                    DataTable t = sql.SQLTable(command);
+                    DataTable t = this.SQLServer[alias].SQLTools.SQLDataTable(command);
                     return JsonConvert.SerializeObject(t, Formatting.Indented);
                 }
 
-                string result = sql.SQLExec(command);
+                string result = this.SQLServer[alias].SQLTools.DirectExec(command);
 
                 if (result.StartsWith("Error:"))
                 {
@@ -2304,7 +2492,6 @@ namespace AngelDB
                 return $"Error: {e}";
             }
         }
-
 
         public string RestorAzureAccounts(Dictionary<string, string> d)
         {
@@ -2372,7 +2559,7 @@ namespace AngelDB
             try
             {
                 string json = AngelDBTools.StringFunctions.RestoreEncriptedFile(d["restore_accounts_from"], d["password"]);
-                this.SQLServer = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                this.SQLServer = JsonConvert.DeserializeObject<Dictionary<string, SQLServerInfo>>(json);
                 return "Ok.";
             }
             catch (Exception e)
@@ -2839,6 +3026,15 @@ namespace AngelDB
         public string ConnectionString { get; set; }
         public string table_directory { get; set; }
         public string table_type { get; set; }        
+    }
+
+
+    public class SQLServerInfo 
+    {
+        public string ConnectionString { get; set; }
+        public SQLServerTools SQLTools { get; set; } = null;
+
+
     }
 
 

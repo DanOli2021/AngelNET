@@ -10,7 +10,7 @@ namespace AngelDB
             {
                 { @"SET API KEY", @"SET API KEY#free" },
                 { @"SET END POINT", @"SET END POINT#free" },
-                { @"SET MAX TOCKENS", @"SET MAX TOCKENS#numeric" },
+                { @"SET MAX tokenS", @"SET MAX tokenS#numeric" },
                 { @"SAVE ACCOUNT TO", @"SAVE ACCOUNT TO#free;PASSWORD#password" },
                 { @"RESTORE ACCOUNT FROM", @"RESTORE ACCOUNT FROM#free;PASSWORD#password" },
                 { @"PROMPT", @"PROMPT#free" },

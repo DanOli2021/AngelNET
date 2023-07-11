@@ -11,9 +11,9 @@ namespace AngelDB
             Dictionary<string, string> commands = new Dictionary<string, string>
             {
                 { @"CONNECT", @"CONNECT#free;USER#free;PASSWORD#free;ACCOUNT#freeoptional;DATABASE#freeoptional;DATA DIRECTORY#freeoptional" },
-                { @"COMMAND", @"COMMAND#free;URL#freeoptional;TOCKEN#freeoptional" },
-                { @"GET TOCKEN", @"GET TOCKEN#free" },
-                { @"SET TOCKEN", @"SET TOCKEN#free" },
+                { @"COMMAND", @"COMMAND#free;URL#freeoptional;token#freeoptional" },
+                { @"GET token", @"GET token#free" },
+                { @"SET token", @"SET token#free" },
                 { @"SERVER", @"SERVER#free" },
                 { @"STOP", @"STOP#free" }
             };

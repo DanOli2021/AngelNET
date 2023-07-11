@@ -7,16 +7,6 @@ C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\config\Angel
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\config\AngelSQL.csx
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\config\Globals.csx
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\EULA.txt
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\adminskus.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\admintokens.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\ApiSamples.angel
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\Globals.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\initdatabase.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\shared.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\skus.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\tokens.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\users.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\scripts\pos\usersgroup.csx
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\AngelSQLServer.exe
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\DB.deps.json
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\DB.runtimeconfig.json

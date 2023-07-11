@@ -17,6 +17,12 @@ namespace AngelDB
                 { @"SAVE ACCOUNTS TO", @"SAVE ACCOUNTS TO#free;PASSWORD#password" },
                 { @"RESTORE ACCOUNTS FROM", @"RESTORE ACCOUNTS FROM#free;PASSWORD#password" },
                 { @"SHOW CONNECTIONS", @"SHOW CONNECTIONS#free" },
+                { @"INSERT INTO", @"INSERT INTO#free;CONNECTION ALIAS#free;VALUES#free" },
+                { @"UPDATE", @"UPDATE#free;WHERE#free;CONNECTION ALIAS#free;VALUES#free" },
+                { @"EXEC", @"EXEC#free;CONNECTION ALIAS#free" },
+                { @"BEGIN TRANSACTION", "BEGIN TRANSACTION#free;CONNECTION ALIAS#free" },
+                { @"COMMIT TRANSACTION", "COMMIT TRANSACTION#free;CONNECTION ALIAS#free" },
+                { @"ROLLBACK TRANSACTION", "ROLLBACK TRANSACTION#free;CONNECTION ALIAS#free" },
             };
 
             return commands;

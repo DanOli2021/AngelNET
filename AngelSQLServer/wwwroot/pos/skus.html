@@ -17,9 +17,9 @@
     <script src="./js/scripts.js"></script>
 
     <script>
-        const Tocken = sessionStorage.getItem("Tocken");
+        const Token = sessionStorage.getItem("Token");
 
-        if (Tocken == null) {
+        if (Token == null) {
             window.location.href = "index.html";
         }
 
@@ -344,7 +344,7 @@
 
         function showSkuDialog(sku_data) {
 
-            var clasfications = sendToAngelPOST("pos/adminskus", "GetClasifications", Tocken, {});
+            var clasfications = sendToAngelPOST("pos/adminskus", "GetClasifications", Token, {});
 
             clasfications.then(function (query) {
 
@@ -367,7 +367,7 @@
                 }
             });
 
-            var currencies = sendToAngelPOST("pos/adminskus", "GetCurrencies", Tocken, {});
+            var currencies = sendToAngelPOST("pos/adminskus", "GetCurrencies", Token, {});
 
             currencies.then(function (query) {
 
@@ -390,7 +390,7 @@
                 }
             });
 
-            var makers = sendToAngelPOST("pos/adminskus", "GetMakers", Tocken, {});
+            var makers = sendToAngelPOST("pos/adminskus", "GetMakers", Token, {});
 
             makers.then(function (query) {
 
@@ -413,7 +413,7 @@
                 }
             });
 
-            var locations = sendToAngelPOST("pos/adminskus", "GetLocations", Tocken, {});
+            var locations = sendToAngelPOST("pos/adminskus", "GetLocations", Token, {});
 
             locations.then(function (query) {
 
@@ -436,7 +436,7 @@
                 }
             });
 
-            var data_result = sendToAngelPOST("pos/adminskus", "GetSku", Tocken, { id: sku_data.id });
+            var data_result = sendToAngelPOST("pos/adminskus", "GetSku", Token, { id: sku_data.id });
 
             data_result.then(function (query) {
 
@@ -556,7 +556,7 @@
             sku.ClaveProdServ = document.getElementById('ClaveProdServ').value;
             sku.ClaveUnidad = document.getElementById('ClaveUnidad').value;
 
-            var data_result = sendToAngelPOST("pos/adminskus", "UpsertSku", Tocken, sku);
+            var data_result = sendToAngelPOST("pos/adminskus", "UpsertSku", Token, sku);
 
             data_result.then(function (query) {
 
@@ -584,7 +584,7 @@
 
         function executeSearch() {
 
-            var datos = sendToAngelPOST("pos/adminskus", "SearchSkus", Tocken, { query: "skus_search = '" + document.getElementById("SearchSku").value + "'" });
+            var datos = sendToAngelPOST("pos/adminskus", "SearchSkus", Token, { query: "skus_search = '" + document.getElementById("SearchSku").value + "'" });
 
             datos.then(function (query) {
 

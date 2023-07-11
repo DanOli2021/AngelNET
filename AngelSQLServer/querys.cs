@@ -8,7 +8,7 @@
         public string account { get; set; } = "";
         public string database { get; set; } = "";
         public string data_directory { get; set; } = "";
-        public string tocken { get; set; } = "";
+        public string token { get; set; } = "";
         public bool on_iis { get; set; } = false;
         public string command { get; set; } = "";
     }
@@ -17,7 +17,7 @@
     public class Responce
     {
         public string type { get; set; } = "";
-        public string tocken { get; set; } = "";
+        public string token { get; set; } = "";
         public string result { get; set; } = "";
     }
 
@@ -33,7 +33,7 @@
 
     public class ApiClass 
     {
-        public string tocken { get; set; } = "";
+        public string token { get; set; } = "";
         public string type { get; set; } = "";
         public string data { get; set; } = "";
     }
@@ -43,6 +43,9 @@
         public string api = "";
         public string message = "";
         public string language = "";
+        public string account = "";
+        public string db_user = "";
+        public string db_password = "";
     }
 
 
