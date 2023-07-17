@@ -5,13 +5,16 @@ using AngelSQL;
 using AngelSQLServer;
 using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using Newtonsoft.Json;
+using System.Collections.Concurrent;
 using System.Data;
 using System.Globalization;
 using System.Net;
 using System.Text;
+
 
 string commandLine = string.Join(" ", args);
 string api_file = Environment.CurrentDirectory + "/config/AngelAPI.csx";
@@ -76,6 +79,7 @@ var builder = WebApplication.CreateBuilder(args);
 // End Create a builder for the web app
 
 
+
 //if is a Windows service, set the current directory to the same as the executable
 builder = WebApplication.CreateBuilder(new WebApplicationOptions()
 {
@@ -89,28 +93,41 @@ if (WindowsServiceHelpers.IsWindowsService())
 }
 
 
-// AngelSQLServer parameters
-Dictionary<string, string> parameters = new Dictionary<string, string>();
-parameters.Add("certificate", "");
-parameters.Add("password", "");
-parameters.Add("bind_ip", "");
-parameters.Add("bind_port", "12000");
-parameters.Add("urls", "");
-parameters.Add("cors", "https://localhost:11000");
-parameters.Add("master_user", "db");
-parameters.Add("master_password", "db");
-parameters.Add("data_directory", "null");
-parameters.Add("account", "account1");
-parameters.Add("account_user", "angelsql");
-parameters.Add("account_password", "angelsql123");
-parameters.Add("database", "database1");
-parameters.Add("request_timeout", "4");
+Dictionary<string, string> parameters = new Dictionary<string, string>
+{
+    { "certificate", "" },
+    { "password", "" },
+    { "urls", "" },
+    { "cors", "http://localhost:11000" },
+    { "master_user", "db" },
+    { "master_password", "db" },
+    { "data_directory", "" },
+    { "account", "account1" },
+    { "account_user", "angelsql" },
+    { "account_password", "angelsql123" },
+    { "database", "database1" },
+    { "request_timeout", "4" },
+    { "wwwroot", "" },
+    { "scripts_directory", "" },
+    { "smtp", "" },
+    { "smtp_port", "" },
+    { "email_address", "" },
+    { "email_password", "" },
+    { "chat_script", "" }
+};
 
 
 //Our AngelDB database 
 AngelDB.DB main_db = new AngelDB.DB();
 
 builder.Services.AddSingleton<AngelDB.DB>(main_db);
+
+// Object to save the connections
+builder.Services.AddSingleton<ConnectionMappingService>();
+
+ConcurrentDictionary<string, AngelDB.DB> db_hub_connections = new ConcurrentDictionary<string, AngelDB.DB>();
+builder.Services.AddSingleton<ConcurrentDictionary<string, AngelDB.DB>>(db_hub_connections);
+
 
 string result = main_db.Prompt($"SCRIPT FILE {config_file}");
 
@@ -123,13 +140,19 @@ else
     LogFile.Log(result);
 }
 
+// Create the master database
 main_db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
 main_db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
 main_db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
 main_db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
 main_db.Prompt($"USE DATABASE {parameters["database"]}", true);
 
+// Create the accounts table
 main_db.Prompt($"CREATE TABLE accounts FIELD LIST db_user, name, email, connection_string, db_password, database, data_directory, account, super_user, super_user_password, active, created", true);
+// Create the hub users table
+main_db.Prompt($"CREATE TABLE hub_users FIELD LIST account, name, email, phone, password, role, active, last_access, created", true);
+// Create the hub_messages table
+main_db.Prompt($"CREATE TABLE hub_messages FIELD LIST userid, touser, messagetype, message, created, status, was_read", true);
 
 // Add cors support
 if (parameters["cors"] == "true")
@@ -150,12 +173,12 @@ if (parameters["cors"] == "true")
 builder.WebHost.ConfigureKestrel(options =>
 {
 
-    try
+    if (!string.IsNullOrEmpty(parameters["urls"]))
     {
-        if (!string.IsNullOrEmpty(parameters["urls"]))
+        string[] urls = parameters["urls"].Split(',');
+        foreach (string url in urls)
         {
-            string[] urls = parameters["urls"].Split(',');
-            foreach (string url in urls)
+            try
             {
                 var uri = new Uri(url);
 
@@ -165,17 +188,35 @@ builder.WebHost.ConfigureKestrel(options =>
                 }
                 else
                 {
-                    options.Listen(IPAddress.Parse(uri.Host), uri.Port);
+                    if (!string.IsNullOrEmpty(parameters["certificate"]) && url.ToLower().Trim().StartsWith("https") )
+                    {
+                        try
+                        {
+                            options.Listen(System.Net.IPAddress.Parse(uri.Host), uri.Port, listenOptions =>
+                            {
+                                listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            LogFile.Log($"Error: {e}");
+                        }
+                    }
+                    else
+                    {
+                        options.Listen(IPAddress.Parse(uri.Host), uri.Port);
+                    }
                 }
 
             }
-        }
+            catch (Exception e)
+            {
+                LogFile.Log($"Error: {e}");
+            }
 
+        }
     }
-    catch (Exception e)
-    {
-        LogFile.Log($"Error: {e.Message}");
-    }
+
 
     // Establece tu tiempo límite deseado aquí (en milisegundos)
 
@@ -189,68 +230,6 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(10);
 
     // Add pfx certificate
-    if (!string.IsNullOrEmpty(parameters["certificate"]))
-    {
-        try
-        {
-            if (!string.IsNullOrEmpty(parameters["bind_port"]))
-            {
-                parameters["bind_port"] = "443";
-            }
-
-            if (!string.IsNullOrEmpty(parameters["bind_ip"]))
-            {
-                options.Listen(System.Net.IPAddress.Parse(parameters["bind_ip"]), int.Parse(parameters["bind_port"]), listenOptions =>
-                {
-                    listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
-                });
-            }
-            else
-            {
-
-                if (string.IsNullOrEmpty(parameters["bind_ip"]))
-                {
-                    parameters["bind_ip"] = "443";
-                }
-
-                options.Listen(System.Net.IPAddress.Any, int.Parse(parameters["bind_port"]), listenOptions =>
-                {
-                    listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
-                });
-
-            }
-
-            //if(!string.IsNullOrEmpty(parameters["urls"]) )
-            //{
-            //    string[] urls = parameters["urls"].Split(',');
-            //    foreach (string url in urls)
-            //    {
-            //        string[] url_parts = url.Split(':');
-            //        if (url_parts.Length == 2)
-            //        {
-            //            options.Listen(System.Net.IPAddress.Parse(url_parts[0]), int.Parse(url_parts[1]), listenOptions =>
-            //            {
-            //                if (!string.IsNullOrEmpty(parameters["certificate"]))
-            //                {
-            //                    listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
-            //                }
-            //                else 
-            //                {
-
-            //                }
-            //            });
-            //        }
-            //    }
-            //}
-
-
-
-        }
-        catch (Exception e)
-        {
-            LogFile.Log($"Error: {e}");
-        }
-    }
 
 });
 
@@ -260,8 +239,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
+
+
+// Add SigNalR services to the container.
+app.MapHub<AngelSQLServerHub>("/AngelSQLServerHub");
+
 
 //Add cors support
 app.UseCors(options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
@@ -310,139 +295,152 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = ""
 });
 
-Dictionary<string, AngelSQL.DBConnections> connections = new Dictionary<string, AngelSQL.DBConnections>();
+ConcurrentDictionary<string, AngelSQL.DBConnections> connections = new ConcurrentDictionary<string, AngelSQL.DBConnections>();
 
 string Identification(AngelSQL.Query query)
 {
-
-    AngelDB.DB db_local = new AngelDB.DB();
-    db_local.NewDatabases = false;
-
-    if (string.IsNullOrEmpty(query.data_directory))
+    try
     {
-        query.data_directory = parameters["data_directory"];
-    }
+        AngelDB.DB db_local = new AngelDB.DB();
+        db_local.NewDatabases = false;
 
-    string result = db_local.Prompt($"DB USER {query.User} PASSWORD {query.password} ACCOUNT {query.account} DATABASE {query.database} DATA DIRECTORY {query.data_directory}");
+        if (string.IsNullOrEmpty(query.data_directory))
+        {
+            query.data_directory = parameters["data_directory"];
+        }
 
-    AngelSQL.Responce responce = new AngelSQL.Responce();
+        string result = db_local.Prompt($"DB USER {query.User} PASSWORD {query.password} ACCOUNT {query.account} DATABASE {query.database} DATA DIRECTORY {query.data_directory}");
 
-    if (result.StartsWith("Error:"))
-    {
-        responce.token = "";
+        AngelSQL.Responce responce = new AngelSQL.Responce();
+
+        if (result.StartsWith("Error:"))
+        {
+            responce.token = "";
+            responce.result = result;
+            responce.type = "ERROR";
+            return JsonConvert.SerializeObject(responce);
+        }
+
+        AngelSQL.DBConnections connection = new AngelSQL.DBConnections();
+        connection.CreationDate = DateTime.Now;
+        connection.expiration_days = 30;
+        connection.date_of_last_access = DateTime.Now;
+        connection.User = query.User;
+        connection.db = db_local;
+
+        string token = Guid.NewGuid().ToString();
+
+        connections.TryAdd(token, connection);
+
+        responce.token = token;
         responce.result = result;
-        responce.type = "ERROR";
+        responce.type = "SUCCESS";
         return JsonConvert.SerializeObject(responce);
+
     }
-
-    AngelSQL.DBConnections connection = new AngelSQL.DBConnections();
-    connection.CreationDate = DateTime.Now;
-    connection.expiration_days = 30;
-    connection.date_of_last_access = DateTime.Now;
-    connection.User = query.User;
-    connection.db = db_local;
-
-    string token = Guid.NewGuid().ToString();
-
-    connections.Add(token, connection);
-
-    responce.token = token;
-    responce.result = result;
-    responce.type = "SUCCESS";
-    return JsonConvert.SerializeObject(responce);
+    catch (Exception e)
+    {
+        return $"Error: Identification() {e}";
+    }
 
 }
 
 
 string QueryResponce(AngelSQL.Query query)
 {
-
-    AngelSQL.Responce responce = new AngelSQL.Responce();
-
-    if (!connections.ContainsKey(query.token))
+    try
     {
-        responce.token = "";
-        responce.result = $"Error: You need to identify yourself first. {query.token}";
-        responce.type = "ERROR";
-        return JsonConvert.SerializeObject(responce);
-    }
+        AngelSQL.Responce responce = new AngelSQL.Responce();
 
-    responce.token = query.token;
-    connections[query.token].date_of_last_access = DateTime.Now;
-
-    if (query.type == "SERVERCOMMAND")
-    {
-        if (connections[query.token].db.Prompt("MY LEVEL") == "MASTER")
+        if (!connections.ContainsKey(query.token))
         {
+            responce.token = "";
+            responce.result = $"Error: You need to identify yourself first. {query.token}";
+            responce.type = "ERROR";
+            return JsonConvert.SerializeObject(responce);
+        }
 
-            DbLanguage language = new DbLanguage();
-            language.SetCommands(AngelSQL.AngelClientsCommands.DbCommands());
-            Dictionary<string, string> d = language.Interpreter(query.command.Trim());
+        responce.token = query.token;
+        connections[query.token].date_of_last_access = DateTime.Now;
 
-            if (d is null)
+        if (query.type == "SERVERCOMMAND")
+        {
+            if (connections[query.token].db.Prompt("MY LEVEL") == "MASTER")
             {
-                responce.result = language.errorString;
-                return JsonConvert.SerializeObject(responce);
-            }
 
-            Dictionary<string, AngelDB.DB> local = new Dictionary<string, AngelDB.DB>();
+                DbLanguage language = new DbLanguage();
+                language.SetCommands(AngelSQL.AngelClientsCommands.DbCommands());
+                Dictionary<string, string> d = language.Interpreter(query.command.Trim());
 
-            foreach (string key in connections.Keys)
-            {
-                if (connections[key].db.BaseDirectory == connections[query.token].db.BaseDirectory)
+                if (d is null)
                 {
-                    local.Add(key, connections[key].db);
+                    responce.result = language.errorString;
+                    return JsonConvert.SerializeObject(responce);
+                }
+
+                Dictionary<string, AngelDB.DB> local = new Dictionary<string, AngelDB.DB>();
+
+                foreach (string key in connections.Keys)
+                {
+                    if (connections[key].db.BaseDirectory == connections[query.token].db.BaseDirectory)
+                    {
+                        local.Add(key, connections[key].db);
+                    }
+
+                }
+
+                switch (d.First().Key)
+                {
+                    case "clients":
+
+                        responce.result = JsonConvert.SerializeObject(connections, Formatting.Indented);
+                        return JsonConvert.SerializeObject(responce);
+
+                    case "count_clients":
+
+                        responce.result = connections.Count.ToString();
+                        return JsonConvert.SerializeObject(responce);
+
+                    case "kill_client":
+
+                        if (connections.ContainsKey(d["kill_client"]))
+                        {
+                            connections.TryRemove(d["kill_client"], out _);
+                            responce.result = "Ok.";
+                        }
+                        else
+                        {
+                            responce.result = "Error: Client not found.";
+                        }
+
+                        return JsonConvert.SerializeObject(responce);
+
+                    default:
+                        break;
                 }
 
             }
 
-            switch (d.First().Key)
-            {
-                case "clients":
-
-                    responce.result = JsonConvert.SerializeObject(connections, Formatting.Indented);
-                    return JsonConvert.SerializeObject(responce);
-
-                case "count_clients":
-
-                    responce.result = connections.Count.ToString();
-                    return JsonConvert.SerializeObject(responce);
-
-                case "kill_client":
-
-                    if (connections.ContainsKey(d["kill_client"]))
-                    {
-                        connections.Remove(d["kill_client"]);
-                        responce.result = "Ok.";
-                    }
-                    else
-                    {
-                        responce.result = "Error: Client not found.";
-                    }
-
-                    return JsonConvert.SerializeObject(responce);
-
-                default:
-                    break;
-            }
-
         }
 
+        responce.result = connections[query.token].db.Prompt(query.command);
+
+        if (responce.result.StartsWith("Error:"))
+        {
+            responce.type = "ERROR";
+        }
+        else
+        {
+            responce.type = "SUCCESS";
+        }
+
+        return JsonConvert.SerializeObject(responce);
+
     }
-
-    responce.result = connections[query.token].db.Prompt(query.command);
-
-    if (responce.result.StartsWith("Error:"))
+    catch (Exception e)
     {
-        responce.type = "ERROR";
+        return $"Error: QueryResponce() {e}";
     }
-    else
-    {
-        responce.type = "SUCCESS";
-    }
-
-    return JsonConvert.SerializeObject(responce);
-
 }
 
 
@@ -717,7 +715,7 @@ app.MapPost("/AngelSQL", async delegate (HttpContext context)
 
                     if (connections.ContainsKey(query.token))
                     {
-                        connections.Remove(query.token);
+                        connections.TryRemove(query.token, out _);
                     }
 
                     AngelSQL.Responce responce = new AngelSQL.Responce();
@@ -798,7 +796,7 @@ Task.Run(() =>
                 {
                     if ((DateTime.Now - connections[item].date_of_last_access).Hours > decimal.Parse(parameters["connection_timeout"]))
                     {
-                        connections.Remove(item);
+                        connections.TryRemove(item, out _);
                     }
                 }
 

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System;
+using System.Threading;
+using System.Data.SqlClient;
 
 namespace AngelDB
 {
@@ -202,8 +204,12 @@ namespace AngelDB
             }
         }
 
+        private readonly object _lock = new object();
+
         public string ExecSQLDirect(string sql)
         {
+            lock (_lock)
+
             try
             {
                 this.SQLCommand.CommandText = sql;
@@ -216,6 +222,29 @@ namespace AngelDB
             }
         }
 
+        public string ExecConcurrentSQLDirect(string sql)
+        {
+            using (var connection = new SQLiteConnection(this.ConnectionString))
+            {
+                connection.Open();
+
+                using (var command = new SQLiteCommand(sql, connection))
+                {
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                        return "Ok.";
+                    }
+                    catch (System.Exception e)
+                    {
+                        return $"Error: {sql} {e}";
+                    }
+                }
+            }
+        }
+
+
+
         public DataTable SQLTable(string SQL)        
         {
             this.SQLCommand.CommandText = SQL;
@@ -223,6 +252,7 @@ namespace AngelDB
             SQLiteDataReader reader = this.SQLCommand.ExecuteReader();
             DataTable dt = new DataTable();
             dt.Load(reader);
+            reader.Close();
             return dt;
         }
 

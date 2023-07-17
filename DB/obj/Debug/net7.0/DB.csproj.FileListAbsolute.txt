@@ -1543,6 +1543,7 @@ C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\login.angel
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\py\pos\skus.py
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\TablaZ.jSon
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\tables.json
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\DB.dll.config
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\DB.deps.json
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\DB.runtimeconfig.json
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\DB.dll
@@ -1563,15 +1564,21 @@ C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\IronPython.Modules.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\IronPython.SQLite.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\IronPython.Wpf.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\IronPython.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.AspNetCore.Connections.Abstractions.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.AspNetCore.Http.Connections.Client.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.AspNetCore.Http.Connections.Common.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.AspNetCore.SignalR.Client.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.AspNetCore.SignalR.Client.Core.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.AspNetCore.SignalR.Common.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.AspNetCore.SignalR.Protocols.Json.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.CodeAnalysis.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.CodeAnalysis.CSharp.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.CodeAnalysis.CSharp.Scripting.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.CodeAnalysis.Scripting.dll
-C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.Configuration.dll
-C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.Configuration.Abstractions.dll
-C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.Configuration.Binder.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.DependencyInjection.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.Features.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.Http.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.Logging.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Microsoft.Extensions.Logging.Abstractions.dll
@@ -1582,6 +1589,7 @@ C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Mono.Unix.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Newtonsoft.Json.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\OpenAI_API.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\Python.Runtime.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\RestSharp.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.Data.SQLite.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.CodeDom.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.Configuration.ConfigurationManager.dll
@@ -1590,6 +1598,7 @@ C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.Data.SQLite.EF6.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.Drawing.Common.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.IO.Hashing.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.IO.Packaging.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.IO.Pipelines.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.Memory.Data.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.Security.Cryptography.ProtectedData.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\System.Security.Permissions.dll
@@ -1679,6 +1688,8 @@ C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\netcoreapp3.0\System
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.csproj.AssemblyReference.cache
+C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.csproj.SuggestedBindingRedirects.cache
+C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.dll.config
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.GeneratedMSBuildEditorConfig.editorconfig
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.AssemblyInfoInputs.cache
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.AssemblyInfo.cs

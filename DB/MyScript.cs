@@ -210,14 +210,6 @@ namespace AngelDB
                 {
                     return o.ToString();
                 }
-                //object o = CSharpScript.EvaluateAsync(code, options, g).GetAwaiter().GetResult();
-
-                //if (o != null)
-                //{
-                //    return o.ToString();
-                //}
-
-                //return "";
 
             }
             catch (Exception e2)

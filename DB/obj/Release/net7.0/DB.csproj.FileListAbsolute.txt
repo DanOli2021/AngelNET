@@ -1568,9 +1568,6 @@ C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.CodeAnalysis.dll
 C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.CodeAnalysis.CSharp.dll
 C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.CodeAnalysis.CSharp.Scripting.dll
 C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.CodeAnalysis.Scripting.dll
-C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.Extensions.Configuration.dll
-C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.Extensions.Configuration.Abstractions.dll
-C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.Extensions.Configuration.Binder.dll
 C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.Extensions.Http.dll
 C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.Extensions.Logging.dll
@@ -1689,3 +1686,17 @@ C:\Desarrollo\AngelNET\DB\obj\Release\net7.0\refint\DB.dll
 C:\Desarrollo\AngelNET\DB\obj\Release\net7.0\DB.pdb
 C:\Desarrollo\AngelNET\DB\obj\Release\net7.0\DB.genruntimeconfig.cache
 C:\Desarrollo\AngelNET\DB\obj\Release\net7.0\ref\DB.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.AspNetCore.Connections.Abstractions.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.AspNetCore.Http.Connections.Client.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.AspNetCore.Http.Connections.Common.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.AspNetCore.SignalR.Client.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.AspNetCore.SignalR.Client.Core.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.AspNetCore.SignalR.Common.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.AspNetCore.SignalR.Protocols.Json.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.Extensions.DependencyInjection.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\Microsoft.Extensions.Features.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\RestSharp.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\System.IO.Pipelines.dll
+C:\Desarrollo\AngelNET\DB\bin\Release\net7.0\DB.dll.config
+C:\Desarrollo\AngelNET\DB\obj\Release\net7.0\DB.csproj.SuggestedBindingRedirects.cache
+C:\Desarrollo\AngelNET\DB\obj\Release\net7.0\DB.dll.config

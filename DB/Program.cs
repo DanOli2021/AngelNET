@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using IronPython.Runtime;
 
 namespace dbcmd
 {
@@ -156,11 +157,16 @@ namespace dbcmd
 
             }
 
-            AngelDB.Monitor.ShowLine("===================================================================", ConsoleColor.Magenta);
-            AngelDB.Monitor.ShowLine(" =>  DataBase software, powerful and simple at the same time", ConsoleColor.Magenta);
-            AngelDB.Monitor.ShowLine(" =>  We explain it to you in 20 words or fewer:", ConsoleColor.Magenta);
-            AngelDB.Monitor.ShowLine(" =>  DB", ConsoleColor.Yellow);
-            AngelDB.Monitor.ShowLine("===================================================================", ConsoleColor.Magenta);
+            void ShowHeader() 
+            {
+                AngelDB.Monitor.ShowLine("===================================================================", ConsoleColor.Magenta);
+                AngelDB.Monitor.ShowLine(" =>  DataBase software, powerful and simple at the same time", ConsoleColor.Magenta);
+                AngelDB.Monitor.ShowLine(" =>  We explain it to you in 20 words or fewer:", ConsoleColor.Magenta);
+                AngelDB.Monitor.ShowLine(" =>  DB", ConsoleColor.Yellow);
+                AngelDB.Monitor.ShowLine("===================================================================", ConsoleColor.Magenta);
+            }
+
+            ShowHeader();
 
             for (; ; )
             {
@@ -196,15 +202,11 @@ namespace dbcmd
                 if (line.Trim().ToUpper() == "CLEAR")
                 {
                     Console.Clear();
-                    AngelDB.Monitor.ShowLine("===================================================================", ConsoleColor.Magenta);
-                    AngelDB.Monitor.ShowLine(" =>  DataBase software, powerful and simple at the same time", ConsoleColor.Magenta);
-                    AngelDB.Monitor.ShowLine(" =>  We explain it to you in 20 words or fewer:", ConsoleColor.Magenta);
-                    AngelDB.Monitor.ShowLine(" =>  DB", ConsoleColor.Yellow);
-                    AngelDB.Monitor.ShowLine("===================================================================", ConsoleColor.Magenta);
+                    ShowHeader();
                     continue;
                 }
 
-                result = db.Prompt(line);
+                result = db.Prompt("BATCH " + line + " SHOW IN CONSOLE");
 
                 if (result.StartsWith("Error:"))
                 {

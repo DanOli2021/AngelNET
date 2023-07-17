@@ -12,7 +12,7 @@ namespace AngelDB {
                 { @"USE", @"USE#Systemtoken;DATABASE#freeoptional" },
                 { @"ACCOUNT", @"ACCOUNT#optional" },
                 { @"CLOSE ACCOUNT", @"CLOSE ACCOUNT#freeoptional" },
-                { @"CREATE ACCOUNT", @"CREATE ACCOUNT # Systemtoken; SUPERUSER#Systemtoken; PASSWORD#password; NAME#freeoptional" },
+                { @"CREATE ACCOUNT", @"CREATE ACCOUNT#Systemtoken; SUPERUSER#Systemtoken; PASSWORD#password; NAME#freeoptional" },
                 { @"USE ACCOUNT", @"USE ACCOUNT#Systemtoken" },
                 { @"DELETE ACCOUNT", @"DELETE ACCOUNT#Systemtoken" },
                 { @"UNDELETE ACCOUNT", @"UNDELETE ACCOUNT#Systemtoken" },
@@ -115,6 +115,8 @@ namespace AngelDB {
                 { @"POST", @"POST#free;ACCOUNT#freeoptional;API#free;LANGUAGE#freeoptional;MESSAGE#free" },
                 { @"LOCK TABLE", @"LOCK TABLE#free;PARTITION KEY#freeoptional" },
                 { @"UNLOCK TABLE", @"UNLOCK TABLE#free;PARTITION KEY#freeoptional" },
+
+                { @"HUB", @"HUB#free" },
 
                 { @"VERSION", @"VERSION#free" },
 

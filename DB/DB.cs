@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Concurrent;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Linq.Expressions;
 using DocumentFormat.OpenXml.InkML;
@@ -16,6 +17,8 @@ using AngelDBTools;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Security.Policy;
 using System.Data.SqlClient;
+using Microsoft.AspNetCore.SignalR.Client;
+
 
 namespace AngelDB
 {
@@ -42,6 +45,14 @@ namespace AngelDB
             }
         }
 
+        // Propiedad estática que devuelve la configuración personalizada
+        private static JsonSerializerSettings ConfiguracionSerializacion =>
+            new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+
         public string account = "";
         public bool IsReadOnly = false;
         public string sqliteConnectionString = "";
@@ -54,7 +65,6 @@ namespace AngelDB
         public Dictionary<string, object> parameters = new Dictionary<string, object>();
         public Dictionary<string, TableInfo> table_connections = new Dictionary<string, TableInfo>();
         public Dictionary<string, DB> partitionsrules = new Dictionary<string, DB>();
-
 
         public string ChatName;
         public string apps_directory = "";
@@ -70,19 +80,19 @@ namespace AngelDB
         {
             get { return m_tables; }
         }
-        
+
         public string BaseDirectory
         {
             get { return _baseDirectory; }
         }
-        
+
         public string ConnectionError
         {
             get { return m_ConnectionError; }
         }
-        
+
         private string _Error = "";
-        
+
         public string Error
         {
             get { return _Error; }
@@ -102,8 +112,8 @@ namespace AngelDB
         public string Command;
         public string rule;
 
-        public Dictionary<string, PartitionsInfo> partitions = new Dictionary<string, PartitionsInfo>();
-        public Dictionary<string, QueryTools> SQLiteConnections = new Dictionary<string, QueryTools>();
+        public ConcurrentDictionary<string, PartitionsInfo> partitions = new ConcurrentDictionary<string, PartitionsInfo>();
+        public ConcurrentDictionary<string, QueryTools> SQLiteConnections = new ConcurrentDictionary<string, QueryTools>();
 
         public WebForms web = new WebForms();
         public Dictionary<string, AzureTable> Azure = new Dictionary<string, AzureTable>();
@@ -140,6 +150,10 @@ namespace AngelDB
 
         //Chat GPT
         public AngelDB.OpenAIChatbot GPT = null;
+
+
+        // SignalR Connection
+        public HubOperation hub = null;
 
         /// <summary>Initializes a new instance of the <see cref="T:AngelDB.DB" /> class.</summary>
         /// <param name="user">The user.</param>
@@ -736,6 +750,8 @@ namespace AngelDB
                         break;
                     case "post":
                         break;
+                    case "hub":
+                        break;
                     case "version":
                         break;
                     default:
@@ -917,7 +933,7 @@ namespace AngelDB
 
                     result = RunScript(d);
                     break;
-                    
+
                 case "my_level":
 
                     result = "";
@@ -1062,7 +1078,7 @@ namespace AngelDB
 
                 case "script_file":
 
-                    if(main_db == null)
+                    if (main_db == null)
                     {
                         return script.EvalFile(d, this);
                     }
@@ -1237,7 +1253,7 @@ namespace AngelDB
 
                     bool show_in_console = false;
 
-                    if(d["show_in_console"] == "true")
+                    if (d["show_in_console"] == "true")
                     {
                         show_in_console = true;
                     }
@@ -1363,17 +1379,17 @@ namespace AngelDB
                     {
                         csv_header = true;
                     }
-                    else 
+                    else
                     {
                         csv_header = false;
                     }
 
-                    result = AngelDBTools.StringFunctions.ReadCSV(d["read_csv"], csv_header, d["value_separator"],d["columns_as_numbers"]);
+                    result = AngelDBTools.StringFunctions.ReadCSV(d["read_csv"], csv_header, d["value_separator"], d["columns_as_numbers"]);
                     break;
 
                 case "gpt":
 
-                    if( this.GPT is null )
+                    if (this.GPT is null)
                     {
                         this.GPT = new OpenAIChatbot(this);
                     }
@@ -1382,14 +1398,14 @@ namespace AngelDB
                     break;
 
 
-                case "post": 
+                case "post":
 
                     AngelDB.AngelPOST api = new AngelDB.AngelPOST();
                     api.api = d["api"];
                     api.message = d["message"];
                     api.language = d["language"];
 
-                    if (d["account"] == "null") 
+                    if (d["account"] == "null")
                     {
                         d["account"] = "";
                     }
@@ -1412,6 +1428,16 @@ namespace AngelDB
 
                 case "version":
                     result = "01.00.00 2023-04-29";
+                    break;
+
+                case "hub":
+
+                    if (hub is null)
+                    {
+                        this.hub = new HubOperation(this);
+                    }
+
+                    result = hub.HubExecute(d["hub"]).GetAwaiter().GetResult();
                     break;
 
                 default:
@@ -1439,7 +1465,7 @@ namespace AngelDB
             try
             {
 
-                if( string.IsNullOrEmpty(table_name)) table_name = o.GetType().Name;
+                if (string.IsNullOrEmpty(table_name)) table_name = o.GetType().Name;
 
                 string sql = "CREATE TABLE " + table_name + " FIELD LIST ";
                 foreach (var prop in o.GetType().GetProperties())
@@ -1485,7 +1511,7 @@ namespace AngelDB
                         }
 
                     }
-                    else 
+                    else
                     {
                         sql += prop.Name + ", ";
                     }
@@ -1493,14 +1519,14 @@ namespace AngelDB
 
                 sql = sql.Substring(0, sql.Length - 2);
 
-                if (search_table) 
+                if (search_table)
                 {
                     sql += " TYPE SEARCH";
                 }
 
                 string result = this.Prompt(sql);
 
-                if( result.StartsWith("Error:"))
+                if (result.StartsWith("Error:"))
                 {
                     Console.WriteLine(result);
                 }
@@ -1576,8 +1602,8 @@ namespace AngelDB
 
         }
 
-        public string ObjectToJson(object o) 
-        { 
+        public string ObjectToJson(object o)
+        {
             return JsonConvert.SerializeObject(o, Formatting.Indented);
         }
 
@@ -1786,7 +1812,7 @@ namespace AngelDB
                 string result = "";
                 DataTable t = JsonConvert.DeserializeObject<DataTable>(d["json"]);
 
-                if( t.Columns.Contains("PartitionKey"))
+                if (t.Columns.Contains("PartitionKey"))
                 {
                     t.Columns["PartitionKey"].ColumnName = "source_partitionkey";
                 }
@@ -1868,9 +1894,9 @@ namespace AngelDB
 
                 foreach (DataColumn item in t.Columns)
                 {
-                    if (d["id_column"] != "null") 
+                    if (d["id_column"] != "null")
                     {
-                        if (item.ColumnName.Trim().ToLower() == d["id_column"].Trim().ToLower()) 
+                        if (item.ColumnName.Trim().ToLower() == d["id_column"].Trim().ToLower())
                         {
                             t.Columns[item.ColumnName].ColumnName = "id";
                         }
@@ -1880,8 +1906,8 @@ namespace AngelDB
                     {
                         t.Columns[item.ColumnName].ColumnName = "_union";
                         sb.Append("_union" + ",");
-                    } 
-                    else if (item.ColumnName.Trim().ToLower() != "id") 
+                    }
+                    else if (item.ColumnName.Trim().ToLower() != "id")
                     {
                         sb.Append(item.ColumnName + ",");
                     }
@@ -1899,7 +1925,7 @@ namespace AngelDB
 
                 result = this.Prompt($"UPSERT INTO {d["save_to_table"]} VALUES {JsonConvert.SerializeObject(t)}");
 
-                if (result.StartsWith("Error:")) 
+                if (result.StartsWith("Error:"))
                 {
                     return "Error: SaveToTable: " + result;
                 }
@@ -1931,11 +1957,11 @@ namespace AngelDB
                     return "[]";
                 }
 
-                DataTable t = JsonConvert.DeserializeObject<DataTable>( local_result );
+                DataTable t = JsonConvert.DeserializeObject<DataTable>(local_result);
 
                 StringBuilder sb = new StringBuilder();
 
-                if(t.Columns.Contains("odata.etag")) t.Columns.Remove("odata.etag");
+                if (t.Columns.Contains("odata.etag")) t.Columns.Remove("odata.etag");
 
                 foreach (DataColumn item in t.Columns)
                 {
@@ -1944,7 +1970,7 @@ namespace AngelDB
                         t.Columns[item.ColumnName].ColumnName = "_union";
                         sb.Append("_union" + ",");
                     }
-                    else 
+                    else
                     {
                         sb.Append(item.ColumnName + ",");
                     }
@@ -2168,9 +2194,9 @@ namespace AngelDB
                     int page_size = 1000;
                     int.TryParse(d["page_size"], out page_size);
 
-                    if( page_size == 0) page_size = 1000;
+                    if (page_size == 0) page_size = 1000;
 
-                    return this.Azure[d["connection_alias"]].GetQueryResults(page_size);                    
+                    return this.Azure[d["connection_alias"]].GetQueryResults(page_size);
 
                 case "save_accounts_to":
 
@@ -2316,7 +2342,7 @@ namespace AngelDB
                     return "Error: It is necessary to first start the SQL Server connection use the command CONNECT <connection_string> ALIAS <alias_name>";
                 }
 
-                if (this.SQLServer[d["connection_alias"]].SQLTools is null) 
+                if (this.SQLServer[d["connection_alias"]].SQLTools is null)
                 {
                     this.SQLServer[d["connection_alias"]].SQLTools = new SQLServerTools(this.SQLServer[d["connection_alias"]].ConnectionString);
                 }
@@ -2356,7 +2382,7 @@ namespace AngelDB
 
         }
 
-        public string SQLServerBenginTransaction(Dictionary<string, string> d) 
+        public string SQLServerBenginTransaction(Dictionary<string, string> d)
         {
             try
             {
@@ -2365,7 +2391,7 @@ namespace AngelDB
                     return "Error: It is necessary to first start the SQL Server connection use the command CONNECT <connection_string> ALIAS <alias_name>";
                 }
 
-                if (!(this.SQLServer[d["connection_alias"]].SQLTools.Connection.State == ConnectionState.Open)) 
+                if (!(this.SQLServer[d["connection_alias"]].SQLTools.Connection.State == ConnectionState.Open))
                 {
                     this.SQLServer[d["connection_alias"]].SQLTools.Connection.Open();
                 }
@@ -2737,7 +2763,7 @@ namespace AngelDB
         }
 
 
-        public DataTable GetDataTable( string Data )
+        public DataTable GetDataTable(string Data)
         {
 
             try
@@ -2765,7 +2791,7 @@ namespace AngelDB
                 UseShellExecute = false,
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
-                WorkingDirectory = this.BaseDirectory + "scripts"                
+                WorkingDirectory = this.BaseDirectory + "scripts"
             };
 
             StringBuilder sb = new();
@@ -3025,11 +3051,11 @@ namespace AngelDB
     {
         public string ConnectionString { get; set; }
         public string table_directory { get; set; }
-        public string table_type { get; set; }        
+        public string table_type { get; set; }
     }
 
 
-    public class SQLServerInfo 
+    public class SQLServerInfo
     {
         public string ConnectionString { get; set; }
         public SQLServerTools SQLTools { get; set; } = null;

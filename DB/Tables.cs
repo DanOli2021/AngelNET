@@ -473,7 +473,7 @@ namespace AngelDB
                         return $"Error: UpdateTimeStamp {result_update}";
                     }
 
-                    mainClass.partitions.Add(account_database_table_partition, p);
+                    mainClass.partitions.TryAdd(account_database_table_partition, p);
                 }
 
                 string table_directory = result;
@@ -485,7 +485,7 @@ namespace AngelDB
                 else
                 {
                     query = new QueryTools($"Data Source={table_directory + mainClass.os_directory_separator + d["insert_into"].Trim().ToLower() + "_" + d["partition_key"].Trim().ToLower() + ".db"}" + ";version = 3");
-                    mainClass.SQLiteConnections.Add(account_database_table_partition, query);
+                    mainClass.SQLiteConnections.TryAdd(account_database_table_partition, query);
                 }
 
                 if (!query.IsOpen())
@@ -1032,7 +1032,7 @@ namespace AngelDB
                         return $"Error: UpdateTimeStamp {result_update}";
                     }
 
-                    mainClass.partitions.Add(account_database_table_partition, p);
+                    mainClass.partitions.TryAdd(account_database_table_partition, p);
                 }
 
 
@@ -1045,7 +1045,7 @@ namespace AngelDB
                 else
                 {
                     query = new QueryTools($"Data Source={table_directory + mainClass.os_directory_separator + d["update"].Trim().ToLower() + "_" + d["partition_key"].Trim().ToLower() + ".db"}" + ";version = 3");
-                    mainClass.SQLiteConnections.Add(account_database_table_partition, query);
+                    mainClass.SQLiteConnections.TryAdd(account_database_table_partition, query);
                 }
 
                 if (!query.IsOpen())
@@ -1152,7 +1152,7 @@ namespace AngelDB
                     {
                         sql = $"UPDATE {d["update"]} SET timestamp = '{System.DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff")}', {d["set"]} WHERE partitionkey = '{d["partition_key"]}' AND {d["where"]}";
                     }
-                    result = query.ExecSQLDirect(sql);
+                    result = query.ExecConcurrentSQLDirect(sql);
                 }
 
 
