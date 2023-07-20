@@ -1,6 +1,14 @@
 {
   "Files": [
     {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\css\\jquery.dataTables.min.css",
+      "PackagePath": "staticwebassets\\css\\jquery.dataTables.min.css"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\css\\responsive.dataTables.css",
+      "PackagePath": "staticwebassets\\css\\responsive.dataTables.css"
+    },
+    {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\css\\sql_commands.css",
       "PackagePath": "staticwebassets\\css\\sql_commands.css"
     },
@@ -13,6 +21,14 @@
       "PackagePath": "staticwebassets\\images\\AngelSQL.png"
     },
     {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\images\\sales.jpg",
+      "PackagePath": "staticwebassets\\images\\sales.jpg"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\images\\sales.png",
+      "PackagePath": "staticwebassets\\images\\sales.png"
+    },
+    {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\index.html",
       "PackagePath": "staticwebassets\\index.html"
     },
@@ -21,8 +37,20 @@
       "PackagePath": "staticwebassets\\js\\AngelSQL.js"
     },
     {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\js\\code.jquery.com_jquery-3.7.0.min.js",
+      "PackagePath": "staticwebassets\\js\\code.jquery.com_jquery-3.7.0.min.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\js\\dataTables.responsive.min.js",
+      "PackagePath": "staticwebassets\\js\\dataTables.responsive.min.js"
+    },
+    {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\js\\index.js",
       "PackagePath": "staticwebassets\\js\\index.js"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\js\\jquery.dataTables.min.js",
+      "PackagePath": "staticwebassets\\js\\jquery.dataTables.min.js"
     },
     {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\sql_commands.html",

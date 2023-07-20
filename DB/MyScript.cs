@@ -89,8 +89,6 @@ namespace AngelDB
             try
             {
 
-                GC.Collect();
-
                 file = d["script_file"];
 
                 if (d["on_main_directory"] == "true")
@@ -152,15 +150,16 @@ namespace AngelDB
                 {
                     if (db.script_file_datetime == Compiled_scripts[file].script_date)
                     {
-                        var o1 = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
+                        //var o1 = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
+                        var o1 = Compiled_scripts[file].script.Invoke(g);
 
-                        if (o1 is null)
+                        if (o1.Result is null)
                         {
                             return "";
                         }
                         else
                         {
-                            return o1.ToString();
+                            return o1.Result.ToString();
                         }
 
                     }
@@ -194,133 +193,30 @@ namespace AngelDB
                 var script = CSharpScript.Create(code, options, typeof(Globals));
                 script.Compile();
 
+                ScriptRunner<object> runner = script.CreateDelegate();
+
                 if (Compiled_scripts.ContainsKey(file))
                 {
                     Compiled_scripts.Remove(file);
                 }
 
-                Compiled_scripts.Add(file, new CompiledScripts { script = script, script_date = db.script_file_datetime });
-                var o = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
-
-                if (o is null)
+                Compiled_scripts.Add(file, new CompiledScripts { script = runner, script_date = db.script_file_datetime });
+                //var o = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
+                var o = runner.Invoke(g);
+                
+                if (o.Result is null)
                 {
                     return "";
                 }
                 else
                 {
-                    return o.ToString();
-                }
-
-            }
-            catch (Exception e2)
-            {
-                string error = e2.ToString();
-                int pos = error.IndexOf("End of stack trace from previous location");
-                if (pos > 0)
-                {
-                    error = error.Substring(0, pos);
-                }
-
-                return $"Error: {file} {error}";
-            }
-
-        }
-
-        public string EvalFileForBlazor(string file, AngelDB.DB db, string data, string message)
-        {
-
-            FileInfo fileInfo = null;
-
-            try
-            {
-
-                GC.Collect();
-
-                if (!File.Exists(file))
-                {
-                    return $"Error: The script file does not exists {file}";
-                }
-
-                Globals g = new Globals();
-                g.db = db;
-                g.data = data;
-                g.message = message;
-
-                db.script_file_datetime = File.GetLastWriteTime(file);
-                db.script_file = file;
-
-                if (Compiled_scripts.ContainsKey(file))
-                {
-                    if (db.script_file_datetime == Compiled_scripts[file].script_date)
+                    if (o.Result is null)
                     {
-                        var o1 = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
-
-                        if (o1 is null)
-                        {
-                            return "";
-                        }
-                        else
-                        {
-                            return o1.ToString();
-                        }
-
+                        return "";
                     }
+
+                    return o.Result.ToString();
                 }
-
-                string code = File.ReadAllText(file);
-                int pos = code.IndexOf("END GLOBALS");
-
-                if (pos > 0)
-                {
-                    string globals = code.Substring(0, pos + 11);
-                    int lines = globals.Split('\n').Length;
-                    code = new string('\n', lines - 1) + code.Substring(pos + 11);
-                }
-
-                List<string> l = new List<string>();
-                l.Add(typeof(AngelDB.DB).Assembly.FullName);
-                ScriptOptions options;
-
-                fileInfo = new FileInfo(file);
-
-                ImmutableArray<string> array = ImmutableArray.Create(fileInfo.Directory.FullName);
-
-                options = ScriptOptions.Default.
-                            WithFilePath(AppDomain.CurrentDomain.BaseDirectory + fileInfo.Name).
-                            AddImports("System").
-                            WithSourceResolver(new SourceFileResolver(array, fileInfo.Directory.FullName)).
-                            AddReferences(l).WithEmitDebugInformation(true).WithFileEncoding(Encoding.UTF8);
-
-                var script = CSharpScript.Create(code, options, typeof(Globals));
-
-                var compilation = script.GetCompilation();
-
-                script.Compile();
-
-                if (Compiled_scripts.ContainsKey(file))
-                {
-                    Compiled_scripts.Remove(file);
-                }
-
-                Compiled_scripts.Add(file, new CompiledScripts { script = script, script_date = db.script_file_datetime });
-                var o = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
-
-                if (o is null)
-                {
-                    return "";
-                }
-                else
-                {
-                    return o.ToString();
-                }
-                //object o = CSharpScript.EvaluateAsync(code, options, g).GetAwaiter().GetResult();
-
-                //if (o != null)
-                //{
-                //    return o.ToString();
-                //}
-
-                //return "";
 
             }
             catch (Exception e2)
@@ -337,89 +233,200 @@ namespace AngelDB
 
         }
 
+        //public string EvalFileForBlazor(string file, AngelDB.DB db, string data, string message)
+        //{
 
-        public string CompileFileForBlazor(string file, AngelDB.DB db, string file_assembly = "")
-        {
+        //    FileInfo fileInfo = null;
 
-            FileInfo fileInfo = null;
+        //    try
+        //    {
 
-            try
-            {
+        //        GC.Collect();
 
-                if (!File.Exists(file))
-                {
-                    return $"Error: The script file does not exists {file}";
-                }
+        //        if (!File.Exists(file))
+        //        {
+        //            return $"Error: The script file does not exists {file}";
+        //        }
 
-                Globals g = new Globals();
-                g.db = db;
-                g.data = "";
-                g.message = "";
+        //        Globals g = new Globals();
+        //        g.db = db;
+        //        g.data = data;
+        //        g.message = message;
 
-                string code = File.ReadAllText(file);
-                int pos = code.IndexOf("END GLOBALS");
+        //        db.script_file_datetime = File.GetLastWriteTime(file);
+        //        db.script_file = file;
 
-                if (pos > 0)
-                {
-                    string globals = code.Substring(0, pos + 11);
-                    int lines = globals.Split('\n').Length;
-                    code = new string('\n', lines - 1) + code.Substring(pos + 11);
-                }
+        //        if (Compiled_scripts.ContainsKey(file))
+        //        {
+        //            if (db.script_file_datetime == Compiled_scripts[file].script_date)
+        //            {
+        //                var o1 = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
 
-                List<string> l = new List<string>();
-                l.Add(typeof(AngelDB.DB).Assembly.FullName);
-                ScriptOptions options;
+        //                if (o1 is null)
+        //                {
+        //                    return "";
+        //                }
+        //                else
+        //                {
+        //                    return o1.ToString();
+        //                }
 
-                fileInfo = new FileInfo(file);
+        //            }
+        //        }
 
-                ImmutableArray<string> array = ImmutableArray.Create(fileInfo.Directory.FullName);
+        //        string code = File.ReadAllText(file);
+        //        int pos = code.IndexOf("END GLOBALS");
 
-                options = ScriptOptions.Default.
-                            WithFilePath(AppDomain.CurrentDomain.BaseDirectory + fileInfo.Name).
-                            AddImports("System").
-                            WithSourceResolver(new SourceFileResolver(array, fileInfo.Directory.FullName)).
-                            AddReferences(l).WithEmitDebugInformation(true).WithFileEncoding(Encoding.UTF8);
+        //        if (pos > 0)
+        //        {
+        //            string globals = code.Substring(0, pos + 11);
+        //            int lines = globals.Split('\n').Length;
+        //            code = new string('\n', lines - 1) + code.Substring(pos + 11);
+        //        }
 
-                var script = CSharpScript.Create(code, options, typeof(Globals));
-                var compilation = script.GetCompilation();
+        //        List<string> l = new List<string>();
+        //        l.Add(typeof(AngelDB.DB).Assembly.FullName);
+        //        ScriptOptions options;
 
-                if (string.IsNullOrEmpty(file_assembly))
-                {
-                    file_assembly = Path.ChangeExtension(file, "dll");
-                }
+        //        fileInfo = new FileInfo(file);
 
-                var result = compilation.Emit(file_assembly);
+        //        ImmutableArray<string> array = ImmutableArray.Create(fileInfo.Directory.FullName);
 
-                if (result.Success)
-                {
-                    return "Ok.";
-                }
+        //        options = ScriptOptions.Default.
+        //                    WithFilePath(AppDomain.CurrentDomain.BaseDirectory + fileInfo.Name).
+        //                    AddImports("System").
+        //                    WithSourceResolver(new SourceFileResolver(array, fileInfo.Directory.FullName)).
+        //                    AddReferences(l).WithEmitDebugInformation(true).WithFileEncoding(Encoding.UTF8);
 
-                StringBuilder sb = new StringBuilder();
+        //        var script = CSharpScript.Create(code, options, typeof(Globals));
 
-                sb.AppendLine("Error: ");
+        //        var compilation = script.GetCompilation();
 
-                foreach (var item in result.Diagnostics)
-                {
-                    sb.AppendLine(item.ToString());
-                }
+        //        script.Compile();
 
-                return sb.ToString();
+        //        if (Compiled_scripts.ContainsKey(file))
+        //        {
+        //            Compiled_scripts.Remove(file);
+        //        }
 
-            }
-            catch (Exception e2)
-            {
-                string error = e2.ToString();
-                int pos = error.IndexOf("End of stack trace from previous location");
-                if (pos > 0)
-                {
-                    error = error.Substring(0, pos);
-                }
+        //        Compiled_scripts.Add(file, new CompiledScripts { script = script, script_date = db.script_file_datetime });
+        //        var o = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
 
-                return $"Error: {file} {error}";
-            }
+        //        if (o is null)
+        //        {
+        //            return "";
+        //        }
+        //        else
+        //        {
+        //            return o.ToString();
+        //        }
+        //        //object o = CSharpScript.EvaluateAsync(code, options, g).GetAwaiter().GetResult();
 
-        }
+        //        //if (o != null)
+        //        //{
+        //        //    return o.ToString();
+        //        //}
+
+        //        //return "";
+
+        //    }
+        //    catch (Exception e2)
+        //    {
+        //        string error = e2.ToString();
+        //        int pos = error.IndexOf("End of stack trace from previous location");
+        //        if (pos > 0)
+        //        {
+        //            error = error.Substring(0, pos);
+        //        }
+
+        //        return $"Error: {file} {error}";
+        //    }
+
+        //}
+
+
+        //public string CompileFileForBlazor(string file, AngelDB.DB db, string file_assembly = "")
+        //{
+
+        //    FileInfo fileInfo = null;
+
+        //    try
+        //    {
+
+        //        if (!File.Exists(file))
+        //        {
+        //            return $"Error: The script file does not exists {file}";
+        //        }
+
+        //        Globals g = new Globals();
+        //        g.db = db;
+        //        g.data = "";
+        //        g.message = "";
+
+        //        string code = File.ReadAllText(file);
+        //        int pos = code.IndexOf("END GLOBALS");
+
+        //        if (pos > 0)
+        //        {
+        //            string globals = code.Substring(0, pos + 11);
+        //            int lines = globals.Split('\n').Length;
+        //            code = new string('\n', lines - 1) + code.Substring(pos + 11);
+        //        }
+
+        //        List<string> l = new List<string>();
+        //        l.Add(typeof(AngelDB.DB).Assembly.FullName);
+        //        ScriptOptions options;
+
+        //        fileInfo = new FileInfo(file);
+
+        //        ImmutableArray<string> array = ImmutableArray.Create(fileInfo.Directory.FullName);
+
+        //        options = ScriptOptions.Default.
+        //                    WithFilePath(AppDomain.CurrentDomain.BaseDirectory + fileInfo.Name).
+        //                    AddImports("System").
+        //                    WithSourceResolver(new SourceFileResolver(array, fileInfo.Directory.FullName)).
+        //                    AddReferences(l).WithEmitDebugInformation(true).WithFileEncoding(Encoding.UTF8);
+
+        //        var script = CSharpScript.Create(code, options, typeof(Globals));
+        //        var compilation = script.GetCompilation();
+
+        //        if (string.IsNullOrEmpty(file_assembly))
+        //        {
+        //            file_assembly = Path.ChangeExtension(file, "dll");
+        //        }
+
+        //        var result = compilation.Emit(file_assembly);
+
+        //        if (result.Success)
+        //        {
+        //            return "Ok.";
+        //        }
+
+        //        StringBuilder sb = new StringBuilder();
+
+        //        sb.AppendLine("Error: ");
+
+        //        foreach (var item in result.Diagnostics)
+        //        {
+        //            sb.AppendLine(item.ToString());
+        //        }
+
+        //        return sb.ToString();
+
+        //    }
+        //    catch (Exception e2)
+        //    {
+        //        string error = e2.ToString();
+        //        int pos = error.IndexOf("End of stack trace from previous location");
+        //        if (pos > 0)
+        //        {
+        //            error = error.Substring(0, pos);
+        //        }
+
+        //        return $"Error: {file} {error}";
+        //    }
+
+        //}
 
         protected virtual void Dispose(bool disposing)
         {
@@ -472,6 +479,6 @@ public class Globals
 public class CompiledScripts
 {
     public System.DateTime script_date;
-    public Script script;
+    public ScriptRunner<object> script;
 }
 

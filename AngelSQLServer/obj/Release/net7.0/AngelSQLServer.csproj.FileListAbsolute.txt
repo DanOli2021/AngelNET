@@ -1695,3 +1695,10 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\AngelSQLServer.dll.conf
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\DB.dll.config
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\AngelSQLServer.csproj.SuggestedBindingRedirects.cache
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\AngelSQLServer.dll.config
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\css\jquery.dataTables.min.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\css\responsive.dataTables.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\images\sales.jpg
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\images\sales.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\js\code.jquery.com_jquery-3.7.0.min.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\js\dataTables.responsive.min.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\wwwroot\js\jquery.dataTables.min.js

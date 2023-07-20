@@ -125,10 +125,6 @@ builder.Services.AddSingleton<AngelDB.DB>(main_db);
 // Object to save the connections
 builder.Services.AddSingleton<ConnectionMappingService>();
 
-ConcurrentDictionary<string, AngelDB.DB> db_hub_connections = new ConcurrentDictionary<string, AngelDB.DB>();
-builder.Services.AddSingleton<ConcurrentDictionary<string, AngelDB.DB>>(db_hub_connections);
-
-
 string result = main_db.Prompt($"SCRIPT FILE {config_file}");
 
 if (!result.StartsWith("Error:"))
@@ -151,8 +147,6 @@ main_db.Prompt($"USE DATABASE {parameters["database"]}", true);
 main_db.Prompt($"CREATE TABLE accounts FIELD LIST db_user, name, email, connection_string, db_password, database, data_directory, account, super_user, super_user_password, active, created", true);
 // Create the hub users table
 main_db.Prompt($"CREATE TABLE hub_users FIELD LIST account, name, email, phone, password, role, active, last_access, created", true);
-// Create the hub_messages table
-main_db.Prompt($"CREATE TABLE hub_messages FIELD LIST userid, touser, messagetype, message, created, status, was_read", true);
 
 // Add cors support
 if (parameters["cors"] == "true")
@@ -505,7 +499,7 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
         try
         {
             string jsonstring = await reader.ReadToEndAsync();
-            AngelSQL.AngelPOST api = JsonConvert.DeserializeObject<AngelSQL.AngelPOST>(jsonstring);
+            dynamic api = JsonConvert.DeserializeObject(jsonstring);
             string scripts_directory = Path.Combine(Environment.CurrentDirectory, "scripts");
 
             if (parameters.ContainsKey("scripts_directory"))
@@ -518,21 +512,25 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 
             AngelDB.DB main_db;
 
-            if (string.IsNullOrEmpty(api.account))
+            if (string.IsNullOrEmpty(api.account.ToString()))
             {
                 api.account = "default: " + session_guid;
             }
 
 
-            if (!post_databases.ContainsKey(api.account))
+            if (!post_databases.ContainsKey(api.account.ToString()))
             {
                 main_db = new AngelDB.DB();
 
-                if (api.account.StartsWith("default: "))
+                if (api.account.ToString().StartsWith("default: "))
                 {
                     if (!parameters.ContainsKey("connection_string"))
                     {
                         main_db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
+                        main_db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
+                        main_db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
+                        main_db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
+                        main_db.Prompt($"USE DATABASE {parameters["database"]}", true);
                     }
                     else
                     {
@@ -545,14 +543,8 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 
                     }
 
-                    main_db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
-                    main_db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
-                    main_db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
-                    main_db.Prompt($"USE DATABASE {parameters["database"]}", true);
-
                     api.db_user = parameters["master_user"];
                     api.db_password = parameters["master_password"];
-
                     main_db.Prompt($"VAR db_user = '{parameters["master_user"]}'", true);
                     main_db.Prompt($"VAR db_password = '{parameters["master_password"]}'", true);
                     main_db.Prompt($"VAR db_account = ''", true);
@@ -560,7 +552,7 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                 }
                 else
                 {
-                    string result = angel_post_db.Prompt($"SELECT * FROM accounts WHERE id = '{api.account.Trim().ToLower()}'", true);
+                    string result = angel_post_db.Prompt($"SELECT * FROM accounts WHERE id = '{api.account.ToString().Trim().ToLower()}'", true);
 
                     if (result.StartsWith("Error:"))
                     {
@@ -602,6 +594,10 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                             return result;
                         }
 
+                        main_db.Prompt($"VAR db_user = '{db_user}'", true);
+                        main_db.Prompt($"VAR db_password = '{db_password}'", true);
+                        main_db.Prompt($"VAR db_account = '{api.account}'", true);
+
                     }
                     else
                     {
@@ -621,13 +617,13 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                             return result;
                         }
 
+                        main_db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
+                        main_db.Prompt($"USE ACCOUNT {account}", true);
+                        main_db.Prompt($"CREATE DATABASE {db_database}", true);
+                        main_db.Prompt($"USE DATABASE {db_database}", true);
+
                     }
 
-
-                    main_db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
-                    main_db.Prompt($"USE ACCOUNT {account}", true);
-                    main_db.Prompt($"CREATE DATABASE {db_database}", true);
-                    main_db.Prompt($"USE DATABASE {db_database}", true);
 
                     main_db.Prompt($"VAR db_user = '{db_user}'", true);
                     main_db.Prompt($"VAR db_password = '{db_password}'", true);
@@ -635,34 +631,34 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 
                 }
 
-                post_databases.Add(api.account, main_db);
+                post_databases.Add(api.account.ToString(), main_db);
 
             }
             else
             {
-                main_db = post_databases[api.account];
+                main_db = post_databases[api.account.ToString()];
             }
 
 
-            if (string.IsNullOrEmpty(api.language))
+            if (string.IsNullOrEmpty(api.language.ToString()))
             {
-                result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true, main_db);
+                result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject( api.message ), true, main_db);
             }
             else
             {
-                switch (api.language)
+                switch (api.language.ToString())
                 {
                     case "C#":
-                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true, main_db);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, main_db);
                         break;
                     case "CSHARP":
-                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true, main_db);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, main_db);
                         break;
                     case "null":
-                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + api.message, true, main_db);
+                        result = angel_post_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, main_db);
                         break;
                     case "PYTHON":
-                        result = angel_post_db.Prompt($"PY FILE {scripts_directory}/{api.api}.py MESSAGE " + api.message, true, main_db);
+                        result = angel_post_db.Prompt($"PY FILE {scripts_directory}/{api.api}.py MESSAGE " + JsonConvert.SerializeObject(api.message), true, main_db);
                         break;
                     default:
                         break;

@@ -39,7 +39,8 @@ Dictionary<string, string> servers = new Dictionary<string, string>
     { "skus_url", "http://localhost:5000/AngelPOST" },
     { "sales_url", "http://localhost:5000/AngelPOST" },
     { "inventory_url", "http://localhost:5000/AngelPOST" },
-    { "configuration_url", "http://localhost:5000/AngelPOST" }
+    { "configuration_url", "http://localhost:5000/AngelPOST" },
+    { "auth_url", "http://localhost:5000/AngelPOST" }
 };
 
 // Development time only

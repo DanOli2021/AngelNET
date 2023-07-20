@@ -41,7 +41,7 @@
     public class AngelPOST
     {
         public string api = "";
-        public string message = "";
+        public dynamic message = "";
         public string language = "";
         public string account = "";
         public string db_user = "";

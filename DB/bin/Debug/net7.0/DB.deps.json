@@ -9,13 +9,13 @@
       "DB/1.0.0": {
         "dependencies": {
           "Azure.Data.Tables": "12.8.0",
-          "Azure.Storage.Blobs": "12.16.0",
-          "Azure.Storage.Common": "12.15.0",
-          "Azure.Storage.Queues": "12.14.0",
+          "Azure.Storage.Blobs": "12.17.0",
+          "Azure.Storage.Common": "12.16.0",
+          "Azure.Storage.Queues": "12.15.0",
           "CsvHelper": "30.0.1",
           "DocumentFormat.OpenXmlSDK": "2.0.0",
-          "IronPython": "3.4.0",
-          "IronPython.StdLib": "3.4.0",
+          "IronPython": "3.4.1",
+          "IronPython.StdLib": "3.4.1",
           "Microsoft.AspNetCore.SignalR.Client": "7.0.9",
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.CodeAnalysis.CSharp": "4.6.0",
@@ -33,7 +33,7 @@
           "DB.dll": {}
         }
       },
-      "Azure.Core/1.31.0": {
+      "Azure.Core/1.33.0": {
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
           "System.Diagnostics.DiagnosticSource": "4.6.0",
@@ -45,14 +45,14 @@
         },
         "runtime": {
           "lib/net6.0/Azure.Core.dll": {
-            "assemblyVersion": "1.31.0.0",
-            "fileVersion": "1.3100.23.21004"
+            "assemblyVersion": "1.33.0.0",
+            "fileVersion": "1.3300.23.31609"
           }
         }
       },
       "Azure.Data.Tables/12.8.0": {
         "dependencies": {
-          "Azure.Core": "1.31.0",
+          "Azure.Core": "1.33.0",
           "System.Text.Json": "7.0.2"
         },
         "runtime": {
@@ -62,40 +62,40 @@
           }
         }
       },
-      "Azure.Storage.Blobs/12.16.0": {
+      "Azure.Storage.Blobs/12.17.0": {
         "dependencies": {
-          "Azure.Storage.Common": "12.15.0",
+          "Azure.Storage.Common": "12.16.0",
           "System.Text.Json": "7.0.2"
         },
         "runtime": {
           "lib/net6.0/Azure.Storage.Blobs.dll": {
-            "assemblyVersion": "12.16.0.0",
-            "fileVersion": "12.1600.23.21104"
+            "assemblyVersion": "12.17.0.0",
+            "fileVersion": "12.1700.23.36104"
           }
         }
       },
-      "Azure.Storage.Common/12.15.0": {
+      "Azure.Storage.Common/12.16.0": {
         "dependencies": {
-          "Azure.Core": "1.31.0",
+          "Azure.Core": "1.33.0",
           "System.IO.Hashing": "6.0.0"
         },
         "runtime": {
           "lib/net6.0/Azure.Storage.Common.dll": {
-            "assemblyVersion": "12.15.0.0",
-            "fileVersion": "12.1500.23.21104"
+            "assemblyVersion": "12.16.0.0",
+            "fileVersion": "12.1600.23.36104"
           }
         }
       },
-      "Azure.Storage.Queues/12.14.0": {
+      "Azure.Storage.Queues/12.15.0": {
         "dependencies": {
-          "Azure.Storage.Common": "12.15.0",
+          "Azure.Storage.Common": "12.16.0",
           "System.Memory.Data": "1.0.2",
           "System.Text.Json": "7.0.2"
         },
         "runtime": {
           "lib/net6.0/Azure.Storage.Queues.dll": {
-            "assemblyVersion": "12.14.0.0",
-            "fileVersion": "12.1400.23.21104"
+            "assemblyVersion": "12.15.0.0",
+            "fileVersion": "12.1500.23.36104"
           }
         }
       },
@@ -115,22 +115,22 @@
           }
         }
       },
-      "DynamicLanguageRuntime/1.3.3": {
+      "DynamicLanguageRuntime/1.3.4": {
         "dependencies": {
           "System.CodeDom": "6.0.0"
         },
         "runtime": {
           "lib/net6.0/Microsoft.Dynamic.dll": {
-            "assemblyVersion": "1.3.3.0",
-            "fileVersion": "1.3.3.1000"
+            "assemblyVersion": "1.3.4.0",
+            "fileVersion": "1.3.4.1000"
           },
           "lib/net6.0/Microsoft.Scripting.Metadata.dll": {
-            "assemblyVersion": "1.3.3.0",
-            "fileVersion": "1.3.3.1000"
+            "assemblyVersion": "1.3.4.0",
+            "fileVersion": "1.3.4.1000"
           },
           "lib/net6.0/Microsoft.Scripting.dll": {
-            "assemblyVersion": "1.3.3.0",
-            "fileVersion": "1.3.3.1000"
+            "assemblyVersion": "1.3.4.0",
+            "fileVersion": "1.3.4.1000"
           }
         }
       },
@@ -153,33 +153,33 @@
           }
         }
       },
-      "IronPython/3.4.0": {
+      "IronPython/3.4.1": {
         "dependencies": {
-          "DynamicLanguageRuntime": "1.3.3",
+          "DynamicLanguageRuntime": "1.3.4",
           "Mono.Unix": "7.1.0-final.1.21458.1"
         },
         "runtime": {
           "lib/net6.0/IronPython.Modules.dll": {
-            "assemblyVersion": "3.4.0.0",
-            "fileVersion": "3.4.0.1000"
+            "assemblyVersion": "3.4.1.0",
+            "fileVersion": "3.4.1.1000"
           },
           "lib/net6.0/IronPython.SQLite.dll": {
-            "assemblyVersion": "3.4.0.0",
-            "fileVersion": "3.4.0.1000"
+            "assemblyVersion": "3.4.1.0",
+            "fileVersion": "3.4.1.1000"
           },
           "lib/net6.0/IronPython.Wpf.dll": {
-            "assemblyVersion": "3.4.0.0",
-            "fileVersion": "3.4.0.1000"
+            "assemblyVersion": "3.4.1.0",
+            "fileVersion": "3.4.1.1000"
           },
           "lib/net6.0/IronPython.dll": {
-            "assemblyVersion": "3.4.0.0",
-            "fileVersion": "3.4.0.1000"
+            "assemblyVersion": "3.4.1.0",
+            "fileVersion": "3.4.1.1000"
           }
         }
       },
-      "IronPython.StdLib/3.4.0": {
+      "IronPython.StdLib/3.4.1": {
         "dependencies": {
-          "IronPython": "3.4.0"
+          "IronPython": "3.4.1"
         }
       },
       "Microsoft.AspNetCore.Connections.Abstractions/7.0.9": {
@@ -1083,12 +1083,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Azure.Core/1.31.0": {
+    "Azure.Core/1.33.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-YZlzaVS4XpPPIob934+UFfxvxMWe05PG3FDfwAXZz+MY+ShDJCjMokfrfh18F7VDW5tG0iMbPVjigeL6crGCiQ==",
-      "path": "azure.core/1.31.0",
-      "hashPath": "azure.core.1.31.0.nupkg.sha512"
+      "sha512": "sha512-p06/5ueyCwKe09zqz7bPR6vbWRGrDy6Ot4aqjrjnowhFlXUBoljUdH+abDZP2vUuSZrOSstF4h860hBHWh8uHg==",
+      "path": "azure.core/1.33.0",
+      "hashPath": "azure.core.1.33.0.nupkg.sha512"
     },
     "Azure.Data.Tables/12.8.0": {
       "type": "package",
@@ -1097,26 +1097,26 @@
       "path": "azure.data.tables/12.8.0",
       "hashPath": "azure.data.tables.12.8.0.nupkg.sha512"
     },
-    "Azure.Storage.Blobs/12.16.0": {
+    "Azure.Storage.Blobs/12.17.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1ibzh49byOzB2ds6k9bsPqXvxxzdc2U9+MmooDr/lYJHgaWEnPZYX/i04vH0oN0jBGN1diW4N27xER8npvOzCw==",
-      "path": "azure.storage.blobs/12.16.0",
-      "hashPath": "azure.storage.blobs.12.16.0.nupkg.sha512"
+      "sha512": "sha512-Dix9QkBHxHGSj1GLeQ7nBLEIr+2EH8VYyKxl39zsX9VCdeppaiM6yRVZMh1nZw/PJU1uUOOvJ2dGkOzdtfHxJg==",
+      "path": "azure.storage.blobs/12.17.0",
+      "hashPath": "azure.storage.blobs.12.17.0.nupkg.sha512"
     },
-    "Azure.Storage.Common/12.15.0": {
+    "Azure.Storage.Common/12.16.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-/SAgn9hhjfHO0RPWp0ilGLr3aMPz+rrz6iRgLKTb1708pI78WLtsQ7/kGooUbCU2flSnk/egmJ0Qj9rFVks/nA==",
-      "path": "azure.storage.common/12.15.0",
-      "hashPath": "azure.storage.common.12.15.0.nupkg.sha512"
+      "sha512": "sha512-LnfetNqowFvH+0vz3/UkhPIt4NR740O8ci/R5S5THVFG6VCJu5z7GY9VgqVPNSf5w2V5IfzNTrKdwwz7SC6B8g==",
+      "path": "azure.storage.common/12.16.0",
+      "hashPath": "azure.storage.common.12.16.0.nupkg.sha512"
     },
-    "Azure.Storage.Queues/12.14.0": {
+    "Azure.Storage.Queues/12.15.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Oi6grxE26z3nARhZrY3sWM562MB86biw0Fosuj5fBAl28vo0wP7k1o0Z7W265TdJXV9iXOu7B2k58OwXoEBMbw==",
-      "path": "azure.storage.queues/12.14.0",
-      "hashPath": "azure.storage.queues.12.14.0.nupkg.sha512"
+      "sha512": "sha512-ZCUxifpmNUAWmEE11KhrU0VPRTxG22IRhZGoplWIr10q2DWQTjqA9ucg1qqJpG966nW2I/pfXdeN7mHU+k00FA==",
+      "path": "azure.storage.queues/12.15.0",
+      "hashPath": "azure.storage.queues.12.15.0.nupkg.sha512"
     },
     "CsvHelper/30.0.1": {
       "type": "package",
@@ -1132,12 +1132,12 @@
       "path": "documentformat.openxmlsdk/2.0.0",
       "hashPath": "documentformat.openxmlsdk.2.0.0.nupkg.sha512"
     },
-    "DynamicLanguageRuntime/1.3.3": {
+    "DynamicLanguageRuntime/1.3.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-FZK23PmwdfnXqX5zMf8JufymxAKXGohg2UtEfBgAlNgqXE8pq0MULF7KUUrxxI1Y6rW5OYwQwNCg1jKw2i8VVw==",
-      "path": "dynamiclanguageruntime/1.3.3",
-      "hashPath": "dynamiclanguageruntime.1.3.3.nupkg.sha512"
+      "sha512": "sha512-tYp2w0KSARfyn7MQhagCbHYLfnoVpKXRxhpZDngACq16cTkJyh4BudpI38M4xFRCD78hdYi6WHd7RZZJ96oNFg==",
+      "path": "dynamiclanguageruntime/1.3.4",
+      "hashPath": "dynamiclanguageruntime.1.3.4.nupkg.sha512"
     },
     "EntityFramework/6.4.4": {
       "type": "package",
@@ -1146,19 +1146,19 @@
       "path": "entityframework/6.4.4",
       "hashPath": "entityframework.6.4.4.nupkg.sha512"
     },
-    "IronPython/3.4.0": {
+    "IronPython/3.4.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-r2wUfzgQWtDkhTYH9f2faMPEdZVir9VvdhAekDIzJx7Ye6SQl35agWDpJkX66le4fvWYmZZ4rXqj5mAcYDrJTw==",
-      "path": "ironpython/3.4.0",
-      "hashPath": "ironpython.3.4.0.nupkg.sha512"
+      "sha512": "sha512-2CKriGKn8KAdEHTpV6umPaEA5kq2tod5npH1V07JeEetJO0PqNYLD7ovJcUB4ZfPVPhwdrlGkOeqyJx8EGGJVA==",
+      "path": "ironpython/3.4.1",
+      "hashPath": "ironpython.3.4.1.nupkg.sha512"
     },
-    "IronPython.StdLib/3.4.0": {
+    "IronPython.StdLib/3.4.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sX3Sl6XMz8NEJfCgfSYFVnQ29aPUDkieR+/y5MqxZeS191Utn4O6YQNKJ7M1oBAra8NGxjOn9t4mVA5IgVq5eA==",
-      "path": "ironpython.stdlib/3.4.0",
-      "hashPath": "ironpython.stdlib.3.4.0.nupkg.sha512"
+      "sha512": "sha512-qrLtYSNWo46f6Xb/FC33KLYNHFSKABJXmYi35Dg1D3ET0GBX92YqtC/hX0CQuntWscGNJQ4Wm3Gjl8NiRoLWzw==",
+      "path": "ironpython.stdlib/3.4.1",
+      "hashPath": "ironpython.stdlib.3.4.1.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Connections.Abstractions/7.0.9": {
       "type": "package",

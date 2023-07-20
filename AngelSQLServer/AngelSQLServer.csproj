@@ -10,48 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\auth\**" />
-    <Compile Remove="wwwroot\mybusiness_auth\**" />
-    <Compile Remove="wwwroot\pos\**" />
-    <Compile Remove="wwwroot\tokens\**" />
-    <Content Remove="wwwroot\auth\**" />
-    <Content Remove="wwwroot\mybusiness_auth\**" />
-    <Content Remove="wwwroot\pos\**" />
-    <Content Remove="wwwroot\tokens\**" />
-    <EmbeddedResource Remove="wwwroot\auth\**" />
-    <EmbeddedResource Remove="wwwroot\mybusiness_auth\**" />
-    <EmbeddedResource Remove="wwwroot\pos\**" />
-    <EmbeddedResource Remove="wwwroot\tokens\**" />
-    <None Remove="wwwroot\auth\**" />
-    <None Remove="wwwroot\mybusiness_auth\**" />
-    <None Remove="wwwroot\pos\**" />
-    <None Remove="wwwroot\tokens\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\adminbranchstores.csx" />
-    <Content Remove="wwwroot\css\jquery.dataTables.min.css" />
-    <Content Remove="wwwroot\css\responsive.dataTables.css" />
-    <Content Remove="wwwroot\images\sales.jpg" />
-    <Content Remove="wwwroot\images\sales.png" />
-    <Content Remove="wwwroot\js\code.jquery.com_jquery-3.7.0.min.js" />
-    <Content Remove="wwwroot\js\dataTables.responsive.min.js" />
-    <Content Remove="wwwroot\js\jquery.dataTables.min.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="AngelSQL1.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="System.ServiceModel.Duplex" Version="4.10.*" />
-    <PackageReference Include="System.ServiceModel.Federation" Version="4.10.*" />
-    <PackageReference Include="System.ServiceModel.Http" Version="4.10.*" />
-    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.*" />
-    <PackageReference Include="System.ServiceModel.Security" Version="4.10.*" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="System.ServiceModel.Duplex" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Federation" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Security" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,10 +41,76 @@
     <None Update="EULA.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="scripts\Chat.csx">
+    <None Update="scripts\accounts\accounts.csx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="scripts\Globals.csx">
+    <None Update="scripts\accounts\Globals.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\auth\adminbranchstores.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\auth\authorizer.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\auth\branch_stores.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\auth\branch_store_authorizer.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\auth\Globals.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\auth\initdatabase_auth.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\auth\pins.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\chat\Chat.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\chat\Globals.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\kiosk\adminskus.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\kiosk\ApiSamples.angel">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\kiosk\Globals.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\kiosk\initdatabase_kiosk.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\kiosk\shared.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\kiosk\skus.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\tokens\admintokens.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\tokens\Globals.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\tokens\initdatabase.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\tokens\tokens.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\tokens\tokensTest.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\tokens\users.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="scripts\tokens\usersgroup.csx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -82,10 +118,265 @@
   <ItemGroup>
     <Folder Include="Connected Services\" />
     <Folder Include="Controllers\" />
-    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\auth\images\pins\" />
+    <Folder Include="wwwroot\auth\pins\images\" />
+    <Folder Include="wwwroot\Kiosk\downloads\" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-grid.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-grid.min.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-grid.rtl.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-grid.rtl.min.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-reboot.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-reboot.min.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-reboot.rtl.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-reboot.rtl.min.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-utilities.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-utilities.min.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-utilities.rtl.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-utilities.rtl.min.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap.min.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap.rtl.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\css\bootstrap.rtl.min.css.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.bundle.js" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.bundle.js.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.bundle.min.js" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.bundle.min.js.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.esm.js" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.esm.js.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.esm.min.js" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.esm.min.js.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.js.map" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.min.js" />
+    <None Include="wwwroot\auth\bootstrap-5.3.0\js\bootstrap.min.js.map" />
+    <None Include="wwwroot\auth\downloads\Tokens.zip" />
+    <None Include="wwwroot\auth\js\AngelSQL.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\auth\js\cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\auth\js\cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\auth\js\code.jquery.com_jquery-3.7.0.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\auth\js\dataTables.responsive.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\auth\js\jquery.dataTables.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\auth\js\scripts.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\js\AngelSQL.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\js\code.jquery.com_jquery-3.7.0.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\js\dataTables.responsive.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\js\index.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\js\jquery.dataTables.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Kiosk\js\AngelSQL.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Kiosk\js\cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Kiosk\js\cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Kiosk\js\code.jquery.com_jquery-3.7.0.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Kiosk\js\dataTables.responsive.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Kiosk\js\jquery.dataTables.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Kiosk\js\scripts.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\auth\authorizers.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-grid.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-reboot.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\bootstrap-5.3.0\css\bootstrap-utilities.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\bootstrap-5.3.0\css\bootstrap.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\branch_store.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\branch_stores.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\create_authorization.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\css\jquery.dataTables.min.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\css\responsive.dataTables.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\css\styles.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_accounting_executive_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_accounting_executive_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_accounting_executive_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_accounting_executive_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_accounting_executive_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_accounting_executive_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_general_back_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_general_back_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_general_back_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_general_back_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_general_back_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\beta_general_back_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_networking_groupware_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_networking_groupware_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_networking_groupware_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_networking_groupware_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_networking_groupware_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_networking_groupware_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_shopping_fish_shop_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_shopping_fish_shop_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_shopping_fish_shop_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_shopping_fish_shop_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_shopping_fish_shop_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\brilliant_shopping_fish_shop_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\diamond_business_report_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\diamond_business_report_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\diamond_business_report_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\diamond_business_report_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\diamond_business_report_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\icons\diamond_business_report_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\permissions.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\images\permissions.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\menu.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\pins.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\privacy.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\register.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\sendpin.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\supervisor.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\termsAndConditions.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\auth\users.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\jquery.dataTables.min.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\css\responsive.dataTables.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\css\sql_commands.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -95,13 +386,466 @@
     <Content Update="wwwroot\images\AngelSQL.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\images\sales.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\images\sales.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\js\AngelSQL.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\js\code.jquery.com_jquery-3.7.0.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\js\dataTables.responsive.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\js\index.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\js\jquery.dataTables.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\bootstrap-5.3.0\css\bootstrap-grid.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\bootstrap-5.3.0\css\bootstrap-reboot.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\bootstrap-5.3.0\css\bootstrap-utilities.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\bootstrap-5.3.0\css\bootstrap.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\bootstrap-5.3.0\js\bootstrap.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\css\jquery.dataTables.min.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\css\responsive.dataTables.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\css\styles.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\cafe_de_olla_recipe-500x375.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_cashbox_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_cashbox_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_cashbox_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_cashbox_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_cashbox_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_cashbox_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_executive_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_executive_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_executive_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_executive_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_executive_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_accounting_executive_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_back_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_back_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_back_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_back_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_back_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_back_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_gear_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_gear_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_gear_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_gear_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_gear_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\beta_general_gear_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_accounting_location_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_accounting_location_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_accounting_location_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_accounting_location_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_accounting_location_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_accounting_location_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_computergadgets_barcode_scanner_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_computergadgets_barcode_scanner_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_computergadgets_barcode_scanner_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_computergadgets_barcode_scanner_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_computergadgets_barcode_scanner_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_computergadgets_barcode_scanner_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_gear_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_gear_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_gear_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_gear_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_gear_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_gear_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_home_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_home_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_home_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_home_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_home_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_home_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_world_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_world_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_world_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_world_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_world_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_general_world_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_barcode_scanner_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_barcode_scanner_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_barcode_scanner_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_barcode_scanner_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_barcode_scanner_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_barcode_scanner_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_checkout_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_checkout_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_checkout_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_checkout_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_checkout_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_checkout_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_christmas_shopping_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_christmas_shopping_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_christmas_shopping_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_christmas_shopping_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_christmas_shopping_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_christmas_shopping_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_clothing_store_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_clothing_store_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_clothing_store_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_clothing_store_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_clothing_store_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_clothing_store_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_customers_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_customers_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_customers_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_customers_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_customers_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_customers_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_departmental_store_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_departmental_store_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_departmental_store_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_departmental_store_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_departmental_store_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_departmental_store_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_kiosk_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_kiosk_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_kiosk_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_kiosk_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_kiosk_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_kiosk_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_product_display_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_product_display_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_product_display_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_product_display_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_product_display_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_product_display_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_wholesale_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_wholesale_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_wholesale_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_wholesale_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_wholesale_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_shopping_wholesale_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_transportation_laden_pickup_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_transportation_laden_pickup_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_transportation_laden_pickup_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_transportation_laden_pickup_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_transportation_laden_pickup_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\brilliant_transportation_laden_pickup_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_market_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_market_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_market_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_market_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_market_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_market_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_report_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_report_16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_report_24.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_report_256.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_report_32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\icons\diamond_business_report_48.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\inventory.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\kiosk.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\pos.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\pos_.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\pos_1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\images\sales.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\inventorymanagement.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\menu.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\sales.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Kiosk\skus.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\sql_commands.html">

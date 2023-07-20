@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Data;
 using System.Collections.Concurrent;
 using DocumentFormat.OpenXml.Spreadsheet;
+using AngelDB;
 
 namespace AngelSQLServer
 {
@@ -13,13 +14,11 @@ namespace AngelSQLServer
         private readonly AngelDB.DB _mainDb;
         private readonly ConnectionMappingService _connectionMappingService;
         private Dictionary<string, string> parameters;
-        ConcurrentDictionary<string, AngelDB.DB> _db_hub_connections;
 
-        public AngelSQLServerHub(AngelDB.DB mainDb, ConnectionMappingService connectionMappingService, ConcurrentDictionary<string, AngelDB.DB> db_hub_connections)
+        public AngelSQLServerHub(AngelDB.DB mainDb, ConnectionMappingService connectionMappingService)
         {
             _mainDb = mainDb;
             _connectionMappingService = connectionMappingService;
-            _db_hub_connections = db_hub_connections;
 
             this.parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(Environment.GetEnvironmentVariable("ANGELSQL_PARAMETERS"));
         }
@@ -36,12 +35,7 @@ namespace AngelSQLServer
                     {
                         if (_connectionMappingService.connections.ContainsKey(hubMessage.ToUser)) 
                         {
-                            hubMessage.status = "it_was_read";
-                            hubMessage.message = "";
-                            await Clients.Client(_connectionMappingService.connections[hubMessage.ToUser]).SendAsync("Send", JsonConvert.SerializeObject(hubMessage));
-
-                            _db_hub_connections[hubMessage.ToUser].Prompt($"UPDATE hub_messages SET was_read = '{hubMessage.was_read}', status = 'it_was_read' WHERE id = '{hubMessage.id}'", true );
-
+                            await SendMessage(Context.ConnectionId, hubMessage.ToUser, "", "it_was_read", "it_was_read");
                             return;
                         }
                     }
@@ -52,25 +46,20 @@ namespace AngelSQLServer
                     }
                     else                     
                     {
-                        HubMessage response = new HubMessage();
-                        response.id = hubMessage.id;
-                        response.messageType = "chat";
-                        await Clients.Client(Context.ConnectionId).SendAsync("Send", $"Error: SendAsync to : {hubMessage.ToUser}: user not conected");
+                        await SendMessage(Context.ConnectionId, hubMessage.ToUser, "", "Error", $"Error: SendAsync to : {hubMessage.ToUser}: user not conected");
                         return;
                     }
 
-                    _db_hub_connections[hubMessage.UserId].Prompt($"UPSERT INTO hub_messages VALUES {JsonConvert.SerializeObject(hubMessage)}", true);
-
                 }
-                catch (Exception e)
+                catch (Exception e)                
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("Send", $"Error: SendAsync to : {hubMessage.ToUser}: {e}");
+                    await SendMessage(Context.ConnectionId, hubMessage.ToUser, "", "Error", $"Error: SendAsync to : {hubMessage.ToUser}: {e}");
                 }
 
             }
             catch (Exception e)
             {
-                await Clients.Client(Context.ConnectionId).SendAsync("Send", $"Error: SendAsync: {e}");
+                await SendMessage(Context.ConnectionId, "", "", "Error", $"Error: SendAsync: {e}");
             }
         }
 
@@ -92,13 +81,13 @@ namespace AngelSQLServer
 
                 if (result.StartsWith("Error:"))
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("Send", $"Error: Identify: {result}");
+                    await SendMessage(Context.ConnectionId, hubIdentify.UserId, "", "Identify", $"Error: Identify: {result}");
                     return;
                 }
 
                 if (result == "[]")
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("Send", $"Error: Identify: User not found {hubIdentify.UserId}");
+                    await SendMessage(Context.ConnectionId, hubIdentify.UserId, "", "Identify", $"Error: Identify: User not found {hubIdentify.UserId}");
                     return;
                 }
 
@@ -106,36 +95,20 @@ namespace AngelSQLServer
 
                 if (dataTable.Rows[0]["password"].ToString().Trim() != hubIdentify.Password.Trim())
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("Send", $"Error: Identify: Password not match {hubIdentify.UserId}");
+                    await SendMessage(Context.ConnectionId, hubIdentify.UserId, "", "Identify", $"Error: Identify: Password not match {hubIdentify.UserId}");
                     return;
                 }
 
                 if (dataTable.Rows[0]["active"].ToString().Trim() != "1")
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("Send", $"Error: Identify: Your username is not active  {hubIdentify.UserId}");
+                    await SendMessage(Context.ConnectionId, hubIdentify.UserId, "", "Identify", $"Error: Identify: Your username is not active  {hubIdentify.UserId}");
                     return;
                 }
 
                 _connectionMappingService.RemoveConnection(hubIdentify.UserId);
                 _connectionMappingService.AddConnection(hubIdentify.UserId, Context.ConnectionId);
 
-                HubMessage hubMessage = new HubMessage();
-                hubMessage.id = Guid.NewGuid().ToString();
-                hubMessage.UserId = hubIdentify.UserId;
-                hubMessage.message = "Accepted credentials";
-
-                if (!_db_hub_connections.ContainsKey(hubMessage.UserId)) 
-                {
-                    AngelDB.DB db = new AngelDB.DB();
-                    db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
-                    db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
-                    db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
-                    db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
-                    db.Prompt($"USE DATABASE {parameters["database"]}", true);
-                    _db_hub_connections.TryAdd(hubMessage.UserId, db);
-                }
-
-                await Clients.Client(Context.ConnectionId).SendAsync("Send", JsonConvert.SerializeObject(hubMessage, Formatting.Indented));
+                await SendMessage(Context.ConnectionId, hubIdentify.UserId, "", "Identify", "Accepted credentials");
 
             }
             catch (Exception e)
@@ -144,6 +117,20 @@ namespace AngelSQLServer
                 return;
             }
 
+        }
+
+
+        public async Task SendMessage(string connectionId, string userid, string toUser, string message_type, string message) 
+        {
+            HubMessage hubMessage;
+            hubMessage = new HubMessage();
+            hubMessage.id = Guid.NewGuid().ToString();
+            hubMessage.created = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fff");
+            hubMessage.UserId = userid;
+            hubMessage.ToUser = toUser;
+            hubMessage.message = message;
+            hubMessage.messageType = message_type;
+            await Clients.Client(connectionId).SendAsync("Send", JsonConvert.SerializeObject(hubMessage, Formatting.Indented));
         }
 
 

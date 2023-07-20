@@ -18,7 +18,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using System.Security.Policy;
 using System.Data.SqlClient;
 using Microsoft.AspNetCore.SignalR.Client;
-
+using DocumentFormat.OpenXml.Presentation;
 
 namespace AngelDB
 {
@@ -748,6 +748,8 @@ namespace AngelDB
                         break;
                     case "gpt":
                         break;
+                    case "post_api":
+                        break;
                     case "post":
                         break;
                     case "hub":
@@ -1288,11 +1290,11 @@ namespace AngelDB
                     result = Sync.SyncNow(d, this);
                     break;
 
-                case "compile":
+                //case "compile":
 
-                    if (d["assembly_name"] == "null") d["assembly_name"] = "";
-                    result = script.CompileFileForBlazor(d["compile"], this, d["assembly_name"]);
-                    break;
+                //    if (d["assembly_name"] == "null") d["assembly_name"] = "";
+                //    result = script.CompileFileForBlazor(d["compile"], this, d["assembly_name"]);
+                //    break;
 
                 case "read_excel":
 
@@ -1397,11 +1399,15 @@ namespace AngelDB
                     result = this.GPT.ProcessCommand(d["gpt"]);
                     break;
 
-
                 case "post":
+                    
+                    result = WebTools.SendJsonToUrl(d["post"], d["message"]);
+                    break;  
+
+                case "post_api":
 
                     AngelDB.AngelPOST api = new AngelDB.AngelPOST();
-                    api.api = d["api"];
+                    api.api = d["post_api"];
                     api.message = d["message"];
                     api.language = d["language"];
 
@@ -1412,7 +1418,8 @@ namespace AngelDB
 
                     api.account = d["account"];
 
-                    result = WebTools.SendJsonToUrl(d["post"], JsonConvert.SerializeObject(api));
+                    Console.WriteLine("POST: " + JsonConvert.SerializeObject(api, Formatting.Indented));
+                    result = WebTools.SendJsonToUrl(d["post"], JsonConvert.SerializeObject(api, Formatting.Indented));
                     break;
 
 
@@ -3004,10 +3011,6 @@ namespace AngelDB
         {
             return JsonConvert.DeserializeObject(jSon);
         }
-
-
-
-
 
 
         // // TODO: reemplazar el finalizador solo si "Dispose(bool disposing)" tiene código para liberar los recursos no administrados

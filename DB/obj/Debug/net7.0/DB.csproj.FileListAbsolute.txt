@@ -1212,8 +1212,6 @@ C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\encodings\uu_codec.py
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\encodings\zlib_codec.py
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\ensurepip\__init__.py
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\ensurepip\__main__.py
-C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\ensurepip\_bundled\pip-9.0.1-py2.py3-none-any.whl
-C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\ensurepip\_bundled\setuptools-28.8.0-py2.py3-none-any.whl
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\ensurepip\_uninstall.py
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\enum.py
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\filecmp.py
@@ -1700,3 +1698,7 @@ C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\refint\DB.dll
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.pdb
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.genruntimeconfig.cache
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\ref\DB.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\clrtype.py
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\ensurepip\_bundled\pip-18.1-py2.py3-none-any.whl
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\ensurepip\_bundled\setuptools-40.6.2-py2.py3-none-any.whl
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\lib\typing.py

@@ -57,7 +57,6 @@ namespace AngelDB
             mem_db.SQLExec("CREATE TABLE IF NOT EXISTS chats (id INTEGER PRIMARY KEY AUTOINCREMENT, id_chat TEXT, from_user TEXT, to_user TEXT, message TEXT, created TEXT, was_read TEXT, status TEXT)");
             mem_db.SQLExec("CREATE UNIQUE INDEX IF NOT EXISTS index_id ON chats (id_chat)");
             mem_db.SQLExec("CREATE UNIQUE INDEX IF NOT EXISTS index_id ON chats (created)");
-
             OnMessageReceived += ReceiveData;
 
         }
@@ -167,37 +166,7 @@ namespace AngelDB
             try
             {
 
-                if (message.StartsWith("Error:"))
-                {
-                    Console.WriteLine();
-                    Console.WriteLine(message);
-                    Console.WriteLine();
-                    return;
-                }
-
                 HUbMessage hUbMessage = JsonConvert.DeserializeObject<HUbMessage>(message);
-
-                if (hUbMessage.message == "Accepted credentials")
-                {
-                    this.main_user = hUbMessage.UserId;
-                    Console.WriteLine(message);
-                    return;
-                }
-
-                string result = main_db.Prompt($"SCRIPT FILE scripts/chat.csx ON APPLICATION DIRECTORY MESSAGE {message}");
-
-                if (result.StartsWith("Error:"))
-                {
-                    Console.WriteLine(result); return;
-                }
-
-                if (result == "Ok.")
-                {
-                    return;
-                }
-
-                // CREATE TABLE IF NOT EXISTS chats (id  id_chat TEXT, from_user TEXT, to_user TEXT, message TEXT, created TEXT, was_read TEXT, status TEXT)");
-
 
                 mem_db.Reset();
                 mem_db.CreateInsert("chats");
@@ -210,9 +179,26 @@ namespace AngelDB
                 mem_db.AddField("status", hUbMessage.status);
                 string result_query = mem_db.Exec();
 
-                if( result_query.StartsWith("Error:"))
+                string result = main_db.Prompt($"SCRIPT FILE scripts/chat/chat.csx ON APPLICATION DIRECTORY MESSAGE {message}");
+
+                if (result.StartsWith("Error:"))
                 {
-                    Console.WriteLine(result_query); 
+                    mem_db.Reset();
+                    mem_db.CreateInsert("chats");
+                    mem_db.AddField("id_chat", System.Guid.NewGuid().ToString());
+                    mem_db.AddField("from_user", "");
+                    mem_db.AddField("to_user", "");
+                    mem_db.AddField("message", result);
+                    mem_db.AddField("created", DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                    mem_db.AddField("was_read", "");
+                    mem_db.AddField("status", "Error");
+                    result_query = mem_db.Exec();
+                    return;
+                }
+
+                if (result == "Ok.")
+                {
+                    return;
                 }
 
                 await hub.SendAsync("SendAsync", result);
@@ -220,7 +206,16 @@ namespace AngelDB
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error: ReceiveData {e}" );
+                mem_db.Reset();
+                mem_db.CreateInsert("chats");
+                mem_db.AddField("id_chat", System.Guid.NewGuid().ToString());
+                mem_db.AddField("from_user", "");
+                mem_db.AddField("to_user", "");
+                mem_db.AddField("message", $"Error: ReceiveData {e}");
+                mem_db.AddField("created", DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                mem_db.AddField("was_read", "");
+                mem_db.AddField("status", "Error");
+                string result_query = mem_db.Exec();
             }
         }
 

@@ -112,7 +112,8 @@ namespace AngelDB {
                 { @"STATISTICS", @"STATISTICS#free" },
                 { @"MYBUSINESS POS", @"MYBUSINESS POS#free" },
                 { @"GPT", @"GPT#free" },
-                { @"POST", @"POST#free;ACCOUNT#freeoptional;API#free;LANGUAGE#freeoptional;MESSAGE#free" },
+                { @"POST API", @"POST API#free;ACCOUNT#freeoptional;API#free;LANGUAGE#freeoptional;MESSAGE#free" },
+                { @"POST", @"POST#free;MESSAGE#free" },
                 { @"LOCK TABLE", @"LOCK TABLE#free;PARTITION KEY#freeoptional" },
                 { @"UNLOCK TABLE", @"UNLOCK TABLE#free;PARTITION KEY#freeoptional" },
 
