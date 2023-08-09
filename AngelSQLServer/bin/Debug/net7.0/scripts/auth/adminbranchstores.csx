@@ -235,19 +235,9 @@ public static class AdminBranchStores
 
         var d = api.DataMessage;
 
-        if (string.IsNullOrEmpty(d.RetypePassword.ToString()))
-        {
-            return "Error: No RetypePassword found";
-        }
-
         if (string.IsNullOrEmpty(d.Password.ToString()))
         {
             return "Error: No password found";
-        }
-
-        if (d.Password.ToString().Trim() != d.Password.ToString().Trim())
-        {
-            return "Error: Passwords do not match";
         }
 
         string db_account = db.Prompt("VAR db_account");
@@ -456,10 +446,8 @@ public static class AdminBranchStores
             return result;
         }
 
-        var d = api.DataMessage;
-
         // Permissions using Token
-        var d13 = new
+        var d = new
         {
             api = "tokens/admintokens",
             account = db_account,
@@ -475,7 +463,7 @@ public static class AdminBranchStores
             }
         };
 
-        result = db.Prompt($"POST {servers["tokens_url"]} MESSAGE {JsonConvert.SerializeObject(d13, Formatting.Indented)}");
+        result = db.Prompt($"POST {servers["tokens_url"]} MESSAGE {JsonConvert.SerializeObject(d, Formatting.Indented)}");
         AngelDB.AngelResponce responce = JsonConvert.DeserializeObject<AngelDB.AngelResponce>(result);
 
         if (result.StartsWith("Error:"))

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Branch Stores</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/responsive.dataTables.css">
+    <script src="./js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+    <script src="./js/dataTables.responsive.min.js"></script>
+
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
+
+    <script src="./js/scripts.js"></script>
+
+    <script>
+        const Token = sessionStorage.getItem("Token");
+
+        if (Token == null) {
+            window.location.href = "index.html";
+        }
+
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row" style="margin-top: 10px;">
+            <a class="btn btn-primary btn-block" href="index.html" style="width: 50%;">
+                <span style="float: left;">
+                    <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px;">
+                </span>
+                Log Out
+            </a>
+
+            <a class="btn btn-secondary btn-block" href="menu.html" style="width: 50%;">
+                <span style="float: left;">
+                    <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px;">
+                </span>
+                Menu
+            </a>
+
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="row">
+                <a href="#">
+                    <span style="float: left;">
+                        <img src="images/icons/brilliant_shopping_fish_shop_128.png" alt="logo" class="logo"
+                            style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
+                    </span>
+                    <h2>Branch Stores</h2>
+                </a>
+            </div>
+
+            <br />
+
+            <div class="row" style="margin-bottom: 10px;">
+                <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
+                    onclick="showBranchStoreDialog('', true)" style="margin-bottom: 20px;">
+                    New Branch Store (F2)
+                </button>
+
+                <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
+                    onclick="getBranchStores()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    Refresh (F4)
+                </button>
+            </div>
+
+
+
+            <br />
+
+            <table id="dataTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Branch Store</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>Authorizer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <script>
+
+                var tabla;
+
+                $(document).ready(function () {
+                    var datos = [];
+
+                    tabla = $('#dataTable').DataTable({
+                        responsive: true,
+                        data: datos,
+                        bFilter: true,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'print'
+                        ],
+                        columns: [
+                            {
+                                // Columna de botón
+                                data: null,
+                                render: function (data, type, row) {
+                                    return '<button class="btn btn-primary">+</button>';
+                                }
+                            },
+                            { data: 'id' },
+                            { data: 'name' },
+                            { data: 'address' },
+                            { data: 'phone' },
+                            { data: 'authorizer' },
+                        ]
+                    });
+
+                    $('#dataTable').on('click', 'td:first-child', function () {
+                        var datosFila = tabla.row($(this).parents('tr')).data();
+                        showBranchStoreDialog(datosFila);
+                        // Aquí se ejecuta el código al hacer doble clic en la columna de botón
+                    });
+
+                });
+            </script>
+
+        </div>
+
+
+    </div>
+
+    <dialog id="myDialog" class="dialog-box">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton" onclick="closeDialog()">Close</button>
+    </dialog>
+
+
+    <dialog id="DialogAcceptCancel" class="dialog-box">
+
+        <h1 id="dialogTittleAcceptCancel">Title</h1>
+        <p id="dialogMessageAcceptCancel">Message</p>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <button id="accept" onclick="closeDialogAcceptCancelDialog()" class="btn btn-danger"
+                    style="width: 100%;">Accept</button>
+            </div>
+
+            <div class="col-sm-6">
+                <button id="cancel" onclick="closeDialogAcceptCancelDialog()" class="btn btn-primary"
+                    style="width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+
+    <dialog id="branch_store_dialog" style="width: 90%;">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="form-group">
+                    <label for="id">Branch Store</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" class="form-control" id="address" name="address">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="authorizer">Authorizer</label>
+                    <select class="form-select" aria-label="Default select example" id="authorizer" name="authorizer">
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary" "
+                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveBranchStore()">
+                        Save
+                    </button>
+                </div>
+
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-danger"
+                        style="text-align: right; margin-top: 20px; width: 100%;"
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Branch Store?', 'DeleteBranchStore')">
+                        Delete
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <button id="closeSkuEdit" class="btn btn-secondary"
+                        style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeBranchStoreDialog()"
+                        style="text-align: right;">
+                        Close
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </dialog>
+
+    <script>
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+
+        function showAcceptCancelDialog(title, message, operation) {
+            document.getElementById('dialogTittleAcceptCancel').innerText = title;
+            document.getElementById('dialogMessageAcceptCancel').innerText = message;
+            document.getElementById('DialogAcceptCancel').showModal();
+            document.getElementById('cancel').focus();
+
+            var accept = document.getElementById('accept');
+            accept.focus();
+
+            accept.addEventListener("click", () => {
+
+                console.log( "operation: " + operation )  
+
+                if( operation )
+                {
+                    if( operation == "DeleteBranchStore" )
+                    {
+                        DeleteBranchStore();
+                    }
+                };
+            });
+
+        }
+
+
+        function DeleteBranchStore() 
+        {
+            var id = document.getElementById('id').value;
+            var data_result = sendToAngelPOST("auth/adminbranchstores", "DeleteBranchStore", Token, { id: id });
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Attention", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                if (responce_query.result == "Ok.") {
+                    showDialog("Attention", "Branch Store " + id + " deleted successfully");
+                    closeAuthorizerDialog();
+                    getAuthorizers();
+                    return;
+                }
+
+                showDialog("Attention", "Branch Store " + id + " not deleted");
+            });            
+        }
+
+
+        function closeDialogAcceptCancelDialog() {
+            document.getElementById('DialogAcceptCancel').close();
+        }
+
+
+        function showBranchStoreDialog(branch_store_data, new_branch_store = false) {
+
+            let select = document.getElementById('authorizer');
+
+            while (select.options.length > 0) {
+                select.remove(0);
+            }
+
+            let blanck_option = document.createElement('option');
+            blanck_option.value = "";
+            blanck_option.text = "";
+            select.appendChild(blanck_option);
+
+            var authorizers = sendToAngelPOST("auth/adminbranchstores", "GetAuthorizers", Token, {});
+
+            authorizers.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                let authorizers = JSON.parse(responce_query.result);
+                let select = document.getElementById('authorizer');
+
+                for (let i = 0; i < authorizers.length; i++) {
+                    let option = document.createElement('option');
+                    option.value = authorizers[i].id;
+                    option.text = authorizers[i].name;
+                    select.appendChild(option);
+                }
+            });
+
+            if (new_branch_store) {
+                var dialog = document.getElementById("branch_store_dialog");
+                dialog.showModal();
+
+                document.getElementById('id').value = "";
+                document.getElementById('name').value = "";
+                document.getElementById('address').value = "";
+                document.getElementById('phone').value = "";
+                document.getElementById('authorizer').value = "";
+                return;
+            }
+
+            var data_result = sendToAngelPOST("auth/adminbranchstores", "GetBranchStore", Token, { id: branch_store_data.id });
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                let branch_store = JSON.parse(responce_query.result);
+
+                var dialog = document.getElementById("branch_store_dialog");
+                dialog.showModal();
+
+                let id = document.getElementById('id');
+                id.readOnly = true;
+
+                console.log(branch_store);
+
+                document.getElementById('id').value = branch_store.id;
+                document.getElementById('name').value = branch_store.name;
+                document.getElementById('address').value = branch_store.address;
+                document.getElementById('phone').value = branch_store.phone;
+
+                console.log(branch_store.authorizer);
+
+                if (branch_store.autohrizer == null) {
+                    branch_store.autohrizer = "";
+                }
+
+                document.getElementById('authorizer').value = branch_store.authorizer;
+
+                let description = document.getElementById('name');
+                description.focus();
+
+            });
+
+        }
+
+        function closeBranchStoreDialog() {
+            var dialog = document.getElementById("branch_store_dialog");
+            dialog.close();
+        }
+
+        function SaveBranchStore() {
+            let branch_store = {};
+
+            branch_store.id = document.getElementById('id').value;
+            branch_store.name = document.getElementById('name').value;
+            branch_store.address = document.getElementById('address').value;
+            branch_store.phone = document.getElementById('phone').value;
+            branch_store.authorizer = document.getElementById('authorizer').value;
+
+            var data_result = sendToAngelPOST("auth/adminbranchstores", "UpsertBranchStores", Token, branch_store);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Error:", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                getBranchStores();
+                showDialog("Success:", "Branch Store Saved");
+
+            });
+
+
+        }
+
+        function getBranchStores() {
+
+            var datos = sendToAngelPOST("auth/adminbranchstores", "GetBranchStores", Token, {});
+
+            datos.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                tabla.clear().rows.add(JSON.parse(responce_query.result)).draw(); // Borramos los datos antiguos, añadimos los nuevos y redibujamos la tabla
+            });
+
+        }
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F2") {
+                showBranchStoreDialog('', true);
+            }
+
+            if (event.key === "F4") {
+                getBranchStores();
+            }
+
+
+        });
+
+        getBranchStores();
+
+        document.getElementById("name").focus();
+
+    </script>
+
+    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

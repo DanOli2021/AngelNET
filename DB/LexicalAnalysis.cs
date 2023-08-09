@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Data;
 using System.IO;
 using System.Security;
-
+using AngelDBTools;
 
 namespace AngelDB {
 
@@ -291,9 +291,10 @@ namespace AngelDB {
                 {
                     string result = values[i].Trim().Replace("'''", "");
 
-                    if (result.StartsWith("&"))
+                    if (result.StartsWith("&("))
                     {
-                        command_dictionary.Add(keys[i - 1], db.Prompt( result.Substring(1) ));
+                        result = StringFunctions.ExtractContentInFirstParentheses(result.Substring(1));
+                        command_dictionary.Add(keys[i - 1], db.Prompt( result ));
                     }
                     else 
                     {
@@ -519,7 +520,4 @@ namespace AngelDB {
         }
 
     }
-
-
-
 }

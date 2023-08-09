@@ -101,7 +101,7 @@ namespace AngelDB
 
             if (result != "Ok.")
             {
-                return "Error: creating table  " + result;
+                return $"Error: creating table  ({$"CREATE TABLE IF NOT EXISTS {d["create_table"]} ( PartitionKey, id, timestamp, {d["field_list"]}, PRIMARY KEY ( PartitionKey, id ) )"})" + result;
             }
 
             result = sqlite.SQLExec($"CREATE INDEX IF NOT EXISTS {d["create_table"]}_timestamp ON {d["create_table"]} (timestamp)");

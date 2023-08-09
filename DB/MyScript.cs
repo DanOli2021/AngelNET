@@ -80,7 +80,7 @@ namespace AngelDB
 
         }
 
-        public string EvalFile(Dictionary<string, string> d, AngelDB.DB db, DB main_db = null)
+        public string EvalFile(Dictionary<string, string> d, AngelDB.DB db, DB operational_db = null)
         {
 
             FileInfo fileInfo = null;
@@ -121,11 +121,11 @@ namespace AngelDB
                 }
 
                 Globals g = new Globals();
-                g.main_db = db;
+                g.server_db = db;
 
-                if (main_db is not null)
+                if (operational_db is not null)
                 {
-                    g.db = main_db;
+                    g.db = operational_db;
                 }
                 else 
                 {
@@ -469,7 +469,7 @@ namespace AngelDB
 public class Globals
 {
     public AngelDB.DB db;
-    public AngelDB.DB main_db;
+    public AngelDB.DB server_db;
     public string return_result = "";
     public string data = "";
     public string message = "";

@@ -1185,6 +1185,14 @@
       "PackagePath": "staticwebassets\\css\\styles.css"
     },
     {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\images\\37ce3634-abae-4389-a72f-d44edd334548.png",
+      "PackagePath": "staticwebassets\\images\\37ce3634-abae-4389-a72f-d44edd334548.png"
+    },
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\images\\42ed4240-87bc-4a49-b27a-47ba0035fbd4.png",
+      "PackagePath": "staticwebassets\\images\\42ed4240-87bc-4a49-b27a-47ba0035fbd4.png"
+    },
+    {
       "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\images\\AngelSQL.png",
       "PackagePath": "staticwebassets\\images\\AngelSQL.png"
     },

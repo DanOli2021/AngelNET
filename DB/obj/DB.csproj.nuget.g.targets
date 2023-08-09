@@ -4,7 +4,6 @@
     <Import Project="$(NuGetPackageRoot)system.text.json\7.0.2\buildTransitive\net6.0\System.Text.Json.targets" Condition="Exists('$(NuGetPackageRoot)system.text.json\7.0.2\buildTransitive\net6.0\System.Text.Json.targets')" />
     <Import Project="$(NuGetPackageRoot)entityframework\6.4.4\buildTransitive\netcoreapp3.0\EntityFramework.targets" Condition="Exists('$(NuGetPackageRoot)entityframework\6.4.4\buildTransitive\netcoreapp3.0\EntityFramework.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.extensions.logging.abstractions\7.0.1\buildTransitive\net6.0\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.logging.abstractions\7.0.1\buildTransitive\net6.0\Microsoft.Extensions.Logging.Abstractions.targets')" />
-    <Import Project="$(NuGetPackageRoot)mono.unix\7.1.0-final.1.21458.1\build\Mono.Unix.targets" Condition="Exists('$(NuGetPackageRoot)mono.unix\7.1.0-final.1.21458.1\build\Mono.Unix.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.analyzers\3.3.4\buildTransitive\Microsoft.CodeAnalysis.Analyzers.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.analyzers\3.3.4\buildTransitive\Microsoft.CodeAnalysis.Analyzers.targets')" />
   </ImportGroup>
 </Project>

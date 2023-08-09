@@ -12,6 +12,8 @@ using System.Linq;
 using DocumentFormat.OpenXml.Math;
 using CsvHelper.Configuration;
 using CsvHelper;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace AngelDBTools
 {
@@ -248,7 +250,7 @@ namespace AngelDBTools
         public static bool IsFloatNumber(char c)
         {
 
-            if ( (c >= '0' && c <= '9') || c == '.' || c == '-')
+            if ((c >= '0' && c <= '9') || c == '.' || c == '-')
             {
                 return true;
             }
@@ -410,17 +412,17 @@ namespace AngelDBTools
         public static void ToCSV(this DataTable dtDataTable, string strFilePath, string delimiter = "\"")
         {
 
-            if (dtDataTable is null) 
+            if (dtDataTable is null)
             {
                 return;
             }
 
-            if( delimiter == "null" ) 
+            if (delimiter == "null")
             {
                 delimiter = "\"";
             }
 
-            StreamWriter sw = new StreamWriter(strFilePath, false, encoding:System.Text.Encoding.UTF8);
+            StreamWriter sw = new StreamWriter(strFilePath, false, encoding: System.Text.Encoding.UTF8);
             //headers    
             for (int i = 0; i < dtDataTable.Columns.Count; i++)
             {
@@ -482,33 +484,33 @@ namespace AngelDBTools
             int n = 0;
             Dictionary<string, int> d = new Dictionary<string, int>();
 
-            foreach(DataRow r in dtDataTable.Rows) 
+            foreach (DataRow r in dtDataTable.Rows)
             {
                 ++n;
 
                 foreach (DataColumn c in dtDataTable.Columns)
                 {
-                    if (!d.ContainsKey(c.ColumnName)) 
+                    if (!d.ContainsKey(c.ColumnName))
                     {
                         if (r[c.ColumnName].GetType() == typeof(string))
                         {
                             d.Add(c.ColumnName, c.ColumnName.Length + 2);
                         }
-                        else 
+                        else
                         {
                             d.Add(c.ColumnName, c.ColumnName.Length);
                         }
-                        
+
                     }
 
-                    if (r[c.ColumnName].ToString().Length > d[c.ColumnName]) 
+                    if (r[c.ColumnName].ToString().Length > d[c.ColumnName])
                     {
                         d[c.ColumnName] = r[c.ColumnName].ToString().Length;
                     }
 
                 }
 
-                if (n == 20) 
+                if (n == 20)
                 {
                     break;
                 }
@@ -588,7 +590,7 @@ namespace AngelDBTools
         {
             try
             {
-                File.WriteAllText(file_name, CryptoString.Encrypt(JsonSerializer.Serialize(ToSave), "hbjklios", "iuybncsa"));
+                File.WriteAllText(file_name, CryptoString.Encrypt(System.Text.Json.JsonSerializer.Serialize(ToSave), "hbjklios", "iuybncsa"));
                 return "Ok.";
             }
             catch (Exception e)
@@ -597,11 +599,11 @@ namespace AngelDBTools
             }
         }
 
-        public static MyEnvironment RestoreEncriptedConfig(string file_name) 
+        public static MyEnvironment RestoreEncriptedConfig(string file_name)
         {
             try
             {
-                return JsonSerializer.Deserialize<MyEnvironment>(CryptoString.Decrypt(File.ReadAllText(file_name), "hbjklios", "iuybncsa"));
+                return System.Text.Json.JsonSerializer.Deserialize<MyEnvironment>(CryptoString.Decrypt(File.ReadAllText(file_name), "hbjklios", "iuybncsa"));
             }
             catch (Exception)
             {
@@ -609,20 +611,20 @@ namespace AngelDBTools
             }
         }
 
-        public static string FormatStringFromPatter(string data, string pattern, bool AcceptEmpty,  Dictionary<string, string> d) 
+        public static string FormatStringFromPatter(string data, string pattern, bool AcceptEmpty, Dictionary<string, string> d)
         {
 
             data += " ";
 
-            while ( true )
+            while (true)
             {
                 int pos = data.IndexOf(pattern, StringComparison.Ordinal);
                 if (pos < 0) break;
 
                 string search_pattern = "";
 
-                for (int n = (pos + 1); n < data.Length; ++n) 
-                { 
+                for (int n = (pos + 1); n < data.Length; ++n)
+                {
                     string char_key = data.Substring(n, 1);
 
                     if (char_key == " ")
@@ -637,7 +639,7 @@ namespace AngelDBTools
                         search_pattern = "";
 
                     }
-                    else 
+                    else
                     {
                         search_pattern += char_key;
                     }
@@ -858,7 +860,7 @@ namespace AngelDBTools
         }
 
 
-        public static string ReadCSV(string file, bool first_as_header, string value_separator = ",", string columns_as_number = "" ) 
+        public static string ReadCSV(string file, bool first_as_header, string value_separator = ",", string columns_as_number = "")
         {
             try
             {
@@ -869,7 +871,7 @@ namespace AngelDBTools
                 var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
                     HasHeaderRecord = first_as_header,
-                    Delimiter = value_separator,                    
+                    Delimiter = value_separator,
                 };
 
                 DataTable dt = null;
@@ -887,10 +889,10 @@ namespace AngelDBTools
 
                         foreach (string s in columns_as_number_array)
                         {
-                            if (!string.IsNullOrEmpty(s)) 
+                            if (!string.IsNullOrEmpty(s))
                             {
                                 dt.Columns.Add(s, typeof(decimal));
-                            }                            
+                            }
                         }
 
                         dt.Load(dr);
@@ -906,9 +908,81 @@ namespace AngelDBTools
             }
         }
 
-        
+        static public string ConvertStringToDbColumn(string input)
+        {
+            string normalized = input.Normalize(NormalizationForm.FormD);
+            StringBuilder stringBuilder = new StringBuilder();
+
+            foreach (var c in normalized)
+            {
+                UnicodeCategory unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    // Verifica y convierte caracteres especiales a '_'
+                    if (Char.IsLetterOrDigit(c) || c == '_')
+                    {
+                        stringBuilder.Append(c);
+                    }
+                    else
+                    {
+                        stringBuilder.Append('_');
+                    }
+                }
+            }
+
+            string noAccent = stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+            string validDbColumnName = noAccent.Replace(' ', '_').ToLower();
+
+            return validDbColumnName;
+        }
+
+
+        public static string ExtractContentInFirstParentheses(string input)
+        {
+            // La expresión regular busca cualquier cosa entre el primer par de paréntesis
+            var regex = new Regex(@"\(([^)]*)\)");
+            var match = regex.Match(input);
+
+            // Si encontramos un match, lo devolvemos. Si no, devolvemos null
+            return match.Success ? match.Groups[1].Value : null;
+        }
+
+        public static string ConvertJsonToHtmlTable(string json)
+        {
+            // Deserializar el JSON a un DataTable
+            DataTable dt = JsonConvert.DeserializeObject<DataTable>(json);
+
+            StringBuilder htmlTable = new StringBuilder();
+            htmlTable.AppendLine("<table>");
+
+            // Encabezados de la tabla
+            htmlTable.AppendLine("<tr>");
+            foreach (DataColumn column in dt.Columns)
+            {
+                htmlTable.AppendLine($"<th>{column.ColumnName}</th>");
+            }
+            htmlTable.AppendLine("</tr>");
+
+            // Filas de la tabla
+            foreach (DataRow row in dt.Rows)
+            {
+                htmlTable.AppendLine("<tr>");
+                foreach (DataColumn column in dt.Columns)
+                {
+                    htmlTable.AppendLine($"<td>{row[column].ToString()}</td>");
+                }
+                htmlTable.AppendLine("</tr>");
+            }
+
+            htmlTable.AppendLine("</table>");
+
+            return htmlTable.ToString();
+        }
 
 
     }
+
+
 
 }

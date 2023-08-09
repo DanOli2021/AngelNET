@@ -9,16 +9,10 @@ using System.Text;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Concurrent;
-using DocumentFormat.OpenXml.Spreadsheet;
-using System.Linq.Expressions;
-using DocumentFormat.OpenXml.InkML;
 using System.Globalization;
 using AngelDBTools;
-using DocumentFormat.OpenXml.Wordprocessing;
-using System.Security.Policy;
 using System.Data.SqlClient;
-using Microsoft.AspNetCore.SignalR.Client;
-using DocumentFormat.OpenXml.Presentation;
+using Python.Runtime;
 
 namespace AngelDB
 {
@@ -128,7 +122,7 @@ namespace AngelDB
         public bool always_use_AngelSQL = false;
         public string ScriptMessage = "";
         public string ScriptCommandMessage = "";
-        public DateTime script_file_datetime;
+        public System.DateTime script_file_datetime;
         public string script_file;
 
         public delegate void SendMessage(string message, ref string result);
@@ -140,13 +134,14 @@ namespace AngelDB
         public MyScript script = new MyScript();
         private bool disposedValue1;
 
-        public PhytonScripts py;
-
         public bool CancelTransactions = false;
 
         public Dictionary<string, StatisticsAnalisis> statistics = new Dictionary<string, StatisticsAnalisis>();
-        public DataTable tTables = null;
-        public DataTable zTables = null;
+
+
+        // For Python.NET
+        private PythonScript pynet = null;
+
 
         //Chat GPT
         public AngelDB.OpenAIChatbot GPT = null;
@@ -162,14 +157,12 @@ namespace AngelDB
         public DB(string user, string password, string baseDirectory, bool path_validation = true)
         {
             language.db = this;
-            py = new PhytonScripts(this);
             _Error = StartDB(user, password, baseDirectory, path_validation);
         }
 
         public DB(string user, string password)
         {
             language.db = this;
-            py = new PhytonScripts(this);
             _Error = StartDB(user, password, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + os_directory_separator + "Data");
         }
 
@@ -177,7 +170,11 @@ namespace AngelDB
         {
             //
             language.db = this;
-            py = new PhytonScripts(this);
+        }
+
+        ~DB()
+        {
+            this.Dispose();
         }
 
         public string StartDB(string user, string password, string baseDirectory, bool path_validation = true)
@@ -573,7 +570,7 @@ namespace AngelDB
             return new DbLanguage();
         }
 
-        public string Prompt(string command, bool ThrowError = false, DB main_db = null)
+        public string Prompt(string command, bool ThrowError = false, DB operational_db = null)
         {
 
             string Command = command;
@@ -756,6 +753,10 @@ namespace AngelDB
                         break;
                     case "version":
                         break;
+                    case "help":
+                        break;
+                    case "python":
+                        break;
                     default:
                         return $"Error: You have not indicated your username and password";
                 }
@@ -814,9 +815,6 @@ namespace AngelDB
                     d["upsert"] = "true";
                     d.Add("insert_into", d["upsert_into"]);
                     result = Tables.InsertInto(d, this);
-                    break;
-                case "copy_to":
-                    result = this.Prompt($"PY FILE copy_table.csx DATA {JsonConvert.SerializeObject(d)}");
                     break;
                 //result = Tables.CopyTo( d, this );
                 case "update":
@@ -962,11 +960,6 @@ namespace AngelDB
 
                     break;
 
-                case "import_from":
-
-                    result = this.Prompt($"PY FILE import_from.py ON APPLICATION DIRECTORY DATA {JsonConvert.SerializeObject(d)}");
-                    break;
-
                 case "who_is":
 
                     result = "01001101 01101001 00100000 01110000 01100001 01110000 11100001 00100000 01100101 01110011 00100000 01000100 01100001 01101110 01101001 01100101 01101100 00100000 01001111 01101100 01101001 01110110 01100101 01110010 00100000 01010010 01101111 01101010 01100001 01110011 00101100 00100000 01111001 00100000 01101101 01101001 00100000 01101101 01100001 01101101 11100001 00100000 01100101 01110011 00100000 01010010 01101111 01110011 01100001 00100000 01001101 01100001 01110010 01101001 01100001 00100000 01010100 01110010 01100101 01110110 01101001 01101100 01101100 01100001 00100000 01000111 01100001 01110010 01100011 01101001 01100001 00101100 00100000 01101101 01101001 01110011 00100000 01101000 01100101 01110010 01101101 01100001 01101110 01101111 01110011 00100000 01110011 01101111 01101110 00100000 01001111 01101100 01101001 01110110 01100101 01110010 00100000 01000111 01110101 01101001 01101100 01101100 01100101 01110010 01101101 01101111 00100000 01010010 01101111 01101010 01100001 01110011 00100000 01010100 01110010 01100101 01110110 01101001 01101100 01101100 01100001 00100000 01100101 00100000 01001001 01100001 01101110 00100000 01010010 01100001 01111010 01101001 01100101 01101100 00100000 01010010 01101111 01101010 01100001 01110011 00100000 01010100 01110010 01100101 01110110 01101001 01101100 01101100 01100001";
@@ -1080,12 +1073,12 @@ namespace AngelDB
 
                 case "script_file":
 
-                    if (main_db == null)
+                    if (operational_db == null)
                     {
                         return script.EvalFile(d, this);
                     }
 
-                    return script.EvalFile(d, this, main_db);
+                    return script.EvalFile(d, this, operational_db);
 
                 case "set_script_message":
 
@@ -1224,23 +1217,6 @@ namespace AngelDB
 
                     return EnviromentTools();
 
-                case "server":
-
-                    if (this.Prompt("MY LEVEL") != "MASTER")
-                    {
-                        return "Error: You don't have enough permissions";
-                    }
-
-                    Server s = new Server(this);
-                    result = s.InitDataBase();
-
-                    if (result.StartsWith("Error:"))
-                    {
-                        return result;
-                    }
-
-                    return s.ServerCommand(d["server"]);
-
                 case "prompt":
 
                     result = Monitor.Prompt(d["prompt"]);
@@ -1328,46 +1304,6 @@ namespace AngelDB
                     result = Tables.UpdatePartitionTimeStamp(d, this);
                     break;
 
-                case "py":
-
-                    result = py.EvalDictionary(d);
-                    break;
-
-                case "pw":
-
-                    result = py.EvalDictionary(d);
-                    break;
-
-                case "py_file":
-
-                    if (py is null)
-                    {
-                        this.py = new PhytonScripts(this);
-                    }
-
-                    result = "" + py.EvalFile(d, this);
-                    break;
-
-                case "py_db":
-
-                    result = "" + py.EvalDB(d, this);
-                    break;
-
-                case "py_deploy_file":
-
-                    result = "" + py.DeployFile(d, this);
-                    break;
-
-                case "py_deploy_to":
-
-                    result = "" + py.DeployToProduction(d, this);
-                    break;
-
-                case "py_get_console":
-
-                    result = "" + py.GetConsole();
-                    break;
-
                 case "statistics":
 
                     result = DBStatistics.StatisticsCommand(this, d["statistics"]);
@@ -1400,9 +1336,9 @@ namespace AngelDB
                     break;
 
                 case "post":
-                    
+
                     result = WebTools.SendJsonToUrl(d["post"], d["message"]);
-                    break;  
+                    break;
 
                 case "post_api":
 
@@ -1445,6 +1381,52 @@ namespace AngelDB
                     }
 
                     result = hub.HubExecute(d["hub"]).GetAwaiter().GetResult();
+                    break;
+
+                case "help":
+
+                    var help = new
+                    {
+                        service = "help",
+                        command = d["help"],
+                    };
+
+                    result = this.Prompt($"GET URL https://angelsql.net/AngelAPI?data={JsonConvert.SerializeObject(help)}");
+
+                    if (!result.StartsWith("Error:"))
+                    {
+                        Dictionary<string, string> help_result = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
+                        StringBuilder sb = new StringBuilder();
+
+                        foreach (var item in help_result)
+                        {
+                            sb.AppendLine();
+                            sb.AppendLine(item.Key + ": " + item.Value);
+                            sb.AppendLine();
+                        }
+
+                        result = sb.ToString();
+
+                    }
+
+                    break;
+
+                case "python":
+
+                    if (pynet is null) 
+                    { 
+                        this.pynet = new AngelDB.PythonScript();
+                    }
+
+                    if( operational_db is null)
+                    {
+                        result = pynet.ExecutePythonScript(d["python"], this, operational_db);
+                    } 
+                    else 
+                    {
+                        result = pynet.ExecutePythonScript(d["python"], operational_db, this);
+                    }
+
                     break;
 
                 default:
@@ -1712,6 +1694,21 @@ namespace AngelDB
                         return $"Error: Grid: {e}";
                     }
 
+                }
+
+
+                if (d["grid"].Trim().StartsWith("RESET", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        this.Grid.Close();
+                        this.Grid = new MemoryDb();
+                        return "Ok.";
+                    }
+                    catch (Exception e)
+                    {
+                        return $"Error: Grid: {e}";
+                    }
                 }
 
                 return Grid.SQLExec(d["grid"]);
@@ -2949,57 +2946,49 @@ namespace AngelDB
             return result;
         }
 
-        public virtual void Dispose(bool disposing)
+        public virtual void Dispose()
         {
-            if (!disposedValue1)
+            try
             {
-                if (disposing)
+
+                if (this.pynet is not null)
                 {
-                    try
-                    {
-                        if (!string.IsNullOrEmpty(this.angel_url))
-                        {
-                            this.Prompt("ANGEL STOP");
-                        }
-
-                        this.CancelTransactions = true;
-
-                        foreach (string key in this.dbs.Keys)
-                        {
-                            this.dbs[key].CancelTransactions = true;
-                        }
-
-                        //this.py.m_engine.Runtime.Shutdown();
-                        //this.py.m_engine = null;
-                        //this.py = null;
-
-                        config = null;
-                        vars = null;
-                        parameters = null;
-                        partitionsrules = null;
-                        language = null;
-                        dbs = null;
-                        sqlite = null;
-                        TablesArea = null;
-                        partitions = null;
-                        SQLiteConnections = null;
-                        web = null;
-                        Azure = null;
-                        SQLServer = null;
-                        Grid = null;
-                        script = null;
-
-
-                    }
-                    catch (Exception)
-                    {
-                    }
+                    this.pynet = null;
+                    PythonEngine.Shutdown();
                 }
 
-                // TODO: liberar los recursos no administrados (objetos no administrados) y reemplazar el finalizador
-                // TODO: establecer los campos grandes como NULL
-                disposedValue1 = true;
+                if (!string.IsNullOrEmpty(this.angel_url))
+                {
+                    this.Prompt("ANGEL STOP");
+                }
+
+                this.CancelTransactions = true;
+
+                foreach (string key in this.dbs.Keys)
+                {
+                    this.dbs[key].CancelTransactions = true;
+                }
+
+                config = null;
+                vars = null;
+                parameters = null;
+                partitionsrules = null;
+                language = null;
+                dbs = null;
+                sqlite = null;
+                TablesArea = null;
+                partitions = null;
+                SQLiteConnections = null;
+                web = null;
+                Azure = null;
+                SQLServer = null;
+                Grid = null;
+                script = null;
             }
+            catch (Exception)
+            {
+            }
+
         }
 
         public string jSonSerialize(object o)
@@ -3020,12 +3009,6 @@ namespace AngelDB
         //     Dispose(disposing: false);
         // }
 
-        void IDisposable.Dispose()
-        {
-            // No cambie este código. Coloque el código de limpieza en el método "Dispose(bool disposing)".
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
     }
 
     public class PartitionsInfo
@@ -3040,7 +3023,7 @@ namespace AngelDB
         {
             try
             {
-                return sqlite.ExecSQLDirect($"UPDATE partitions SET timestamp = '{DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff")}' WHERE partition = '{this.partition_name}'");
+                return sqlite.ExecSQLDirect($"UPDATE partitions SET timestamp = '{System.DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff")}' WHERE partition = '{this.partition_name}'");
             }
             catch (Exception e)
             {

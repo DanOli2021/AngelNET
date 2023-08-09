@@ -1,0 +1,21 @@
+18:43:55--> Task: Error: certificate file  does not exists
+18:56:18--> Task: Error: certificate file  does not exists
+18:56:37--> Task: Error: certificate file  does not exists
+18:57:37--> Task: Error: certificate file  does not exists
+18:58:24--> Task: Error: certificate file  does not exists
+18:58:32--> Task: Error: C:\Desarrollo\AngelNET\AngelSQLServer/config/tasks.csx Microsoft.CodeAnalysis.Scripting.CompilationErrorException: C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\tasks.csx(11,64): error CS1026: ) expected
+   at Microsoft.CodeAnalysis.Scripting.ScriptBuilder.ThrowIfAnyCompilationErrors(DiagnosticBag diagnostics, DiagnosticFormatter formatter)
+   at Microsoft.CodeAnalysis.Scripting.ScriptBuilder.CreateExecutor[T](ScriptCompiler compiler, Compilation compilation, Boolean emitDebugInformation, CancellationToken cancellationToken)
+   at Microsoft.CodeAnalysis.Scripting.Script`1.GetExecutor(CancellationToken cancellationToken)
+   at Microsoft.CodeAnalysis.Scripting.Script`1.CreateDelegate(CancellationToken cancellationToken)
+   at AngelDB.MyScript.EvalFile(Dictionary`2 d, DB db, DB operational_db) in C:\Desarrollo\AngelNET\DB\MyScript.cs:line 196
+18:59:07--> Task: Error: certificate file  does not exists
+23:07:20--> Task: Error: certificate file  does not exists
+23:08:20--> Task: Error: certificate file  does not exists
+23:08:43--> Task: Error: certificate file  does not exists
+23:09:49--> Task: Error: certificate file  does not exists
+23:14:11--> Task: Error: certificate file  does not exists
+23:16:50--> Task: Error: certificate file  does not exists
+23:17:31--> Task: Error: certificate file  does not exists
+23:21:18--> Task: Error: certificate file  does not exists
+23:23:43--> Task: Error: certificate file  does not exists

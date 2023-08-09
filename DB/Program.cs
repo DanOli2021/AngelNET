@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using IronPython.Runtime;
+using Python.Runtime;
 
 namespace dbcmd
 {
@@ -196,6 +196,8 @@ namespace dbcmd
 
                 if (line.Trim().ToUpper() == "QUIT")
                 {
+                    PythonEngine.Shutdown();
+                    Environment.Exit(0);
                     break;
                 }
 

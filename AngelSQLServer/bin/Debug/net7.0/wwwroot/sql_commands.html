@@ -25,6 +25,15 @@
 
     </script>
 
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-block-color: #96D4D4;
+        }
+
+
+    </style>
+
 </head>
 
 <body>
@@ -50,6 +59,11 @@
             }, 0);
         }
 
+        function isValidHTML(html) {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+        }
+
         function executeAngelSQLCommand() {
             const sqlCommand = document.getElementById("sqlCommand").value;
 
@@ -69,11 +83,17 @@
             resultCommand.value = sqlCommand;
             resultCommand.readOnly = true;
 
+            const commandCopyBtn = document.createElement("button");
+            commandCopyBtn.textContent = "\uD83D\uDCCB Copy command";
+            commandCopyBtn.addEventListener("click", function () {
+                copyToClipboard(sqlCommand);
+            });
+            resultCommand.after(commandCopyBtn);
+
             const resultOutput = document.createElement("div");
             resultOutput.classList.add("resultOutput");
             resultOutput.textContent = "Thinking...";
 
-            console.log(sqlCommand);
             result = db.prompt("BATCH " + sqlCommand + " SHOW IN CONSOLE");
 
             let dotCount = 0;
@@ -95,6 +115,7 @@
                     const codeBlockRegex = /```([a-z]*)\n([\s\S]*?)```/g;  // Regex para detectar bloques de código y lenguaje
                     let match;
                     let lastIndex = 0;
+
                     while ((match = codeBlockRegex.exec(value)) !== null) {
                         const beforeCode = value.slice(lastIndex, match.index);
                         const language = match[1]; // Aquí obtenemos el lenguaje
@@ -123,7 +144,15 @@
                         }
 
                         const codeDiv = document.createElement("div");
-                        codeDiv.textContent = code;
+
+                        if (isValidHTML(code)) {
+                            // Esto es HTML válido, establecemos innerHTML
+                            codeDiv.innerHTML = code;
+                        } else {
+                            // Esto no es HTML válido, establecemos textContent
+                            codeDiv.textContent = code;
+                        }
+
                         hljs.highlightBlock(codeDiv);
 
                         const codeCopyBtn = document.createElement("button");
@@ -146,9 +175,21 @@
                     }
 
                     const afterCode = value.slice(lastIndex);
+
                     if (afterCode.trim()) {
+
                         const afterCodeDiv = document.createElement("div");
                         afterCodeDiv.textContent = afterCode;
+
+                        if (isValidHTML(afterCode)) {
+                            // Esto es HTML válido, establecemos innerHTML
+                            afterCodeDiv.innerHTML = afterCode;
+                        } else {
+                            // Esto no es HTML válido, establecemos textContent
+                            afterCodeDiv.textContent = afterCode;
+                        }
+
+                        console.log(isValidHTML(afterCode));
 
                         afterCodeDiv.style.fontFamily = 'Arial';
                         afterCodeDiv.style.fontSize = '11pt';
@@ -168,7 +209,6 @@
                     }
 
                 }, 500);
-
 
             }).catch(function (error) {
                 clearInterval(dotInterval); // Detenemos la animación
@@ -190,6 +230,7 @@
             resultsContainer.scrollTop = 0;
         }
 
+
         function copyToClipboard(text) {
             const tempTextArea = document.createElement("textarea");
             tempTextArea.value = text;
@@ -197,7 +238,6 @@
             tempTextArea.select();
             document.execCommand("copy");
             document.body.removeChild(tempTextArea);
-            alert("El texto ha sido copiado al portapapeles: " + text);
         }
 
         // Asegúrate de que se ejecute la función cuando se carga la página y cuando el contenido del textarea cambia

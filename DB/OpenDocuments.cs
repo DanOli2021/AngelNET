@@ -8,6 +8,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data;
 using DocumentFormat.OpenXml.Wordprocessing;
+using AngelDBTools;
 
 namespace AngelDB
 {
@@ -38,11 +39,16 @@ namespace AngelDB
 
                     foreach (DataColumn c in t.Columns)
                     {
+                        c.ColumnName = StringFunctions.ConvertStringToDbColumn(c.ColumnName);
+                    }
+
+                    foreach (DataColumn c in t.Columns)
+                    {
                         if (c.ColumnName.Trim().ToLower() == "id") 
                         {
                             continue;
                         }
-                        columns += c.ColumnName.Trim() + ",";
+                        columns += c.ColumnName + ",";
                     }
 
                     columns = columns.TrimEnd(',');
@@ -53,6 +59,8 @@ namespace AngelDB
                     {                        
                         return result;
                     }
+
+                    Console.WriteLine($"UPSERT INTO {as_table} VALUES {JsonConvert.SerializeObject(t, Formatting.Indented)}");
 
                     result = db.Prompt($"UPSERT INTO {as_table} VALUES {JsonConvert.SerializeObject(t, Formatting.Indented)}" );
                     return result;
@@ -121,7 +129,14 @@ namespace AngelDB
                         var j = 1;
                         foreach (Cell cell in row.Descendants<Cell>())
                         {
+
                             string column_name = GetCellValue(doc, cell);
+
+
+                            if( column_name is null)
+                            {
+                                column_name = "Field" + j++;
+                            }
 
                             if (column_name.Trim().ToLower() == "id") 
                             {
@@ -167,12 +182,26 @@ namespace AngelDB
 
         private static string GetCellValue(SpreadsheetDocument doc, Cell cell)
         {
+
+            if (cell == null)
+            {
+                return null;
+            }
+
+            if( cell.CellValue == null)
+            {
+                return null;
+            }
+
             string value = cell.CellValue.InnerText;
+
             if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
             {
                 return doc.WorkbookPart.SharedStringTablePart.SharedStringTable.ChildElements.GetItem(int.Parse(value)).InnerText;
             }
+
             return value;
+
         }
 
         public static void ExportDSToExcel(DataSet ds, string destination)

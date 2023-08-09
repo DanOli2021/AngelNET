@@ -58,7 +58,6 @@ namespace AngelDB {
                 { @"WHO I AM", @"WHO I#free;AM#free" },
                 { @"GET FILE", @"GET FILE#free;BASE 64#free;FROM#Systemtoken;PARTITION KEY#free;WHERE#freeoptional" },
                 { @"DELETE FILE", @"DELETE FILE#free;FROM#Systemtoken;PARTITION KEY#free;WHERE#free" },
-                { @"CONNECT TO", @"CONNECT TO#free;SERVER#free;PORT#number;USER#free;PASSWORD#password;CHAT NAME#Systemtoken;TYPE#free;SECRET#freeoptional" },
                 { @"ALWAYS USE ANGELSQL", @"ALWAYS USE ANGELSQL#free" },
                 { @"DB USER", @"DB USER#Systemtoken;PASSWORD#password;ACCOUNT#freeoptional;DATABASE#freeoptional;DATA DIRECTORY#freeoptional;LOAD FILE#freeoptional" },
                 { @"CLOSE DB", @"CLOSE DB#free" },
@@ -90,6 +89,7 @@ namespace AngelDB {
                 { @"PROMPT PASSWORD", @"PROMPT PASSWORD#free" },
                 { @"BATCH", @"BATCH#free;SHOW IN CONSOLE#optional" },
                 { @"BATCH FILE", @"BATCH FILE#free;SHOW IN CONSOLE#optional" },
+
                 { @"CREATE SYNC", @"CREATE SYNC#free;FROM TABLE#free;FROM PARTITIONS#freeoptional;FROM CONNECTION#free;FROM ACCOUNT#freeoptional;FROM DATABASE#freeoptional;TO CONNECTION#free;TO ACCOUNT#freeoptional;TO DATABASE#freeoptional;TO TABLE#freeoptional" },
                 { @"GET SYNCS", @"GET SYNCS#free;WHERE#freeoptional" },
                 { @"DELETE SYNC", @"DELETE SYNC#free" },
@@ -98,6 +98,7 @@ namespace AngelDB {
                 { @"GET MAX SYNC TIME", @"GET MAX SYNC TIME#free;FROM TABLE#freeoptional;WHERE#freeoptional" },
                 { @"UPDATE PARTITION", @"UPDATE PARTITION#free;FROM TABLE#free;TIME STAMP#free" },
                 { @"SYNC NOW", @"SYNC NOW#free;PARTITIONS CONDITION#freeoptional;PARTITIONS TO PROCESS#freeoptional;ROWS#freeoptional;SHOW LOG#optional;LOG FILE#freeoptional;CHANGE TO SEARCH#optional;WHERE#freeoptional" },
+
                 { @"COMPILE", @"COMPILE#free;ASSEMBLY NAME#freeoptional" },
                 { @"READ EXCEL", @"READ EXCEL#free;AS TABLE#freeoptional;SHEET#freeoptional;FIRST ROW AS HEADER#optional" },
                 { @"CREATE EXCEL", @"CREATE EXCEL#free;JSON VALUES#free" },
@@ -118,6 +119,9 @@ namespace AngelDB {
                 { @"UNLOCK TABLE", @"UNLOCK TABLE#free;PARTITION KEY#freeoptional" },
 
                 { @"HUB", @"HUB#free" },
+                { @"HELP", @"HELP#free" },
+                { @"PYTHON", @"PYTHON#free" },
+
 
                 { @"VERSION", @"VERSION#free" },
 

@@ -38,7 +38,25 @@
     <None Update="config\Globals.csx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="config\start.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="config\Tasks.csx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EULA.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="pfx\certificate.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="py\SampleClass.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="py\SamplePlot.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="py\SampleWebPlot.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="scripts\accounts\accounts.csx">

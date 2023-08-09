@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "FN8CTr+tDfs6P/I+sTA65bqB+x+Evv3CL+bzcotsTnY=",
+  "Hash": "KPCPQM+91MbFlbRJnnR4uzq1S5QPqo9VI40/hKXurxI=",
   "Source": "AngelSQLServer",
   "BasePath": "_content/AngelSQLServer",
   "Mode": "Default",
@@ -1783,6 +1783,40 @@
       "CopyToOutputDirectory": "Always",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\styles.css"
+    },
+    {
+      "Identity": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\images\\37ce3634-abae-4389-a72f-d44edd334548.png",
+      "SourceId": "AngelSQLServer",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\",
+      "BasePath": "_content/AngelSQLServer",
+      "RelativePath": "images/37ce3634-abae-4389-a72f-d44edd334548.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\37ce3634-abae-4389-a72f-d44edd334548.png"
+    },
+    {
+      "Identity": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\images\\42ed4240-87bc-4a49-b27a-47ba0035fbd4.png",
+      "SourceId": "AngelSQLServer",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\",
+      "BasePath": "_content/AngelSQLServer",
+      "RelativePath": "images/42ed4240-87bc-4a49-b27a-47ba0035fbd4.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\42ed4240-87bc-4a49-b27a-47ba0035fbd4.png"
     },
     {
       "Identity": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\images\\AngelSQL.png",

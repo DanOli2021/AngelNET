@@ -8,12 +8,14 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
+string main_url = "http://localhost:11000";
+
 Dictionary<string, string> parameters = new Dictionary<string, string>
 {
     { "certificate", "" },
     { "password", "" },
-    { "urls", "" },
-    { "cors", "http://localhost:11000" },
+    { "urls", main_url },
+    { "cors", main_url },
     { "master_user", "db" },
     { "master_password", "db" },
     { "data_directory", "" },
@@ -28,6 +30,10 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
     { "smtp_port", "" },
     { "email_address", "" },
     { "email_password", "" },
+    { "angel_api", "config/AngelAPI.csx" },
+    { "python_path", "C:/Program Files/Python311/python311.dll" },
+    { "service_command", "config/Tasks.csx" },
+    { "service_delay", "300000" },
 };
 
 
@@ -35,23 +41,13 @@ Environment.SetEnvironmentVariable("ANGELSQL_PARAMETERS", JsonConvert.SerializeO
 
 Dictionary<string, string> servers = new Dictionary<string, string>
 {
-    { "tokens_url", "http://localhost:5000/AngelPOST" },
-    { "skus_url", "http://localhost:5000/AngelPOST" },
-    { "sales_url", "http://localhost:5000/AngelPOST" },
-    { "inventory_url", "http://localhost:5000/AngelPOST" },
-    { "configuration_url", "http://localhost:5000/AngelPOST" },
-    { "auth_url", "http://localhost:5000/AngelPOST" }
+    { "tokens_url", $"{main_url}/AngelPOST" },
+    { "skus_url", $"{main_url}/AngelPOST" },
+    { "sales_url", $"{main_url}/AngelPOST" },
+    { "inventory_url", $"{main_url}/AngelPOST" },
+    { "configuration_url", $"{main_url}/AngelPOST" },
+    { "auth_url", $"{main_url}/AngelPOST" }
 };
-
-// Development time only
-
-if ( Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" )
-{
-    foreach (string key in servers.Keys)
-    {
-        servers[key] = "https://localhost:7170/AngelPOST";
-    }
-}
 
 Environment.SetEnvironmentVariable("ANGELSQL_SERVERS", JsonConvert.SerializeObject(servers, Formatting.Indented));
 

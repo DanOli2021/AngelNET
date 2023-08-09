@@ -5,65 +5,112 @@ using System.Data;
 using System.Linq;
 using DocumentFormat.OpenXml.Spreadsheet;
 using static AngelDB.StatisticsAnalisis;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using Formatting = Newtonsoft.Json.Formatting;
+using DataTable = System.Data.DataTable;
+using MathNet.Numerics;
+using MathNet.Numerics.Distributions;
+using DocumentFormat.OpenXml.Math;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using AngelDBTools;
 
 namespace AngelDB
 {
 
-    public static class DBStatistics 
+    public static class DBStatistics
     {
 
+        public static class StatisticsCommands
+        {
+            public static Dictionary<string, string> Commands()
+            {
+                Dictionary<string, string> commands = new Dictionary<string, string>
+            {
+                { @"ANALYSIS", @"ANALYSIS#free;FROM#free;VARIABLE#freeoptional" },
+                { @"ANALYSIS LIST", @"ANALYSIS LIST#free;SEPARATOR#freeoptional;VALUES#free" },
+                { @"SHOW ANALYSIS", @"SHOW ANALYSIS#free" },
+                { @"GET Z", @"GET Z#free" },
+                { @"GET T", @"GET T#free;CONFIDENCE LEVEL#free;DEGREES OF FREEDOM#free" },
+                { @"FREQUENCY TABLE OF", @"FREQUENCY TABLE OF#free;COLUMN#free;AS HTML#optional" },
+                { @"CONFIDENCE INTERVAL CASE 1", @"CONFIDENCE INTERVAL CASE 1#free;SAMPLE MEAN#free;POPULATION STANDARD DEVIATION#free;SAMPLE SIZE#free;CONFIDENCE LEVEL#free" },
+                { @"CONFIDENCE INTERVAL CASE 2", @"CONFIDENCE INTERVAL CASE 2#free;MEAN#free;STANDARD DEVIATION#free;SIZE#free;CONFIDENCE LEVEL#free" },
+                { @"CONFIDENCE INTERVAL CASE 4", @"CONFIDENCE INTERVAL CASE 4#free;MEAN#free;STANDARD DEVIATION#free;SIZE#free;CONFIDENCE LEVEL#free" },
+            };
 
-        public static string StatisticsCommand(AngelDB.DB db, string command) 
+                return commands;
+
+            }
+
+        }
+
+
+        public static string StatisticsCommand(AngelDB.DB db, string command)
         {
 
             DbLanguage language = new DbLanguage(db);
-            
+
             Dictionary<string, string> d = new Dictionary<string, string>();
             language.SetCommands(StatisticsCommands.Commands());
             d = language.Interpreter(command);
 
             if (d == null)
             {
-               return language.errorString;
+                return language.errorString;
             }
 
             if (d.Count == 0)
             {
-               return "Error: not command found " + command; ;
+                return "Error: not command found " + command; ;
             }
             string commandkey = d.First().Key;
 
-            switch (commandkey)
+            try
             {
-                case "analysis":
-                    return Analysis(db, d);
-                case "confidence_interval_of":
-                    return ConfidenceLevel(db, d);
-                case "confidence_interval_between":
-                    return ConfindenceLevelCompareTowMeans(db, d);
-                case "proportion_compare":
-                    return ConfindenceLevelCompareTowProportions(db, d);
-                case "show_analysis":
-                    return ShowAnalysis(db, d);
-                default:
-                    return "Error: not command found " + command;
-            }
+                switch (commandkey)
+                {
+                    case "analysis":
+                        return Analysis(db, d);
+                    case "analysis_list":
+                        return AnalysisList(db, d);
+                    case "show_analysis":
+                        return ShowAnalysis(db, d);
+                    case "get_z":
+                        return ConfidenceInterval.GetZValueNormalDistribution(d["get_normal_distribution_z"]).ToString();
+                    case "get_t":
+                        return ConfidenceInterval.GetTStudentNormalDistribution(d["confidence_level"], d["degrees_of_freedom"]).ToString();
+                    case "frequency_table_of":
+                        return CreateFrequencyTable(d);
+                    default:
+                        return "Error: not command found " + command;
+                }
 
+            }
+            catch (Exception e)
+            {
+                return "Error: " + e.Message;
+            }
         }
 
-        public static string Analysis( AngelDB.DB db, Dictionary<string,string> d ) 
+        public static string Analysis(AngelDB.DB db, Dictionary<string, string> d)
         {
 
             try
             {
                 StatisticsAnalisis st = new StatisticsAnalisis(db);
+
+                if (d["from"].StartsWith("Error:"))
+                {
+                    return d["from"];
+                }
+
                 string result = st.Data(d["from"], d["variable"]);
 
                 if (!result.StartsWith("Error:"))
                 {
 
-                    result = st.Analysis();
-                    
+                    result = st.Analysis(d["variable"]);
+
                     if (db.statistics.ContainsKey(d["analysis"]))
                     {
                         db.statistics[d["analysis"]] = st;
@@ -84,10 +131,45 @@ namespace AngelDB
 
         }
 
-
-        public static string ShowAnalysis(AngelDB.DB db, Dictionary<string, string> d) 
+        public static string AnalysisList(AngelDB.DB db, Dictionary<string, string> d)
         {
-            if (!db.statistics.ContainsKey(d["show_analysis"])) 
+
+            try
+            {
+                StatisticsAnalisis st = new StatisticsAnalisis(db);
+                string result = "";
+                result = st.DataList(d["values"], d["separator"]); ;
+
+
+
+                if (!result.StartsWith("Error:"))
+                {
+
+                    result = st.Analysis();
+
+                    if (db.statistics.ContainsKey(d["analysis_list"]))
+                    {
+                        db.statistics[d["analysis_list"]] = st;
+                    }
+                    else
+                    {
+                        db.statistics.Add(d["analysis_list"], st);
+                    }
+                }
+
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                return "Error: analysis: " + e.Message;
+            }
+
+        }
+
+        public static string ShowAnalysis(AngelDB.DB db, Dictionary<string, string> d)
+        {
+            if (!db.statistics.ContainsKey(d["show_analysis"]))
             {
                 return $"Error: Analysis does not exist {d["show_analisis"]}";
             }
@@ -96,147 +178,91 @@ namespace AngelDB
 
         }
 
-        public static string ConfidenceLevel(AngelDB.DB db, Dictionary<string, string> d) 
+
+        public static string CreateFrequencyTable(Dictionary<string, string> d)
         {
 
-            string result = "";
+            DataTable dt = JsonConvert.DeserializeObject<DataTable>(d["frequency_table_of"]);
 
-            if (db.statistics.ContainsKey(d["confidence_interval_of"]))
+            if (d["column"] == "null") return $"Error: Column name not specified {d["column"]}";
+
+            if (!dt.Columns.Contains(d["column"])) return $"Error: Column name not specified {d["column"]}";
+
+            // Agrupa los datos por el valor de la columna y cuenta la frecuencia de cada valor
+            var query = dt.AsEnumerable()
+                .GroupBy(r => r.Field<object>(d["column"]))
+                .Select(g => new { Value = g.Key, Frequency = g.Count() })
+                .OrderByDescending(g => g.Frequency);
+
+            // Crea un nuevo DataTable para la tabla de frecuencias
+            DataTable freqTable = new DataTable("FrequencyTable");
+            freqTable.Columns.Add(d["column"], typeof(object));
+            freqTable.Columns.Add("Frequency", typeof(int));
+
+            // Agrega los datos a la tabla de frecuencias
+            foreach (var item in query)
             {
-                if (d["proportion"] == "null")
-                {
-                    result = db.statistics[d["confidence_interval_of"]].ConfidenceInterval(d["confidence_level"]);
-                }
-                else 
-                {
-                    result = db.statistics[d["confidence_interval_of"]].ConfidenceIntervalProportion(d["confidence_level"], d["proportion"]);
-                }
-                
+                freqTable.Rows.Add(item.Value, item.Frequency);
             }
-            else
+
+            if (d["as_html"] == "true") 
             {
-                result = "Error: statistics not found";
+                return StringFunctions.ConvertJsonToHtmlTable(JsonConvert.SerializeObject(freqTable, Formatting.Indented));
             }
 
-            return result;
-
+            return JsonConvert.SerializeObject(freqTable, Formatting.Indented);
         }
 
 
-        public static string ConfindenceLevelCompareTowMeans(AngelDB.DB db, Dictionary<string, string> d) 
+    }
+
+
+
+    public static class ConfidenceInterval
+    {
+        // Get the critical Z value from the standard normal distribution for the given confidence level.
+        public static double GetZValue(double confidenceLevel)
         {
+            // Use the CumulativeDistribution function to get the critical Z value
+            double zValue = Normal.InvCDF(0, 1, (1 + confidenceLevel) / 2);
 
-            if (!db.statistics.ContainsKey(d["confidence_interval_between"]))
-            {
-                return $"Error: statistics not found {d["confidence_interval_between"]}";
-            }
-
-            if (!db.statistics.ContainsKey(d["and"]))
-            {
-                return $"Error: statistics not found {d["and"]}";
-            }
-
-            Descriptive x1 = db.statistics[d["confidence_interval_between"]].description;
-            Descriptive x2 = db.statistics[d["and"]].description;
-
-            double mean1 = x1.Result.Mean;
-            double mean2 = x2.Result.Mean;
-
-            DataRow[] rows;
-            string confidence = d["confidence_level"];
-
-            if (x1.Result.Count <= 30)
-            {
-                rows = db.tTables.Select($"GL = '{x1.Result.Count}'");
-            }
-            else
-            {
-                rows = db.tTables.Select($"GL = 'z'");
-            }
-
-            if (rows.Length == 0)
-            {
-                return $"Error: ConfidenceInterval: Confindence interval not found {confidence}.";
-            }
-                        
-            // z = ( valor_buscado - media ) / desviación standard
-            double confidence_factor = double.Parse(rows[0]["P" + confidence].ToString());
-
-            double standard_error = Math.Sqrt((x1.Result.Variance / x1.Result.Count) + (x2.Result.Variance / x2.Result.Count));
-            double mean_diference = x1.Result.Mean - x2.Result.Mean;
-            
-            Dictionary<string, double> limits = new Dictionary<string, double>();
-            
-            double upper_calculus = (confidence_factor * standard_error) + mean_diference;
-            double lower_calculus = (confidence_factor * standard_error * -1) + mean_diference;
-
-            limits.Add("z", confidence_factor);
-            limits.Add("Lower", lower_calculus);
-            limits.Add("Upper", upper_calculus);
-
-            return JsonConvert.SerializeObject(limits, Formatting.Indented);
+            return zValue;
         }
 
-        public static string ConfindenceLevelCompareTowProportions(AngelDB.DB db, Dictionary<string, string> d)
+        public static double GetTValue(double confidenceLevel, int degreesOfFreedom)
         {
+            // Use the CumulativeDistribution function to get the critical Z value
+            double tValue = StudentT.InvCDF(0, 1, degreesOfFreedom, (confidenceLevel + 1) / 2);
 
-            if (!db.statistics.ContainsKey(d["proportion_compare"]))
-            {
-                return $"Error: statistics not found {d["proportion_compare"]}";
-            }
+            return tValue;
+        }
 
-            if (!db.statistics.ContainsKey(d["between"]))
-            {
-                return $"Error: statistics not found {d["between"]}";
-            }
+        public static double GetZValueNormalDistribution(string nivelConfianza)
+        {
+            double nivel = 0;
+            double.TryParse(nivelConfianza, out nivel);
+            nivel = nivel / 100;
+            // Utilizar MathNet.Numerics para obtener el valor crítico Z
+            double valorZ = Normal.InvCDF(0, 1, (1 + nivel) / 2); ;
+            return valorZ;
+        }
 
-            if (!db.statistics.ContainsKey(d["and"]))
-            {
-                return $"Error: statistics not found {d["and"]}";
-            }
+        public static double GetTStudentNormalDistribution(string confidenceLevel, string degreesOfFreedom)
+        {
+            double level = 0;
+            double.TryParse(confidenceLevel, out level);
+            level = level / 100;
 
-            Descriptive main = db.statistics[d["proportion_compare"]].description;
-            Descriptive x1 = db.statistics[d["between"]].description;
-            Descriptive x2 = db.statistics[d["and"]].description;
+            int degrees = 0;
+            int.TryParse(degreesOfFreedom, out degrees);
 
-            double main_count = main.Result.Count;           
-            double p1 = x1.Result.Count / main_count;
-            double p2 = x2.Result.Count / main_count;
-
-            DataRow[] rows;
-            string confidence = d["confidence_level"];
-
-            if (x1.Result.Count <= 30)
-            {
-                rows = db.tTables.Select($"GL = '{x1.Result.Count}'");
-            }
-            else
-            {
-                rows = db.tTables.Select($"GL = 'z'");
-            }
-
-            if (rows.Length == 0)
-            {
-                return $"Error: ConfidenceInterval: Confindence interval not found {confidence}.";
-            }
-
-            // z = ( valor_buscado - media ) / desviación standard
-            double confidence_factor = double.Parse(rows[0]["P" + confidence].ToString());
-
-            double standard_error = Math.Sqrt(( (p1 * (1 - p1) ) / x1.Result.Count) + ((p2 * (1 - p2)) / x2.Result.Count));
-            Dictionary<string, double> limits = new Dictionary<string, double>();
-
-            double upper_calculus = (confidence_factor * standard_error) + (p1 - p2);
-            double lower_calculus = (confidence_factor * standard_error) - (p1 - p2);
-
-            limits.Add("z", confidence_factor);
-            limits.Add("Lower", lower_calculus);
-            limits.Add("Upper", upper_calculus);
-
-            return JsonConvert.SerializeObject(limits, Formatting.Indented);
+            // Use MathNet.Numerics to get the critical Z value
+            double tValue = StudentT.InvCDF(0, 1, degrees, (level + 1) / 2);
+            return tValue;
         }
 
     }
+
 
     public class StatisticsAnalisis
     {
@@ -244,27 +270,11 @@ namespace AngelDB
         public Descriptive description = null;
         private List<double> numeric_data = new List<double>();
         public AngelDB.DB db;
+        public string JSonData = "";
 
         public StatisticsAnalisis(AngelDB.DB db)
         {
             this.db = db;
-
-            if (db.tTables is null)
-            {
-                if (System.IO.File.Exists(Environment.CurrentDirectory + "/tables.json"))
-                {
-                    this.db.tTables = JsonConvert.DeserializeObject<DataTable>(System.IO.File.ReadAllText(Environment.CurrentDirectory + "/tables.json"));
-                }
-            }
-
-            if (db.zTables is null)
-            {
-                if (System.IO.File.Exists(Environment.CurrentDirectory + "/TablaZ.jSon"))
-                {
-                    this.db.zTables = JsonConvert.DeserializeObject<DataTable>(System.IO.File.ReadAllText(Environment.CurrentDirectory + "/TablaZ.jSon"));
-                }
-            }
-
         }
 
         public string Data(string jSonData, string AnalyzeColumn)
@@ -272,15 +282,27 @@ namespace AngelDB
             try
             {
                 DataTable data = JsonConvert.DeserializeObject<DataTable>(jSonData);
+                this.JSonData = jSonData;
 
                 foreach (DataRow item in data.Rows)
                 {
+
                     if (AnalyzeColumn != "null")
                     {
+                        if (item[AnalyzeColumn] is DBNull)
+                        {
+                            continue;
+                        }
+
                         numeric_data.Add(Convert.ToDouble(item[AnalyzeColumn]));
                     }
                     else
                     {
+                        if (item[0] is DBNull)
+                        {
+                            continue;
+                        }
+
                         numeric_data.Add(Convert.ToDouble(item[0]));
                     }
                 }
@@ -293,154 +315,46 @@ namespace AngelDB
             }
         }
 
-        public string Analysis()
+        public string DataList(string List, string separator)
+        {
+            try
+            {
+
+                if (separator == "null")
+                {
+                    separator = ",";
+                }
+
+                string[] separadores = new string[] { separator, "\n" };
+                string[] data = List.Split(separadores, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string item in data)
+                {
+                    numeric_data.Add(Convert.ToDouble(item));
+                }
+
+                return "Ok.";
+            }
+            catch (Exception e)
+            {
+                return $"Error: DataList: {e.ToString()}";
+            }
+        }
+
+
+        public string Analysis(string variable_name = "")
         {
             try
             {
                 description = new Descriptive(this.numeric_data.ToArray());
+                description.Result.VariableName = variable_name;
                 description.Analyze();
+
                 return JsonConvert.SerializeObject(description.Result, Formatting.Indented);
             }
             catch (Exception e)
             {
                 return $"Error: Analisys: {e.ToString()}";
-            }
-        }
-
-
-        public string ConfidenceInterval(string confidence)
-        {
-            try
-            {
-
-                if (this.description is null)
-                {
-                    return "Error: ConfidenceInterval: Analyze the data first use method Analisys().";
-                }
-
-                if (this.numeric_data.Count == 0)
-                {
-                    return "Error: ConfidenceInterval: No data to analyze.";
-                }
-
-                DataRow[] rows;
-
-                if (this.description.Result.Count <= 30)
-                {
-                    rows = this.db.tTables.Select($"GL = '{this.description.Result.Count}'");
-                }
-                else
-                {
-                    rows = this.db.tTables.Select($"GL = 'z'");
-                }
-
-                if (rows.Length == 0)
-                {
-                    return $"Error: ConfidenceInterval: Confindence interval not found {confidence}.";
-                }
-
-
-                // z = ( valor_buscado - media ) / desviación standard
-                double confidence_factor = double.Parse(rows[0]["P" + confidence].ToString());
-                Dictionary<string, double> limits = new Dictionary<string, double>();
-
-                double standard_error = description.Result.StdDev / Math.Sqrt(description.Result.Count);
-
-                double upper_calculus = (confidence_factor * standard_error) + description.Result.Mean;
-                double lower_calculus = (confidence_factor * standard_error * -1) + description.Result.Mean;
-
-                limits.Add("z", confidence_factor);
-                limits.Add("Mean", description.Result.Mean);
-                limits.Add("StdDev", description.Result.StdDev);
-                limits.Add("Lower", lower_calculus);
-                limits.Add("Upper", upper_calculus);
-
-                return JsonConvert.SerializeObject(limits, Formatting.Indented);
-            }
-            catch (Exception e)
-            {
-                return $"Error: ConfidenceInterval: {e.ToString()}";
-            }
-        }
-
-
-        public string ConfidenceIntervalProportion(string confidence, string sample)
-        {
-            try
-            {
-
-                if (this.description is null)
-                {
-                    return "Error: ConfidenceInterval: Analyze the data first use method Analisys().";
-                }
-
-                if (this.numeric_data.Count == 0)
-                {
-                    return "Error: ConfidenceInterval: No data to analyze.";
-                }
-
-                DataRow[] rows;
-
-                if (this.description.Result.Count <= 30)
-                {
-                    rows = this.db.tTables.Select($"GL = '{this.description.Result.Count}'");
-                }
-                else
-                {
-                    rows = this.db.tTables.Select($"GL = 'z'");
-                }
-
-                if (rows.Length == 0)
-                {
-                    return $"Error: ConfidenceInterval: Confindence interval not found {confidence}.";
-                }
-
-
-                // z = ( valor_buscado - media ) / desviación standard
-                double confidence_factor = double.Parse(rows[0]["P" + confidence].ToString());
-                Dictionary<string, double> limits = new Dictionary<string, double>();
-
-                double nsample = double.Parse(sample) / description.Result.Count;
-                double proportion = Math.Sqrt((nsample * (1 - nsample)) / description.Result.Count);
-
-                double upper_calculus = nsample + (confidence_factor * proportion);
-                double lower_calculus = nsample - (confidence_factor * proportion);
-
-                limits.Add("z", confidence_factor);
-                limits.Add("Lower", lower_calculus);
-                limits.Add("Upper", upper_calculus);
-
-                return JsonConvert.SerializeObject(limits, Formatting.Indented);
-            }
-            catch (Exception e)
-            {
-                return $"Error: ConfidenceInterval: {e.ToString()}";
-            }
-        }
-
-
-        public string ZTable(double value)
-        {
-
-            try
-            {
-
-                string string_value = value.ToString().PadRight(6, '0');
-                string z = value.ToString().Substring(0, 3);
-                string zColumn = value.ToString().Substring(4);
-
-                DataRow[] rows = this.db.zTables.Select($"z = '{z}'");
-
-                if (rows.Length == 0)
-                {
-                    return $"Error: ZTable: Z value not found {value}.";
-                }
-
-                return rows[0]["P"].ToString();
-            }
-            catch (Exception e)
-            {
-                return $"Error: ZTable: {e}";
             }
         }
 
@@ -458,90 +372,32 @@ namespace AngelDB
             /// </summary>
             public Statistics() { }
 
-            /// <summary>
-            /// Count
-            /// </summary>
+            public string VariableName = "";
             public uint Count;
-            /// <summary>
-            /// Sum
-            /// </summary>
             public double Sum;
-            /// <summary>
-            /// Arithmatic mean
-            /// </summary>
             public double Mean;
-            /// <summary>
-            /// Geometric mean
-            /// </summary>
-            public double GeometricMean;
-            /// <summary>
-            /// Harmonic mean
-            /// </summary>
-            public double HarmonicMean;
-            /// <summary>
-            /// Minimum value
-            /// </summary>
+            public double Mode;
             public double Min;
-            /// <summary>
-            /// Maximum value
-            /// </summary>
             public double Max;
-            /// <summary>
-            /// The range of the values
-            /// </summary>
-            public double Range;
-            /// <summary>
-            /// Sample variance
-            /// </summary>
             public double Variance;
-            /// <summary>
-            /// Sample standard deviation
-            /// </summary>
             public double StdDev;
-            /// <summary>
-            /// Skewness of the data distribution
-            /// </summary>
+            public double Range;
+            public double GeometricMean;
+            public double HarmonicMean;
             public double Skewness;
-            /// <summary>
-            /// Kurtosis of the data distribution
-            /// </summary>
             public double Kurtosis;
-            /// <summary>
-            /// Interquartile range
-            /// </summary>
             public double IQR;
-            /// <summary>
-            /// Median, or second quartile, or at 50 percentile
-            /// </summary>
             public double Median;
-            /// <summary>
-            /// First quartile, at 25 percentile
-            /// </summary>
             public double FirstQuartile;
-            /// <summary>
-            /// Third quartile, at 75 percentile
-            /// </summary>
             public double ThirdQuartile;
-            /// <summary>
-            /// Sum of Error
-            /// </summary>
             internal double SumOfError;
-            /// <summary>
-            /// The sum of the squares of errors
-            /// </summary>
             internal double SumOfErrorSquare;
-            /// <summary>
-            /// Percentile
-            /// </summary>
-            /// <param name="percent">Pecentile, between 0 to 100</param>
-            /// <returns>Percentile</returns>
-            /// 
 
             public double Percentile(double percent)
             {
                 return Descriptive.percentile(sortedData, percent);
             }
-        } // end of class DescriptiveResult
+        }
 
 
         /// <summary>
@@ -687,6 +543,33 @@ namespace AngelDB
                 Result.IQR = percentile(sortedData, 75) -
                 percentile(sortedData, 25);
 
+                // Calcular la moda
+                var frequencyTable = new Dictionary<double, int>();
+                foreach (var value in data)
+                {
+                    if (frequencyTable.ContainsKey(value))
+                    {
+                        frequencyTable[value]++;
+                    }
+                    else
+                    {
+                        frequencyTable[value] = 1;
+                    }
+                }
+
+                double mode = data[0];
+                int maxCount = 0;
+                foreach (var pair in frequencyTable)
+                {
+                    if (pair.Value > maxCount)
+                    {
+                        mode = pair.Key;
+                        maxCount = pair.Value;
+                    }
+                }
+
+                Result.Mode = mode;
+
             } // end of method Analyze
 
 
@@ -820,6 +703,43 @@ namespace AngelDB
         public double ProbalityResult { get; set; }
     }
 
+
+    public static class ChiSquareDistribution
+    {
+        // Función para calcular la densidad de probabilidad de la distribución chi cuadrado
+        public static double ChiSquareDensity(double x, int degreesOfFreedom)
+        {
+            // Validamos que los grados de libertad sean al menos 1
+            if (degreesOfFreedom <= 0)
+            {
+                throw new ArgumentException("Los grados de libertad deben ser al menos 1.", nameof(degreesOfFreedom));
+            }
+
+            // Calculamos la constante (1 / (2^(k/2) * Γ(k/2)))
+            double constant = 1 / (Math.Pow(2, degreesOfFreedom / 2.0) * SpecialGammaFunction(degreesOfFreedom / 2.0));
+
+            // Calculamos la parte de la exponencial (e^(-x/2))
+            double expPart = Math.Exp(-x / 2.0);
+
+            // Calculamos la parte del término con x (x^(k/2-1))
+            double xPart = Math.Pow(x, degreesOfFreedom / 2.0 - 1);
+
+            // Calculamos la densidad de probabilidad completa
+            double density = constant * xPart * expPart;
+
+            return density;
+        }
+
+        // Función especial para el cálculo de la función gamma (Γ)
+        // En C#, podemos utilizar la función Gamma de la clase Math, pero aquí se muestra cómo sería implementarla desde cero.
+        private static double SpecialGammaFunction(double x)
+        {
+            if (x == 1)
+                return 1;
+
+            return (x - 1) * SpecialGammaFunction(x - 1);
+        }
+    }
 }
 
 
