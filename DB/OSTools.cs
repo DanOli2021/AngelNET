@@ -71,6 +71,21 @@ namespace AngelDB
             return os_name + architecture;
         }
 
+        public static bool IsAbsolutePath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return false;
+
+            // Una ruta que comienza con "\\" o "driveLetter:\", como "C:\", se considera absoluta.
+            if (path.StartsWith("\\\\") ||
+                (path.Length >= 3 && char.IsLetter(path[0]) && path[1] == ':' && path[2] == '\\'))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 
 }

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>UserS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/responsive.dataTables.css">
+    <script src="./js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+    <script src="./js/dataTables.responsive.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
+
+    <script src="./js/main.js"></script>
+
+    <script>
+
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const Token = JSON.parse( sessionStorage.getItem("Token") );
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+            <a class="btn btn-primary btn-block" href="menu.html" style="width: 100%;">
+                <span style="float: left;">
+                    <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                </span>
+                Menu
+            </a>
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="row">
+                <a href="#">
+                    <span style="float: left;">
+                        <img src="images/icons/beta_accounting_executive_128.png" alt="logo" class="logo"
+                            style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
+                    </span>
+                    <h2>System Users</h2>
+                </a>
+            </div>
+
+            <br />
+
+            <div class="row" style="margin-bottom: 10px;">
+                <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
+                    onclick="showUserDialog('', true)" style="margin-bottom: 20px;">
+                    New User (F2)
+                </button>
+
+                <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
+                    onclick="getUsers()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    Refresh (F4)
+                </button>
+            </div>
+
+
+
+            <br />
+
+            <table id="dataTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Group</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <script>
+
+                var tabla;
+
+                $(document).ready(function () {
+                    var datos = [];
+
+                    tabla = $('#dataTable').DataTable({
+                        responsive: true,
+                        data: datos,
+                        bFilter: true,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'print'
+                        ],
+                        columns: [
+                            {
+                                // Columna de botón
+                                data: null,
+                                render: function (data, type, row) {
+                                    return '<button class="btn btn-primary">+</button>';
+                                }
+                            },
+                            { data: 'id' },
+                            { data: 'Name' },
+                            { data: 'Phone' },
+                            { data: 'Email' },
+                            { data: 'UserGroups' },
+                        ]
+                    });
+
+                    $('#dataTable').on('click', 'td:first-child', function () {
+                        var datosFila = tabla.row($(this).parents('tr')).data();
+                        showUserDialog(datosFila);
+                        // Aquí se ejecuta el código al hacer doble clic en la columna de botón
+                    });
+
+                });
+            </script>
+
+        </div>
+
+
+    </div>
+
+    <dialog id="myDialog" class="dialog-box">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton" onclick="closeDialog()">Close</button>
+    </dialog>
+
+    <dialog id="DialogAcceptCancel" class="dialog-box">
+
+        <h1 id="dialogTittleAcceptCancel">Title</h1>
+        <p id="dialogMessageAcceptCancel">Message</p>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <button id="accept" onclick="closeDialogAcceptCancelDialog()" class="btn btn-danger"
+                    style="width: 100%;">Accept</button>
+            </div>
+
+            <div class="col-sm-6">
+                <button id="cancel" onclick="closeDialogAcceptCancelDialog()" class="btn btn-primary"
+                    style="width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+
+
+    <dialog id="user_dialog" style="width: 90%;">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="form-group">
+                    <label for="id">Autohrizer</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="User">Email</label>
+                    <input type="text" class="form-control" id="email" name="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="UserGroups">User Groups</label>
+                    <select class="form-select" aria-label="Default select example" id="UserGroups" name="UserGroups">
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="organization">Organization</label>
+                    <input type="text" class="form-control" id="organization" name="organization">
+                </div>
+
+                <div class="form-group">
+                    <label for="Password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                </div>
+
+                <div class="form-group">
+                    <label for="retype_password">Retype Password</label>
+                    <input type="password" class="form-control" id="retype_password" name="retype_password">
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary" "
+                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveUser()">
+                        Save
+                    </button>
+                </div>
+
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-danger"
+                        style="text-align: right; margin-top: 20px; width: 100%;"
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the User?', 'DeleteUser')">
+                        Delete
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <button id="closeSkuEdit" class="btn btn-secondary"
+                        style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeUsersDialog()"
+                        style="text-align: right;">
+                        Close
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </dialog>
+
+    <script>
+
+        function showDialog(title, message) {
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+
+        function showAcceptCancelDialog(title, message, operation) {
+            document.getElementById('dialogTittleAcceptCancel').innerText = title;
+            document.getElementById('dialogMessageAcceptCancel').innerText = message;
+            document.getElementById('DialogAcceptCancel').showModal();
+            document.getElementById('cancel').focus();
+
+            var accept = document.getElementById('accept');
+            accept.focus();
+
+            accept.addEventListener("click", () => {
+                if( operation )
+                {
+                    if( operation == "DeleteUser" )
+                    {
+                        DeleteUser();
+                    }
+                };
+            });
+
+        }
+
+
+        function DeleteUser() 
+        {
+            var id = document.getElementById('id').value;
+            var data_result = sendToAngelPOST("tokens/admintokens", "DeleteUser", Token, { User: id });
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Attention", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                if (responce_query.result == "Ok.") {
+                    showDialog("Attention", "User " + id + " deleted successfully");
+                    closeUsersDialog();
+                    getUsers();
+                    return;
+                }
+
+                showDialog("Attention", "User " + id + " not deleted");
+            });            
+        }
+
+
+        function closeDialogAcceptCancelDialog() {
+            document.getElementById('DialogAcceptCancel').close();
+        }
+        
+
+        function showUserDialog(User_data, new_User = false) {
+
+            let select = document.getElementById('UserGroups');
+
+            while (select.options.length > 0) {
+                select.remove(0);
+            }
+
+            let option = document.createElement('option');
+            option.value = "AUTORIZERS";
+            option.text = "AUTORIZERS";
+            select.appendChild(option);
+
+            let option1 = document.createElement('option');
+            option1.value = "SUPERVISORS";
+            option1.text = "SUPERVISORS";
+            select.appendChild(option1);
+
+            let option2 = document.createElement('option');
+            option2.value = "PINSCONSUMER";
+            option2.text = "PINSCONSUMER";
+            select.appendChild(option2);
+
+            if (new_User) {
+                var dialog = document.getElementById("user_dialog");
+                dialog.showModal();
+
+                document.getElementById('id').value = "";
+                document.getElementById('id').readOnly = false;
+                document.getElementById('name').value = "";
+                document.getElementById('phone').value = "";
+                document.getElementById('email').value = "";
+                document.getElementById('UserGroups').value = "";
+                return;
+            }
+
+            var data_result = GetUser(Token.username, Token.token, User_data.id)
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                let User = JSON.parse(responce_query.result);
+
+                var dialog = document.getElementById("user_dialog");
+                dialog.showModal();
+
+                let id = document.getElementById('id');
+                id.readOnly = true;
+
+                document.getElementById('id').value = User.id;
+                document.getElementById('name').value = User.name;
+                document.getElementById('phone').value = User.phone;
+                document.getElementById('email').value = User.email;
+                document.getElementById('UserGroups').value = User.UserGroups;
+
+                let description = document.getElementById('name');
+                description.focus();
+
+            });
+
+        }
+
+        function closeUsersDialog() {
+            var dialog = document.getElementById("user_dialog");
+            dialog.close();
+        }
+
+        function SaveUser() {
+            let user = {};
+
+            user.id = document.getElementById('id').value;
+            user.name = document.getElementById('name').value;
+            user.phone = document.getElementById('phone').value;
+            user.email = document.getElementById('email').value;
+            user.password = document.getElementById('password').value;
+            user.retype_password = document.getElementById('retype_password').value;
+            user.UserGroups = document.getElementById('UserGroups').value;
+            user.Token = Token;
+
+            var data_result = SaveUser(Token.username, Token.token, user);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Error:", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                getUsers();
+                showDialog("Success:", "User Saved");
+
+            });
+
+        }
+
+        function getUsers() {
+
+            var datos = GetUsers(Token.username, Token.token);
+
+            datos.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                tabla.clear().rows.add(JSON.parse(responce_query.result)).draw(); // Borramos los datos antiguos, añadimos los nuevos y redibujamos la tabla
+            });
+
+        }
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F2") {
+                showUserDialog('', true);
+            }
+
+            if (event.key === "F4") {
+                getUsers();
+            }
+
+
+        });
+
+        getUsers();
+
+        document.getElementById("name").focus();
+
+    </script>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

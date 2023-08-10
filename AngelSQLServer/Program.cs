@@ -47,8 +47,6 @@ if (WindowsServiceHelpers.IsWindowsService())
 var builder = WebApplication.CreateBuilder(args);
 // End Create a builder for the web app
 
-
-
 //if is a Windows service, set the current directory to the same as the executable
 builder = WebApplication.CreateBuilder(new WebApplicationOptions()
 {
@@ -88,9 +86,7 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
 
 //Our AngelDB database 
 AngelDB.DB server_db = new AngelDB.DB();
-
 builder.Services.AddSingleton<AngelDB.DB>(server_db);
-
 // Object to save the connections
 builder.Services.AddSingleton<ConnectionMappingService>();
 
@@ -295,6 +291,11 @@ if (parameters.ContainsKey("wwwroot"))
     }
 }
 
+if (!OSTools.IsAbsolutePath(wwww_directory))
+{
+    wwww_directory = Path.Combine(Environment.CurrentDirectory, wwww_directory);
+}
+
 if (!Directory.Exists(wwww_directory))
 {
     Directory.CreateDirectory(wwww_directory);
@@ -304,10 +305,11 @@ if (!Directory.Exists(wwww_directory))
     File.WriteAllText(index_html, content);
 }
 
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
-        wwww_directory),
+         wwww_directory),
     RequestPath = ""
 });
 
@@ -399,15 +401,15 @@ string QueryResponce(AngelSQL.Query query)
     }
 }
 
-string scripts_directory = "";
+string scripts_directory = Environment.CurrentDirectory + "/scripts";
 
-if (!parameters.ContainsKey("scripts_directory"))
+if (parameters.ContainsKey("scripts_directory"))
 {
-    parameters.Add("scripts_directory", scripts_directory);
+    if (!string.IsNullOrEmpty(parameters["scripts_directory"])) 
+    {
+        scripts_directory = parameters["scripts_directory"];
+    }
 }
-
-scripts_directory = parameters["scripts_directory"];
-
 
 app.MapGet("/AngelAPI", (string data) =>
 {

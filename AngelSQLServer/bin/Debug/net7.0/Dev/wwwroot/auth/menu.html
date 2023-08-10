@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AUTH APP - Menu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+    <script src="./js/main.js"></script>
+
+    <script>
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const Token = JSON.parse( sessionStorage.getItem("Token") );
+
+
+    </script>
+
+
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row" style="margin-top: 10px;">
+            <div class="container-fluid">
+                <a class="btn btn-primary btn-block" href="index.html" style="width: 100%;">
+                    <span style="float: left;">
+                        <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px;">
+                    </span>
+                    Log Out
+                </a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px;width:256px">
+
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;">MyBusiness POS Authorizer</h1>
+
+            <div class="col-sm-12">
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        let response = GetGroupsUsingTocken(Token.username, Token.token);
+
+                        response.then(function (query) {
+                            let response_query = JSON.parse(query);
+
+                            if (response_query.result.startsWith("Error:")) {
+                                showDialog("Alert", response_query.result);
+                            } else {
+                                sessionStorage.setItem('user_groups', response_query.result);
+                                generateButtons();
+                            }
+                        });
+                    });
+
+                    function generateButtons() {
+
+                        generateButton("pins.html", "brilliant_networking_groupware_128.png", "Generated Pins", "btn btn-info btn-block btn-lg form-control");
+
+                        if (sessionStorage.getItem("user_groups") != null) {
+                            console.log(sessionStorage.getItem("user_groups"));
+                            let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
+
+                            if( user_groups.groups.includes("SUPERVISORS") )  
+                            {
+                                window.location.href = "supervisor.html";
+                                return;
+                            }
+
+                            if( user_groups.groups.includes("AUTHORIZERS") ) 
+                            {
+                                generateButton("branch_store.html", "brilliant_shopping_fish_shop_128.png", "Branch Stores", "btn btn-primary btn-block btn-lg form-control");
+                                generateButton("users_groups.html", "golden_educationicons_classmate_128.png", "User Groups", "btn btn-secondary btn-block btn-lg form-control");
+                                generateButton("users.html", "beta_accounting_executive_128.png", "System Users", "btn btn-primary btn-block btn-lg form-control");
+                            }
+                        }
+                    }
+
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <dialog id="myDialog">
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
+    </dialog>
+
+    <script>
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+    </script>
+
+    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
