@@ -45,7 +45,7 @@ Console.WriteLine(result);
 
 Console.WriteLine("Creating Pins catalog...");
 Pin pin = new Pin();
-result = db.CreateTable(pin);
+result = db.CreateTable(pin, "pins");
 Console.WriteLine(result);
 
 UsersGroup g = new UsersGroup();
@@ -64,8 +64,8 @@ g.Permissions = "";
 result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
 Console.WriteLine("Upsert group: " + result); 
 
-g.id = "SUPERVISOR";
-g.Name = "SUPERVISOR";
+g.id = "SUPERVISORS";
+g.Name = "SUPERVISORS";
 g.Permissions = "";
 
 result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
@@ -75,10 +75,11 @@ Users u = new Users();
 u.id = "authuser";
 u.Name = "authuser";
 u.Password = "mysecret";
-u.UserGroups = "AUTHORIZERS";
+u.UserGroups = "AUTHORIZERS, SUPERVISORS, PINSCONSUMER";
 u.Organization = "AUTHORIZERS";
 u.Email = "";
 u.Phone = "";
+u.permissions_list = "Delete Sale, Inventory Transfer, Delete Item";
 
 result = db.Prompt("UPSERT INTO users VALUES " + JsonConvert.SerializeObject(u));
 Console.WriteLine("Upsert users: " + result); 

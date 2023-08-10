@@ -34,7 +34,7 @@ async function GetUser(user, token, userToObtain)
     return sendToAngelPOST(user, "tokens/admintokens", token, "GetUser", { User: userToObtain });
 }
 
-async function SaveUSer(user, token, userToSave)
+async function SaveUser(user, token, userToSave)
 {
     return sendToAngelPOST(user, "tokens/admintokens", token, "UpsertUser", userToSave);
 }
@@ -42,6 +42,66 @@ async function SaveUSer(user, token, userToSave)
 async function GetUsers(user, token)
 {
     return sendToAngelPOST(user, "tokens/admintokens", token, "GetUsers",  {});
+}
+
+async function GetGroups(user, token)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetGroups",  {});
+}
+
+async function DeleteUser(user, token, UserToDelete)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "DeleteUser",  { UserToDelete: UserToDelete });
+}
+
+async function GetGroup(user, token, id)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetGroups", { Where: "id = '" + id + "'"});
+}
+
+async function SaveGroup(user, token, GroupToSave)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "UpsertGroup", GroupToSave);
+}
+
+async function DeleteGroup(user, token, GroupToDelete)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "DeleteGroup",  { UserGroupToDelete: GroupToDelete });
+}
+
+async function DeleteBranchStore(user, token, BranchStoreToDelete)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "DeleteBranchStore",  { BranchStoreToDelete: BranchStoreToDelete });
+}
+
+async function GetBranchStore(user, token, BranchStoreId)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetBranchStore", { BranchStoreId: BranchStoreId });
+}
+
+async function SaveBranchStore(user, token, BranchStoreToSave)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "UpsertBranchStore", BranchStoreToSave);
+}
+
+async function GetBranchStores(user, token)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetBranchStores", {});
+}
+
+async function GetBranchStoresByUser(user, token)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetBranchStoresByUser", {});
+}
+
+async function CreatePermission(user, token, Branchstore_id, Permission_id)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "CreatePermission", { Branchstore_id: Branchstore_id, Permission_id: Permission_id });
+}
+
+async function GetPins(user, token, InitialDate, FinalDate)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetPins", { InitialDate: InitialDate, FinalDate: FinalDate });
 }
 
 
@@ -53,8 +113,6 @@ async function sendToAngelPOST(user, api_name, token, OperationType, object_data
     account = user.split("@")[1];
   }
   
-console.log(api_name);
-
   var api = {
     api: api_name,
     account: account,

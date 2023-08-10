@@ -89,6 +89,20 @@ async function GetBranchStores(user, token)
     return sendToAngelPOST(user, "tokens/admintokens", token, "GetBranchStores", {});
 }
 
+async function GetBranchStoresByUser(user, token)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetBranchStoresByUser", {});
+}
+
+async function CreatePermission(user, token, Branchstore_id, Permission_id)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "CreatePermission", { Branchstore_id: Branchstore_id, Permission_id: Permission_id });
+}
+
+async function GetPins(user, token, InitialDate, FinalDate)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetPins", { InitialDate: InitialDate, FinalDate: FinalDate });
+}
 
 
 async function sendToAngelPOST(user, api_name, token, OperationType, object_data) {
@@ -99,8 +113,6 @@ async function sendToAngelPOST(user, api_name, token, OperationType, object_data
     account = user.split("@")[1];
   }
   
-console.log(api_name);
-
   var api = {
     api: api_name,
     account: account,

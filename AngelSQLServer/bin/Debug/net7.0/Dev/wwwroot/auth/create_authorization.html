@@ -8,14 +8,15 @@
 
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
 
-    <script src="./js/scripts.js"></script>
+    <script src="./js/main.js"></script>
 
     <script>
-        const Token = sessionStorage.getItem("Token");
 
-        if (Token == null) {
+        if (sessionStorage.getItem("Token") == null) {
             window.location.href = "index.html";
         }
+
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
 
     </script>
 
@@ -64,31 +65,33 @@
                 <script>
 
                     document.addEventListener("DOMContentLoaded", function () {
-                        let response = getPermissions(Token);
+                        let response = GetGroupsUsingTocken(Token.username, Token.token);
 
-                        response.then(function (query) {
+                        response.then(function (query) { 
                             let response_query = JSON.parse(query);
                             if (response_query.result.startsWith("Error:")) {
                                 showDialog("Alert", response_query.result);
                             }
                             else {
-                                let Group = JSON.parse(sessionStorage.getItem("Group"));
 
-                                if (Group.id != "SUPERVISORS") {
-                                    window.location.href = "index.html";
+                                let groups_list = JSON.parse(response_query.result);
+
+
+                                if (!groups_list.groups.includes("SUPERVISORS")) {
+                                    //window.location.href = "index.html";
                                     return;
                                 }
 
                                 var supervisor_name = document.getElementById("supervisor_name");
-                                supervisor_name.innerText = "Supervisor: " + Group.user + " " + Group.user_name;
+                                supervisor_name.innerText = "Supervisor: " + groups_list.user + " " + groups_list.user_name;
 
                                 var url = new URL(window.location.href);
                                 var params = new URLSearchParams(url.search);
                                 var branchstore = params.get('branchstore');
 
-                                let resmponce_branch_store = sendToAngelPOST("auth/adminbranchstores", "GetBranchStore", Token, { id: branchstore });;
+                                let responce_branch_store = GetBranchStore(Token.username, Token.token, branchstore);
 
-                                resmponce_branch_store.then(function (query) {
+                                responce_branch_store.then(function (query) {
                                     let response_query = JSON.parse(query);
                                     if (response_query.result.startsWith("Error:")) {
                                         showDialog("Alert", response_query.result);
@@ -99,7 +102,7 @@
                                         var button = document.getElementById("authorizer_confirm");
                                         button.innerText = "Branch Store: " + branchstore_object.name;
 
-                                        let authorizer = sendToAngelPOST("auth/adminbranchstores", "GetAuthorizer", Token, { id: Group.user });;
+                                        let authorizer = GetUser(Token.username, Token.token, groups_list.user);
 
                                         authorizer.then(function (query) {
                                             let response_query = JSON.parse(query);
@@ -109,12 +112,11 @@
                                             else {
                                                 let authorizer_object = JSON.parse(response_query.result);
 
-                                                if (authorizer_object.id != branchstore_object.authorizer) {
+                                                if (authorizer_object.User != branchstore_object.authorizer) {
                                                     window.location.href = "index.html";
                                                     return;
                                                 }
 
-                                                console.log(authorizer_object.permissions_list);
                                                 var arrayElementos = authorizer_object.permissions_list.split(',');
                                                 var contenedor = document.getElementById('authorizer_buttons');
 
@@ -145,7 +147,7 @@
                                                     imagen.src = "./images/icons/brilliant_networking_groupware_128.png";
                                                     imagen.alt = elemento.nombre;
 
-                                                    boton.addEventListener('click', CreatePermission(elemento, branchstore_object.id));
+                                                    boton.addEventListener('click', CreatePin(elemento, branchstore_object.id));
 
                                                     span.appendChild(imagen);
                                                     boton.appendChild(span);
@@ -166,9 +168,10 @@
 
                     });
 
-                    function CreatePermission(element, branchstore_id) {
+                    function CreatePin(element, branchstore_id) {
                         return function () {
-                            let response = sendToAngelPOST("auth/adminbranchstores", "CreatePermission", Token, { permission_id: element, branchstore_id: branchstore_id });
+
+                            let response = CreatePermission(Token.username, Token.token, branchstore_id, element);
 
                             response.then(function (query) {
                                 let response_query = JSON.parse(query);
@@ -248,7 +251,7 @@
 
     </script>
 
-    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

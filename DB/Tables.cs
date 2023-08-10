@@ -186,7 +186,7 @@ namespace AngelDB
 
             if (result == "[]")
             {
-                return $"Error: Source table does not exits: {select["from"]}";
+                return $"Error: Source table does not exist: {select["from"]}";
             }
 
             DataTable source_table = JsonConvert.DeserializeObject<DataTable>(result);
@@ -303,7 +303,7 @@ namespace AngelDB
                 string result = query_database.OpenConnection();
                 if (result.StartsWith("Error:")) return "Error: On Open Database List:" + result;
                 DataTable t = query_database.SQLTable($"SELECT * FROM tables WHERE tablename = '{table_name}'");
-                if (t.Rows.Count == 0) return "Error: Table does not exits";
+                if (t.Rows.Count == 0) return $"Error: Table does not exist {table_name}";
                 query_database.CloseConnection();
 
                 string table_directory;
@@ -817,7 +817,7 @@ namespace AngelDB
             string databaseConnectionString = $"Data Source={databaseDirectory + mainClass.os_directory_separator + "tables.db"};" + "version = 3";
             SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
             DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["from"]}'");
-            if (t.Rows.Count == 0) return "Error: Table does not exits";
+            if (t.Rows.Count == 0) return $"Error: Table does not exist {d["from"]}";
 
             string tableDirectory;
 
@@ -860,7 +860,7 @@ namespace AngelDB
                 SqliteTools sqlite = new SqliteTools(ConnectionString);
                 DataTable t = sqlite.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["delete_table"]}'");
 
-                if (t.Rows.Count == 0) return "Error: Table does not exits";
+                if (t.Rows.Count == 0) return $"Error: Table does not exist {d["delete_table"]}";
 
                 string result = sqlite.SQLExec($"DELETE FROM tables WHERE tablename = '{d["delete_table"]}'");
 
@@ -1210,7 +1210,7 @@ namespace AngelDB
             SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
             DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["delete_from"]}'");
 
-            if (t.Rows.Count == 0) return "Error: Table does not exits";
+            if (t.Rows.Count == 0) return $"Error: Table does not exist {d["delete_from"]}";
 
             string table_type = t.Rows[0]["tabletype"].ToString();
 
@@ -1241,7 +1241,7 @@ namespace AngelDB
 
             if (!File.Exists(partitionFile))
             {
-                if (t.Rows.Count == 0) return "Error: Partition Table does not exits";
+                if (t.Rows.Count == 0) return $"Error: Partition Table does not exist {partitionFile}";
             }
 
 
@@ -1307,7 +1307,7 @@ namespace AngelDB
             SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
             DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["alter_table"]}'");
 
-            if (t.Rows.Count == 0) return "Error: Table does not exits";
+            if (t.Rows.Count == 0) return $"Error: Table does not exist {d["alter_table"]}";
             string table_type = t.Rows[0]["tabletype"].ToString();
 
             string tableDirectory;
@@ -1352,7 +1352,7 @@ namespace AngelDB
 
                 if (!File.Exists(partitionFile))
                 {
-                    if (t.Rows.Count == 0) return "Error: Partition Table does not exits";
+                    if (t.Rows.Count == 0) return $"Error: Partition Table does not exist {partitionFile}";
                 }
 
                 if (d["add_column"] != "null")
@@ -1417,7 +1417,7 @@ namespace AngelDB
                     string databaseConnectionString = $"Data Source={databaseDirectory + mainClass.os_directory_separator + "tables.db"}" + ";version = 3";
                     SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
                     DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["from"]}'");
-                    if (t.Rows.Count == 0) return $"Error: Table does not exits: {d["from"]}";
+                    if (t.Rows.Count == 0) return $"Error: Table does not exist: {d["from"]}";
                     string table_type = t.Rows[0]["tabletype"].ToString();
                     string tableDirectory;
 
@@ -1623,7 +1623,7 @@ namespace AngelDB
                 SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
                 DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["from_table"]}'");
 
-                if (t.Rows.Count == 0) return "Error: Table does not exits";
+                if (t.Rows.Count == 0) return $"Error: Table does not exist {d["from_table"]}";
 
                 string tableDirectory;
 
@@ -1674,7 +1674,7 @@ namespace AngelDB
                 SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
                 DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["from_table"]}'");
 
-                if (t.Rows.Count == 0) return "Error: Table does not exits";
+                if (t.Rows.Count == 0) return $"Error: Table does not exist {d["from_table"]}";
 
                 string tableDirectory;
 
@@ -1722,7 +1722,7 @@ namespace AngelDB
                 SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
                 DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["from_table"]}'");
 
-                if (t.Rows.Count == 0) return "Error: Table does not exits";
+                if (t.Rows.Count == 0) return $"Error: Table does not exist {d["from_table"]}";
 
                 string tableDirectory;
 
@@ -1885,7 +1885,7 @@ namespace AngelDB
                 SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
                 DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["lock_table"]}'");
 
-                if (t.Rows.Count == 0) return $"Error: Table does not exits: {d["lock_table"]}";
+                if (t.Rows.Count == 0) return $"Error: Table does not exist: {d["lock_table"]}";
 
                 string tableDirectory;
 
@@ -1945,7 +1945,7 @@ namespace AngelDB
                 SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
                 DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["unlock_table"]}'");
 
-                if (t.Rows.Count == 0) return $"Error: Table does not exits: {d["unlock_table"]}";
+                if (t.Rows.Count == 0) return $"Error: Table does not exist: {d["unlock_table"]}";
 
                 string tableDirectory;
 

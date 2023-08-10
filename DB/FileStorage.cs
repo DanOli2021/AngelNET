@@ -27,7 +27,7 @@ namespace AngelDB {
             SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
             DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["send_to"]}'");
 
-            if (t.Rows.Count == 0) return "Error: Table does not exits";
+            if (t.Rows.Count == 0) return $"Error: Table does not exist {d["send_to"]}";
 
             string tableDirectory = t.Rows[0]["storage"].ToString();
 
@@ -119,7 +119,7 @@ namespace AngelDB {
             SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
             DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["from"]}'");
 
-            if (t.Rows.Count == 0) return "Error: Table does not exits";
+            if (t.Rows.Count == 0) return $"Error: Table does not exist {d["from"]}";
 
             string tableDirectory = t.Rows[0]["storage"].ToString();
 
@@ -223,7 +223,7 @@ namespace AngelDB {
             SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
             DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["from"]}'");
 
-            if (t.Rows.Count == 0) return "Error: Table does not exits";
+            if (t.Rows.Count == 0) return $"Error: Table does not exist {d["from"]}";
 
             string tableDirectory = t.Rows[0]["storage"].ToString();
 
@@ -309,7 +309,7 @@ namespace AngelDB {
             SqliteTools sqliteDatabase = new SqliteTools(databaseConnectionString);
             DataTable t = sqliteDatabase.SQLTable($"SELECT * FROM tables WHERE tablename = '{d["copy_from"]}'");
 
-            if (t.Rows.Count == 0) return "Error: Table does not exits";
+            if (t.Rows.Count == 0) return $"Error: Table does not exist {d["copy_from"]}";
 
             string tableDirectory = t.Rows[0]["storage"].ToString();
 

@@ -201,6 +201,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="organization">Permissions List (Comma separated)</label>
+                    <input type="text" class="form-control" id="permissions_list" name="permissions_list">
+                </div>
+
+                <div class="form-group">
                     <label for="Password">Password</label>
                     <input type="password" class="form-control" id="password" name="password">
                 </div>
@@ -350,6 +355,8 @@
                 document.getElementById('phone').value = "";
                 document.getElementById('email').value = "";
                 document.getElementById('user_groups_list').value = "";
+                document.getElementById('organization').value = "";
+                document.getElementById('permissions_list').value = "";
                 return;
             }
 
@@ -380,6 +387,7 @@
                 document.getElementById('email').value = User.Email;
                 document.getElementById('user_groups_list').value = User.UserGroups;
                 document.getElementById('organization').value = User.Organization;
+                document.getElementById('permissions_list').value = User.permissions_list;
 
                 let description = document.getElementById('name');
                 description.focus();
@@ -404,6 +412,7 @@
             user.retype_password = document.getElementById('retype_password').value;
             user.UserGroups = document.getElementById('user_groups_list').value;
             user.Organization = document.getElementById('organization').value;
+            user.permissions_list = document.getElementById('permissions_list').value;
 
             if (user.Password.trim() != user.retype_password.trim()) {
                 showDialog("Error:", "Passwords do not match");

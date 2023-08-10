@@ -5,7 +5,6 @@
     <title>AUTH APP - Menu</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
 
     <script src="./js/main.js"></script>
@@ -64,18 +63,16 @@
                         generateButton("pins.html", "brilliant_networking_groupware_128.png", "Generated Pins", "btn btn-info btn-block btn-lg form-control");
 
                         if (sessionStorage.getItem("user_groups") != null) {
-                            console.log(sessionStorage.getItem("user_groups"));
                             let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
 
                             if( user_groups.groups.includes("SUPERVISORS") )  
                             {
-                                window.location.href = "supervisor.html";
-                                return;
+                                generateButton("supervisor.html", "futurexp_security_security_test_128.png", "My Branch Stores", "btn btn-success btn-block btn-lg form-control");
                             }
 
                             if( user_groups.groups.includes("AUTHORIZERS") ) 
                             {
-                                generateButton("branch_store.html", "brilliant_shopping_fish_shop_128.png", "Branch Stores", "btn btn-primary btn-block btn-lg form-control");
+                                generateButton("branch_stores.html", "brilliant_shopping_fish_shop_128.png", "Branch Stores", "btn btn-primary btn-block btn-lg form-control");
                                 generateButton("users_groups.html", "golden_educationicons_classmate_128.png", "User Groups", "btn btn-secondary btn-block btn-lg form-control");
                                 generateButton("users.html", "beta_accounting_executive_128.png", "System Users", "btn btn-primary btn-block btn-lg form-control");
                             }

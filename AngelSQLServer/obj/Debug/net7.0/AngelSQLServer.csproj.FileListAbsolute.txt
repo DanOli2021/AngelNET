@@ -1094,7 +1094,6 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\scripts\tokens\tokens
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\scripts\tokens\tokensTest.csx
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\scripts\tokens\users.csx
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\scripts\tokens\usersgroup.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\authorizers.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\bootstrap-5.3.0\css\bootstrap-grid.css
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\bootstrap-5.3.0\css\bootstrap-grid.css.map
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\bootstrap-5.3.0\css\bootstrap-grid.min.css
@@ -1139,7 +1138,6 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\bootstra
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\bootstrap-5.3.0\js\bootstrap.js.map
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\bootstrap-5.3.0\js\bootstrap.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\bootstrap-5.3.0\js\bootstrap.min.js.map
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\branch_store.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\branch_stores.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\create_authorization.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\css\jquery.dataTables.min.css
@@ -1185,14 +1183,12 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\i
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\permissions.jpg
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\permissions.png
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\index.html
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\AngelSQL.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\code.jquery.com_jquery-3.7.0.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\dataTables.responsive.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\jquery.dataTables.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\main.js
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\scripts.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\menu.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\pins.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\privacy.html
@@ -1409,3 +1405,12 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\menu.ht
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\sales.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\skus.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\sql_commands.html
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\scripts\tokens\branch_stores.csx
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\scripts\tokens\pins.csx
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\icons\futurexp_security_security_test_128.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\icons\futurexp_security_security_test_16.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\icons\futurexp_security_security_test_24.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\icons\futurexp_security_security_test_256.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\icons\futurexp_security_security_test_32.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\images\icons\futurexp_security_security_test_48.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\users_groups.html

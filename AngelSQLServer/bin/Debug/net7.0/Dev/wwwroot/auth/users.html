@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>UserS</title>
+    <title>Users</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
@@ -24,7 +24,7 @@
             window.location.href = "index.html";
         }
 
-        const Token = JSON.parse( sessionStorage.getItem("Token") );
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
 
     </script>
 
@@ -191,8 +191,18 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="user_groups_list">User Groups List (Comma separated)</label>
+                    <input type="text" class="form-control" id="user_groups_list" name="user_groups_list">
+                </div>
+
+                <div class="form-group">
                     <label for="organization">Organization</label>
                     <input type="text" class="form-control" id="organization" name="organization">
+                </div>
+
+                <div class="form-group">
+                    <label for="organization">Permissions List (Comma separated)</label>
+                    <input type="text" class="form-control" id="permissions_list" name="permissions_list">
                 </div>
 
                 <div class="form-group">
@@ -210,7 +220,7 @@
             <div class="row">
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-primary" "
-                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveUser()">
+                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveUserData()">
                         Save
                     </button>
                 </div>
@@ -261,11 +271,9 @@
             accept.focus();
 
             accept.addEventListener("click", () => {
-                if( operation )
-                {
-                    if( operation == "DeleteUser" )
-                    {
-                        DeleteUser();
+                if (operation) {
+                    if (operation == "DeleteUser") {
+                        DeleteUserData();
                     }
                 };
             });
@@ -273,10 +281,9 @@
         }
 
 
-        function DeleteUser() 
-        {
+        function DeleteUserData() {
             var id = document.getElementById('id').value;
-            var data_result = sendToAngelPOST("tokens/admintokens", "DeleteUser", Token, { User: id });
+            var data_result = DeleteUser(Token.username, Token.token, id );
 
             data_result.then(function (query) {
 
@@ -288,22 +295,19 @@
                     return;
                 }
 
-                if (responce_query.result == "Ok.") {
-                    showDialog("Attention", "User " + id + " deleted successfully");
-                    closeUsersDialog();
-                    getUsers();
-                    return;
-                }
+                showDialog("Attention", "User " + id + " deleted successfully");
+                closeUsersDialog();
+                getUsers();
+                return;
 
-                showDialog("Attention", "User " + id + " not deleted");
-            });            
+            });
         }
 
 
         function closeDialogAcceptCancelDialog() {
             document.getElementById('DialogAcceptCancel').close();
         }
-        
+
 
         function showUserDialog(User_data, new_User = false) {
 
@@ -313,20 +317,33 @@
                 select.remove(0);
             }
 
-            let option = document.createElement('option');
-            option.value = "AUTORIZERS";
-            option.text = "AUTORIZERS";
-            select.appendChild(option);
+            var groups_result = GetGroups(Token.username, Token.token);
 
-            let option1 = document.createElement('option');
-            option1.value = "SUPERVISORS";
-            option1.text = "SUPERVISORS";
-            select.appendChild(option1);
+            groups_result.then(function (query_result) {
+                let responce_query = JSON.parse(query_result);
 
-            let option2 = document.createElement('option');
-            option2.value = "PINSCONSUMER";
-            option2.text = "PINSCONSUMER";
-            select.appendChild(option2);
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                let groups = JSON.parse(responce_query.result);
+
+                for (let i = 0; i < groups.length; i++) {
+                    let option = document.createElement("option");
+                    option.text = groups[i].id;
+                    option.value = groups[i].id;
+                    select.add(option);
+                }
+
+            });
+
+            document.getElementById('UserGroups').value = "";
+
+            let option = document.createElement("option");
+            option.text = "";
+            option.value = "";
+            select.add(option);
 
             if (new_User) {
                 var dialog = document.getElementById("user_dialog");
@@ -337,15 +354,19 @@
                 document.getElementById('name').value = "";
                 document.getElementById('phone').value = "";
                 document.getElementById('email').value = "";
-                document.getElementById('UserGroups').value = "";
+                document.getElementById('user_groups_list').value = "";
+                document.getElementById('organization').value = "";
+                document.getElementById('permissions_list').value = "";
                 return;
             }
 
-            var data_result = GetUser(Token.username, Token.token, User_data.id)
+            var data_result = GetUser(Token.username, Token.token, User_data.id);
 
             data_result.then(function (query) {
 
                 let responce_query = JSON.parse(query);
+
+                console.log(responce_query.result);
 
                 if (responce_query.result.startsWith("Error:")) {
                     console.log(responce_query.result);
@@ -360,11 +381,13 @@
                 let id = document.getElementById('id');
                 id.readOnly = true;
 
-                document.getElementById('id').value = User.id;
-                document.getElementById('name').value = User.name;
-                document.getElementById('phone').value = User.phone;
-                document.getElementById('email').value = User.email;
-                document.getElementById('UserGroups').value = User.UserGroups;
+                document.getElementById('id').value = User.User;
+                document.getElementById('name').value = User.Name;
+                document.getElementById('phone').value = User.Phone;
+                document.getElementById('email').value = User.Email;
+                document.getElementById('user_groups_list').value = User.UserGroups;
+                document.getElementById('organization').value = User.Organization;
+                document.getElementById('permissions_list').value = User.permissions_list;
 
                 let description = document.getElementById('name');
                 description.focus();
@@ -378,17 +401,23 @@
             dialog.close();
         }
 
-        function SaveUser() {
+        function SaveUserData() {
             let user = {};
 
-            user.id = document.getElementById('id').value;
-            user.name = document.getElementById('name').value;
-            user.phone = document.getElementById('phone').value;
-            user.email = document.getElementById('email').value;
-            user.password = document.getElementById('password').value;
+            user.User = document.getElementById('id').value;
+            user.Name = document.getElementById('name').value;
+            user.Phone = document.getElementById('phone').value;
+            user.Email = document.getElementById('email').value;
+            user.Password = document.getElementById('password').value;
             user.retype_password = document.getElementById('retype_password').value;
-            user.UserGroups = document.getElementById('UserGroups').value;
-            user.Token = Token;
+            user.UserGroups = document.getElementById('user_groups_list').value;
+            user.Organization = document.getElementById('organization').value;
+            user.permissions_list = document.getElementById('permissions_list').value;
+
+            if (user.Password.trim() != user.retype_password.trim()) {
+                showDialog("Error:", "Passwords do not match");
+                return;
+            }
 
             var data_result = SaveUser(Token.username, Token.token, user);
 
@@ -402,8 +431,8 @@
                     return;
                 }
 
-                getUsers();
                 showDialog("Success:", "User Saved");
+                getUsers();
 
             });
 
@@ -428,6 +457,22 @@
 
         }
 
+        document.getElementById('UserGroups').addEventListener('change', function (e) {
+            const selectedValue = e.target.value;
+
+            const inputList = document.getElementById('user_groups_list');
+            const currentValues = inputList.value.split(',').map(item => item.trim());
+
+            if (!currentValues.includes(selectedValue)) {
+                if (inputList.value) {
+                    inputList.value += `, ${selectedValue}`;
+                } else {
+                    inputList.value = selectedValue;
+                }
+            }
+        });
+
+
         document.addEventListener('keydown', function (event) {
 
             if (event.key === "F2") {
@@ -441,9 +486,10 @@
 
         });
 
-        getUsers();
+        document.addEventListener('DOMContentLoaded', function () {
+            getUsers();
+        });
 
-        document.getElementById("name").focus();
 
     </script>
 

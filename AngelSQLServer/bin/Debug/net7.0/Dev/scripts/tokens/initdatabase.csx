@@ -6,9 +6,8 @@
 #load "tokens.csx"
 #load "users.csx"
 #load "usersgroup.csx"
-
-#r "DB.dll"
-#r "Newtonsoft.Json.dll"
+#load "branch_stores.csx"
+#load "pins.csx"
 
 using System;
 using System.Collections.Generic;
@@ -39,6 +38,16 @@ UsersGroup usersgroup = new UsersGroup();
 result = db.CreateTable(usersgroup);
 Console.WriteLine(result);
 
+Console.WriteLine("Creating BranchStore catalog...");
+branch_stores branch_store = new branch_stores();
+result = db.CreateTable(branch_store);
+Console.WriteLine(result);
+
+Console.WriteLine("Creating Pins catalog...");
+Pin pin = new Pin();
+result = db.CreateTable(pin, "pins");
+Console.WriteLine(result);
+
 UsersGroup g = new UsersGroup();
 
 g.id = "AUTHORIZERS";
@@ -48,14 +57,29 @@ g.Permissions = "";
 result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
 Console.WriteLine("Upsert group: " + result); 
 
+g.id = "PINSCONSUMER";
+g.Name = "PINSCONSUMER";
+g.Permissions = "";
+
+result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
+Console.WriteLine("Upsert group: " + result); 
+
+g.id = "SUPERVISORS";
+g.Name = "SUPERVISORS";
+g.Permissions = "";
+
+result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
+Console.WriteLine("Upsert group: " + result); 
+
 Users u = new Users();
 u.id = "authuser";
 u.Name = "authuser";
 u.Password = "mysecret";
-u.UserGroups = "AUTHORIZERS";
+u.UserGroups = "AUTHORIZERS, SUPERVISORS, PINSCONSUMER";
 u.Organization = "AUTHORIZERS";
 u.Email = "";
 u.Phone = "";
+u.permissions_list = "Delete Sale, Inventory Transfer, Delete Item";
 
 result = db.Prompt("UPSERT INTO users VALUES " + JsonConvert.SerializeObject(u));
 Console.WriteLine("Upsert users: " + result); 

@@ -15,12 +15,15 @@
 #load "tokens.csx"
 #load "users.csx"
 #load "usersgroup.csx"
+#load "branch_stores.csx"
+#load "pins.csx"
+
 
 using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Linq;
 
 public class AngelApiOperation
 {
@@ -39,8 +42,8 @@ switch (api.OperationType)
         return AdminAuth.GetGroups(db, api);
     case "DeleteGroup":
         return AdminAuth.DeleteGroup(db, api);
-    case "CreateUser":
-        return AdminAuth.CreateUser(db, api);
+    case "UpsertUser":
+        return AdminAuth.UpsertUser(db, api);
     case "DeleteUser":
         return AdminAuth.DeleteUser(db, api);
     case "GetUsers":
@@ -59,6 +62,20 @@ switch (api.OperationType)
         return AdminAuth.GetGroupsUsingTocken(db, api);
     case "GetUserUsingToken":
         return AdminAuth.GetUserUsingToken(db, api);
+    case "UpsertBranchStore":
+        return AdminAuth.UpsertBranchStore(db, api);
+    case "GetBranchStores":
+        return AdminAuth.GetBranchStores(db, api);
+    case "DeleteBranchStore":
+        return AdminAuth.DeleteBranchStore(db, api);
+    case "GetBranchStore":
+        return AdminAuth.GetBranchStore(db, api);
+    case "GetBranchStoresByUser":
+        return AdminAuth.GetBranchStoresByUser(db, api);
+    case "CreatePermission":
+        return AdminAuth.CreatePermission(db, api);
+    case "GetPins":
+        return AdminAuth.GetPins(db, api);
     default:
         return $"Error: No service found {api.OperationType}";
 }
@@ -83,8 +100,6 @@ public static class AdminAuth
         }
 
         var d = api.DataMessage;
-
-        
         
         
         if( d.User == null )
@@ -236,18 +251,6 @@ public static class AdminAuth
             return "Error: User not found";
         }
 
-        result = db.Prompt($"SELECT * FROM UsersGroup WHERE id = '{dt.Rows[0]["UserGroups"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: GetGroupsUsingTocken() " + result.Replace("Error:", "");
-        }
-
-        if (result == "[]")
-        {
-            return "Error: GetGroupsUsingTocken() UserGroup not found";
-        }
-
         DataRow r = JsonConvert.DeserializeObject<DataTable>(result).Rows[0];
 
         var group = new
@@ -255,6 +258,7 @@ public static class AdminAuth
             groups = dt.Rows[0]["UserGroups"],
             user = dt.Rows[0]["id"].ToString(),
             user_name = dt.Rows[0]["name"].ToString(),
+            permissions_list = dt.Rows[0]["permissions_list"].ToString(),
         };
 
         return JsonConvert.SerializeObject(group, Formatting.Indented);
@@ -429,7 +433,7 @@ public static class AdminAuth
     }
 
 
-    public static string CreateUser(AngelDB.DB db, AngelApiOperation api)
+    public static string UpsertUser(AngelDB.DB db, AngelApiOperation api)
     {
         string result = "";
 
@@ -454,7 +458,7 @@ public static class AdminAuth
             return "Error: CreateUser() Password is null";
         }
 
-        if( d.userGroups == null )
+        if( d.UserGroups == null )
         {
             return "Error: CreateUser() userGroups is null";
         }
@@ -479,8 +483,15 @@ public static class AdminAuth
             return "Error: CreateUser() Phone is null";
         }
 
+        if( d.permissions_list == null )
+        {
+            return "Error: CreateUser() permissions_list is null";
+        }
 
-
+        if( string.IsNullOrEmpty( d.Password.ToString() ) )
+        {
+            return "Error: CreateUser() password is null or empty";
+        }
 
         string[] groups = d.UserGroups.ToString().Split(',');
 
@@ -508,12 +519,22 @@ public static class AdminAuth
         t.Organization = d.Organization;
         t.Email = d.Email;
         t.Phone = d.Phone;
+        t.permissions_list = d.permissions_list;
 
         result = db.Prompt($"UPSERT INTO users VALUES {JsonConvert.SerializeObject(t)}");
 
         if (result.StartsWith("Error:"))
         {
             return "Error: CreateUser() insert " + result.Replace("Error:", "");
+        }
+
+        api.DataMessage.expiry_days = 30;
+
+        result = CreateNewToken(db, api);
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: CreateUser() " + result.Replace("Error:", "");
         }
 
         return $"Ok. User created successfully: " + d.User;
@@ -609,7 +630,8 @@ public static class AdminAuth
             Organization = t.Rows[0]["Organization"],
             Email = t.Rows[0]["Email"],
             Phone = t.Rows[0]["Phone"],
-            UserGroups = t.Rows[0]["UserGroups"]
+            UserGroups = t.Rows[0]["UserGroups"],
+            permissions_list = t.Rows[0]["permissions_list"]
         };
 
         return JsonConvert.SerializeObject(user, Formatting.Indented);
@@ -630,12 +652,10 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
-
         if( d.UserToDelete == null )
         {
             return "Error: DeleteUser() UserToDelete is null";
         }
-
 
         result = db.Prompt($"SELECT * FROM users WHERE id = '{d.UserToDelete}'");
 
@@ -650,6 +670,7 @@ public static class AdminAuth
         }
 
         result = db.Prompt($"DELETE FROM users PARTITION KEY main WHERE id = '{d["UserToDelete"]}'");
+
 
         if (result.StartsWith("Error:"))
         {
@@ -691,16 +712,14 @@ public static class AdminAuth
             return "Error: UpsertGroup() Permissions is null";
         }
 
-
-
         result = db.Prompt($"SELECT * FROM UsersGroup WHERE id = '{d.UserGroup}'");
 
         dynamic NewPermissions = d.Permissions;
         UsersGroup t = new UsersGroup();
 
-        t.id = d.UserGroup;
+        t.id = d.UserGroup.ToString().ToUpper().Trim();
         t.Name = d.Name;
-        t.Permissions = JsonConvert.SerializeObject(d.Permissions);
+        t.Permissions = d.Permissions;
 
         result = db.Prompt($"UPSERT INTO UsersGroup VALUES {JsonConvert.SerializeObject(t, Formatting.Indented)}");
 
@@ -726,9 +745,14 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        if( d.Where == null )
+        {
+            d.Where = "";
+        }
+
         if (string.IsNullOrEmpty(d.Where.ToString()))
         {
-            result = db.Prompt($"SELECT * FROM UsersGroup WHERE id = '{d.UserGroup}'");
+            result = db.Prompt($"SELECT * FROM UsersGroup ORDER BY name");
         }
         else
         {
@@ -737,7 +761,7 @@ public static class AdminAuth
 
         if (result.StartsWith("Error:"))
         {
-            return "Error: DeleteGroup() " + result.Replace("Error:", "");
+            return "Error: GetGroups() " + result.Replace("Error:", "");
         }
 
         return result;
@@ -761,6 +785,15 @@ public static class AdminAuth
             return "Error: DeleteGroup() UserGroupToDelete is null";
         }
         
+        List<string> system_groups = new List<string> { "AUTHORIZERS", "SUPERVISORS", "PINSCONSUMER" };
+        
+        foreach (string item in system_groups)
+        {
+            if( item == d.UserGroupToDelete.ToString().ToUpper().Trim() )
+            {
+                return $"Error: UpsertGroup() UserGroup {d.UserGroupToDelete.ToString().Trim().ToUpper()} is a system group";
+            }
+        }
 
         result = db.Prompt($"SELECT * FROM UsersGroup WHERE id = '{d.UserGroupToDelete.ToString().Trim().ToUpper()}'");
 
@@ -785,7 +818,346 @@ public static class AdminAuth
     }
 
 
-    public static string ValidateAdminUser(AngelDB.DB db, string Token)
+
+    public static string UpsertBranchStore(AngelDB.DB db, AngelApiOperation api)
+    {
+        string result = ValidateAdminUser(db, api.Token);
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if( d.id == null )
+        {
+            return "Error: UpsertBranchStores() id is null";
+        }
+
+        if( d.name == null )
+        {
+            return "Error: UpsertBranchStores() Name is null";
+        }
+
+        if( d.address == null )
+        {
+            return "Error: UpsertBranchStores() Address is null";
+        }
+
+        if( d.phone == null )
+        {
+            return "Error: UpsertBranchStores() Phone is null";
+        }  
+
+        if( d.authorizer == null )
+        {
+            d.authorizer = "";
+        }
+
+        branch_stores branch_store = new branch_stores
+        {
+            id = d.id.ToString().Trim().ToUpper(),
+            name = d.name.ToString(),
+            address = d.address.ToString(),
+            phone = d.phone.ToString(),
+            authorizer = d.authorizer.ToString().Trim()
+        };
+
+        if (!string.IsNullOrEmpty(d.authorizer.ToString()))
+        {
+            result = db.Prompt($"SELECT * FROM users WHERE id = '{d.authorizer.ToString().Trim()}'");
+
+            if (result.StartsWith("Error:"))
+            {
+                return "Error: UpsertBranchStores() " + result.Replace("Error:", "");
+            }
+
+            if (result == "[]")
+            {
+                return $"Error: No user found: {d.authorizer}";
+            }
+        }
+
+        var settings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        };
+
+        result = db.Prompt($"UPSERT INTO branch_stores VALUES {JsonConvert.SerializeObject(branch_store, Formatting.Indented, settings)}");
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: UpsertBranchStores() " + result.Replace("Error:", "");
+        }
+
+        return result;
+    }
+
+
+    public static string GetBranchStores(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token);
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if (d.Where == null)
+        {
+            d.Where = "";
+        }
+
+        if (!string.IsNullOrEmpty( d.Where.ToString() ))
+        {
+            result = db.Prompt($"SELECT * FROM branch_stores PARTITION KEY main WHERE {d.Where}");
+        }
+        else
+        {
+            result = db.Prompt($"SELECT * FROM branch_stores PARTITION KEY main");
+        }
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        return result;
+    }
+
+
+    public static string GetBranchStore(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token);
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if( d.BranchStoreId == null )
+        {
+            return "Error: GetBranchStore() BranchStoreId is null";
+        }
+
+        result = db.Prompt($"SELECT * FROM branch_stores PARTITION KEY main WHERE id = '{d.BranchStoreId}'");
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        if (result == "[]") 
+        {
+            return "Error: No branch store found";
+        }
+
+        DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
+
+        branch_stores b = new branch_stores();
+        b.id = dt.Rows[0]["id"].ToString();
+        b.name = dt.Rows[0]["name"].ToString();
+        b.address = dt.Rows[0]["address"].ToString();
+        b.phone = dt.Rows[0]["phone"].ToString();
+        b.authorizer = dt.Rows[0]["authorizer"].ToString();
+
+        return JsonConvert.SerializeObject(b, Formatting.Indented);
+
+    }
+
+    public static string DeleteBranchStore(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token);
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if (d.BranchStoreToDelete == null)
+        {
+            return "Error: DeleteBranchStore() BranchStoreToDelete is null";
+        }
+
+        result = db.Prompt($"DELETE FROM branch_stores PARTITION KEY main WHERE id = '{d.BranchStoreToDelete}'");
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        return $"Ok. Branch Store deleted successfully: {d.BranchStoreToDelete}";
+    }
+
+
+    public static string GetBranchStoresByUser(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS");
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        api.DataMessage.TokenToGetTheUser = api.Token;
+
+        result = GetUserUsingToken(db, api);
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        result = db.Prompt($"SELECT * FROM branch_stores PARTITION KEY main WHERE authorizer = '{result}'");
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        return result;
+
+    }
+    
+
+    public static string CreatePermission(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS");
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if( d.Branchstore_id == null )
+        {
+            return "Error: CreatePermission() Branchstore_id is null";
+        }
+
+        if( d.Permission_id == null )
+        {
+            return "Error: CreatePermission() Permission_id is null";
+        }
+
+        result = db.Prompt($"SELECT * FROM users WHERE id = '{result}'"); 
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        if( result == "[]")
+        {
+            return $"Error: User {result} not found";
+        }
+
+        DataTable user = JsonConvert.DeserializeObject<DataTable>(result);
+
+        result = db.Prompt($"SELECT * FROM branch_stores PARTITION KEY main WHERE id = '{d.Branchstore_id.ToString()}'");
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        if (result == "[]")
+        {
+            return $"Error: Branch Store {d.Branchstore_id.ToString()} not found";
+        }
+
+        Pin p = new Pin()
+        {
+            id = Guid.NewGuid().ToString(),
+            authorizer = user.Rows[0]["id"].ToString(),
+            authorizer_name = user.Rows[0]["Name"].ToString(),
+            branch_store = d.Branchstore_id.ToString(),
+            date = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
+            permissions = d.Permission_id.ToString(),
+            status = "pending",
+            pin_number = RandomNumberGenerator.GenerateRandomNumber(4)
+        };
+
+        result = db.Prompt($"UPSERT INTO pins VALUES {JsonConvert.SerializeObject(p, Formatting.Indented)}");
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        return JsonConvert.SerializeObject(p, Formatting.Indented);
+
+    }
+
+    public static string GetPins(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS");
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if (d.InitialDate == null)
+        {
+            return "Error: GetPins() InitialDate is null";
+        }
+
+        if (d.FinalDate == null)
+        {
+            return "Error: GetPins() FinalDate is null";
+        }
+
+        result = db.Prompt($"SELECT * FROM users WHERE id = '{result}'");
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        if (result == "[]")
+        {
+            return $"Error: User {result} not found";
+        }
+
+        DataTable user = JsonConvert.DeserializeObject<DataTable>(result);
+
+        if (!user.Rows[0]["UserGroups"].ToString().Contains("AUTHORIZERS"))
+        {
+            result = db.Prompt($"SELECT * FROM pins WHERE date >= '{d.InitialDate}' AND date <= '{d.FinalDate} 24:00:00' AND authorizer = '{user.Rows[0]["user"]}' ORDER BY date DESC");
+        }
+        else
+        {
+            result = db.Prompt($"SELECT * FROM pins WHERE date >= '{d.InitialDate}' AND date <= '{d.FinalDate} 24:00:00' ORDER BY date DESC");
+        }
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        return result;
+
+    }
+
+
+    public static string ValidateAdminUser(AngelDB.DB db, string Token, string groups = "AUTHORIZERS")
     {
 
         string result = db.Prompt($"SELECT * FROM tokens WHERE id = '{Token}'");
@@ -816,14 +1188,43 @@ public static class AdminAuth
 
         DataTable dataTable = JsonConvert.DeserializeObject<DataTable>(result);
 
-        if (dataTable.Rows[0]["UserGroups"].ToString().Trim().IndexOf("AUTHORIZERS") < 0) 
+        List<string> authorizedGroups = groups.Split(',').ToList(); 
+        List<string> userGroups = dataTable.Rows[0]["UserGroups"].ToString().Split(',').ToList();
+
+
+        bool found = false;   
+
+        foreach (string item in authorizedGroups)
+        {    
+            Console.WriteLine(item);        
+            if (userGroups.Contains(item.Trim())) 
+            {
+                found = true;                
+                break;
+            }                        
+        }
+
+        if (!found) 
         {
             return "Error: ValidateAdminUser() User not authorized: " + dataTableToken.Rows[0]["User"].ToString();
-        }
+        }        
 
         return dataTableToken.Rows[0]["User"].ToString();
 
     }
+
+
+    public static class RandomNumberGenerator
+    {
+        private static Random random = new Random();
+
+        public static string GenerateRandomNumber(int digitCount)
+        {
+            int randomNumber = random.Next((int)Math.Pow(10, digitCount));
+            return randomNumber.ToString().PadLeft(digitCount, '0');
+        }
+    }
+    
 
 }
 
