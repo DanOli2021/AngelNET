@@ -1,11 +1,7 @@
 //AngelSQLServer
 
 using AngelDB;
-using AngelSQL;
 using AngelSQLServer;
-using DocumentFormat.OpenXml.Bibliography;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using Newtonsoft.Json;
@@ -43,22 +39,8 @@ if (WindowsServiceHelpers.IsWindowsService())
     Environment.CurrentDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 }
 
-// Create a bulder for the web app
-var builder = WebApplication.CreateBuilder(args);
-// End Create a builder for the web app
-
-//if is a Windows service, set the current directory to the same as the executable
-builder = WebApplication.CreateBuilder(new WebApplicationOptions()
-{
-    Args = args,
-    ContentRootPath = WindowsServiceHelpers.IsWindowsService() ? Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) : default
-});
-
-if (WindowsServiceHelpers.IsWindowsService())
-{
-    builder.Host.UseWindowsService();
-}
-
+AngelDB.DB server_db = new AngelDB.DB();
+string result = server_db.Prompt($"SCRIPT FILE {config_file}");
 
 Dictionary<string, string> parameters = new Dictionary<string, string>
 {
@@ -83,15 +65,6 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
     { "chat_script", "" }
 };
 
-
-//Our AngelDB database 
-AngelDB.DB server_db = new AngelDB.DB();
-builder.Services.AddSingleton<AngelDB.DB>(server_db);
-// Object to save the connections
-builder.Services.AddSingleton<ConnectionMappingService>();
-
-string result = server_db.Prompt($"SCRIPT FILE {config_file}");
-
 if (!result.StartsWith("Error:"))
 {
     parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
@@ -101,9 +74,55 @@ else
     LogFile.Log(result);
 }
 
-if (parameters.ContainsKey("python_path")) 
+if (parameters.ContainsKey("python_path"))
 {
     Environment.SetEnvironmentVariable("PYTHON_PATH", parameters["python_path"]);
+}
+
+
+string wwww_directory = Path.Combine(Environment.CurrentDirectory, "wwwroot");
+
+if (parameters.ContainsKey("wwwroot"))
+{
+    if (!string.IsNullOrEmpty(parameters["wwwroot"]))
+    {
+        wwww_directory = parameters["wwwroot"];
+    }
+}
+
+if (!OSTools.IsAbsolutePath(wwww_directory))
+{
+    wwww_directory = Path.Combine(Environment.CurrentDirectory, wwww_directory);
+}
+
+if (!Directory.Exists(wwww_directory))
+{
+    Directory.CreateDirectory(wwww_directory);
+
+    string index_html = Path.Combine(wwww_directory, "index.html");
+    string content = $"<html><head><title>AngelSQLServer</title></head><body><h1>AngelSQLServer</h1><p>AngelSQLServer is running</p><p>{index_html}</p></body></html>";
+    File.WriteAllText(index_html, content);
+}
+
+// Create a bulder for the web app
+//if is a Windows service, set the current directory to the same as the executable
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
+{
+    Args = args,
+    ContentRootPath = WindowsServiceHelpers.IsWindowsService() ? Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) : default,    
+    WebRootPath = wwww_directory
+});
+
+// End Create a builder for the web app
+// Server DB
+builder.Services.AddSingleton<AngelDB.DB>(server_db);
+// Object to save the connections
+builder.Services.AddSingleton<ConnectionMappingService>();
+
+
+if (WindowsServiceHelpers.IsWindowsService())
+{
+    builder.Host.UseWindowsService();
 }
 
 // Create the master database
@@ -280,32 +299,6 @@ defaultFilesOptions.DefaultFileNames.Clear();
 defaultFilesOptions.DefaultFileNames.Add("index.html");
 
 app.UseDefaultFiles(defaultFilesOptions);
-
-string wwww_directory = Path.Combine(Environment.CurrentDirectory, "wwwroot");
-
-if (parameters.ContainsKey("wwwroot"))
-{
-    if (!string.IsNullOrEmpty(parameters["wwwroot"]))
-    {
-        wwww_directory = parameters["wwwroot"];
-    }
-}
-
-if (!OSTools.IsAbsolutePath(wwww_directory))
-{
-    wwww_directory = Path.Combine(Environment.CurrentDirectory, wwww_directory);
-}
-
-if (!Directory.Exists(wwww_directory))
-{
-    Directory.CreateDirectory(wwww_directory);
-
-    string index_html = Path.Combine(wwww_directory, "index.html");
-    string content = $"<html><head><title>AngelSQLServer</title></head><body><h1>AngelSQLServer</h1><p>AngelSQLServer is running</p><p>{index_html}</p></body></html>";
-    File.WriteAllText(index_html, content);
-}
-
-
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(

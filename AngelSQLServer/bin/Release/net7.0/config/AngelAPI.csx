@@ -3,23 +3,20 @@
 #load "Globals.csx"
 // END GLOBALS
 
-#r "AngelSQL.dll"
-#r "DB.dll"
-#r "Newtonsoft.Json.dll"
-
 using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+Dictionary<string, string> parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(Environment.GetEnvironmentVariable("ANGELSQL_PARAMETERS"));
+Dictionary<string, string> messaje_dic = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
 
-Dictionary<string, string> my_data = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
+Console.WriteLine($"AngelAPI.csx: {message}");
 
-switch (my_data["service"])
+switch (messaje_dic["service"])
 {
-    case "skus":
+    case "help":
 
-        return db.Prompt($"SCRIPT FILE scripts/pos/skus.csx DATA {message}");
+        return db.Prompt($"SCRIPT FILE {parameters["scripts_directory"]}/help.csx MESSAGE {messaje_dic["command"]}");
 
     default:
         return "Error: No service found";
 }
-

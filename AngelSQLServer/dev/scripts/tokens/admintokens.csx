@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Globalization;
 
 public class AngelApiOperation
 {
@@ -50,8 +51,8 @@ switch (api.OperationType)
         return AdminAuth.GetUsers(db, api);
     case "GetUser":
         return AdminAuth.GetUser(db, api);
-    case "CreateNewToken":
-        return AdminAuth.CreateNewToken(db, api);
+    case "SaveToken":
+        return AdminAuth.SaveToken(db, api);
     case "DeleteToken":
         return AdminAuth.DeleteToken(db, api);
     case "ValidateToken":
@@ -62,6 +63,10 @@ switch (api.OperationType)
         return AdminAuth.GetGroupsUsingTocken(db, api);
     case "GetUserUsingToken":
         return AdminAuth.GetUserUsingToken(db, api);
+    case "GetTokens":
+        return AdminAuth.GetTokens(db, api);
+    case "GetToken":
+        return AdminAuth.GetToken(db, api);
     case "UpsertBranchStore":
         return AdminAuth.UpsertBranchStore(db, api);
     case "GetBranchStores":
@@ -76,6 +81,8 @@ switch (api.OperationType)
         return AdminAuth.CreatePermission(db, api);
     case "GetPins":
         return AdminAuth.GetPins(db, api);
+    case "OperatePin":
+        return AdminAuth.OperatePin(db, api);
     default:
         return $"Error: No service found {api.OperationType}";
 }
@@ -88,11 +95,11 @@ public class OperationTypeClass
 
 public static class AdminAuth
 {
-    public static string CreateNewToken(AngelDB.DB db, AngelApiOperation api)
+    public static string SaveToken(AngelDB.DB db, AngelApiOperation api)
     {
         string result = "";
 
-        result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "CreateNewToken");
+        result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "SaveToken");
 
         if (result.StartsWith("Error:"))
         {
@@ -104,21 +111,36 @@ public static class AdminAuth
 
         if (d.User == null)
         {
-            return "Error: CreateNewToken() User is null";
+            return "Error: SaveToken() User is null";
         }
 
-        if (d.expiry_days == null)
+        if (d.UsedFor == null)
         {
-            return "Error: CreateNewToken() expiry_days is null";
+            d.UsedFor = "App Access";
         }
 
+        if (d.ExpiryTime == null)
+        {
+            return "Error: SaveToken() ExpiryTime is null";
+        }
 
+        if (d.id == null)
+        {
+            return "Error: SaveToken() id (Token) is null"; ;
+        }
+
+        d.ExpiryTime = ConvertToDateTimeWithMaxTime(d.ExpiryTime.ToString());
+
+        if (d.Observations == null)
+        {
+            d.Observations = "";
+        }
 
         result = db.Prompt($"SELECT * FROM users WHERE id = '{d.User}'");
 
         if (result.StartsWith("Error:"))
         {
-            return "Error: CreateNewToken() " + result.Replace("Error:", "");
+            return "Error: SaveToken() " + result.Replace("Error:", "");
         }
 
         if (result == "[]")
@@ -128,36 +150,114 @@ public static class AdminAuth
 
         Tokens t = new Tokens();
 
-        string token = Guid.NewGuid().ToString();
+        if (d.id == "New")
+        {
+            d.id = System.Guid.NewGuid().ToString();
+        }
 
-        t.id = token;
+        t.id = d.id;
         t.User = d.User;
+        t.UsedFor = d.UsedFor;
+        t.CreationTime = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
+        t.Observations = d.Observations;
+        t.ExpiryTime = d.ExpiryTime;
 
-        int expiry_days = int.Parse(d.expiry_days.ToString());
-
-        if (expiry_days < 0)
-        {
-            expiry_days = 400000;
-        }
-
-        t.ExpiryTime = DateTime.Now.AddDays(expiry_days).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
-        result = db.Prompt($"INSERT INTO tokens VALUES {JsonConvert.SerializeObject(t)}");
+        result = db.Prompt($"UPSERT INTO tokens VALUES {JsonConvert.SerializeObject(t)}");
 
         if (result.StartsWith("Error:"))
         {
-            return "Error: CreateNewToken() insert " + result.Replace("Error:", "");
+            return "Error: SaveToken() insert " + result.Replace("Error:", "");
         }
 
-        result = db.Prompt($"DELETE FROM tokens PARTITION KEY main WHERE User = '{d["User"]}' AND id <> '{token}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: CreateNewToken() delete tockens " + result.Replace("Error:", "");
-        }
-
-        return token;
+        return t.id;
 
     }
+
+
+    public static string GetTokens(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "GetTokens");
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if (d.Where == null)
+        {
+            d.Where = "";
+        }
+
+        if (!string.IsNullOrEmpty(d.Where.ToString()))
+        {
+            result = db.Prompt($"SELECT * FROM tokens PARTITION KEY main WHERE {d.Where}");
+        }
+        else
+        {
+            result = db.Prompt($"SELECT * FROM tokens PARTITION KEY main");
+        }
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        DataTable t = JsonConvert.DeserializeObject<DataTable>(result);
+
+        DataColumn newColumn = new DataColumn("ServerTime", typeof(System.String));
+        newColumn.DefaultValue = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
+        t.Columns.Add(newColumn);
+
+        return JsonConvert.SerializeObject(t);
+    }
+
+
+    public static string GetToken(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "GetToken");
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if (d.TokenId == null)
+        {
+            return "Error: GetToken() TokenId is null";
+        }
+
+        result = db.Prompt($"SELECT * FROM tokens PARTITION KEY main WHERE id = '{d.TokenId}'");
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        if (result == "[]")
+        {
+            return "Error: No token found";
+        }
+
+        DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
+
+        Tokens t = new Tokens();
+        t.id = dt.Rows[0]["id"].ToString();
+        t.User = dt.Rows[0]["User"].ToString();
+        t.ExpiryTime = dt.Rows[0]["ExpiryTime"].ToString();
+        t.UsedFor = dt.Rows[0]["UsedFor"].ToString();
+        t.Observations = dt.Rows[0]["Observations"].ToString();
+        t.CreationTime = dt.Rows[0]["CreationTime"].ToString();
+
+        return JsonConvert.SerializeObject(t, Formatting.Indented);
+
+    }
+
 
     public static string DeleteToken(AngelDB.DB db, AngelApiOperation api)
     {
@@ -177,7 +277,6 @@ public static class AdminAuth
         {
             return "Error: DeleteToken() TokenToDelete is null";
         }
-
 
         result = db.Prompt($"SELECT * FROM tokens WHERE id = '{d.TokenToDelete}'");
 
@@ -376,8 +475,6 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
-
-
         if (d.User == null)
         {
             return "Error: GetTokenFromUser() User is null";
@@ -387,8 +484,6 @@ public static class AdminAuth
         {
             return "Error: GetTokenFromUser() Password is null";
         }
-
-
 
         result = db.Prompt($"SELECT * FROM users WHERE id = '{d.User}'");
 
@@ -409,7 +504,7 @@ public static class AdminAuth
             return "Error: Invalid password";
         }
 
-        result = db.Prompt($"SELECT * FROM tokens WHERE user = '{d.User}'");
+        result = db.Prompt($"SELECT * FROM tokens WHERE user = '{d.User}' AND ExpiryTime > '{DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff")}'");
 
         if (result.StartsWith("Error:"))
         {
@@ -444,53 +539,51 @@ public static class AdminAuth
             return result;
         }
 
-
-
         var d = api.DataMessage;
 
         if (d.User == null)
         {
-            return "Error: CreateUser() User is null";
+            return "Error: UpsertUser() User is null";
         }
 
         if (d.Password == null)
         {
-            return "Error: CreateUser() Password is null";
+            return "Error: UpsertUser() Password is null";
         }
 
         if (d.UserGroups == null)
         {
-            return "Error: CreateUser() userGroups is null";
+            return "Error: UpsertUser() userGroups is null";
         }
 
         if (d.Name == null)
         {
-            return "Error: CreateUser() Name is null";
+            return "Error: UpsertUser() Name is null";
         }
 
         if (d.Organization == null)
         {
-            return "Error: CreateUser() Organization is null";
+            return "Error: UpsertUser() Organization is null";
         }
 
         if (d.Email == null)
         {
-            return "Error: CreateUser() Email is null";
+            return "Error: UpsertUser() Email is null";
         }
 
         if (d.Phone == null)
         {
-            return "Error: CreateUser() Phone is null";
+            return "Error: UpsertUser() Phone is null";
         }
 
         if (d.permissions_list == null)
         {
-            return "Error: CreateUser() permissions_list is null";
+            return "Error: UpsertUser() permissions_list is null";
         }
 
         if (string.IsNullOrEmpty(d.Password.ToString()))
         {
-            return "Error: CreateUser() password is null or empty";
+            return "Error: UpsertUser() password is null or empty";
         }
 
         string[] groups = d.UserGroups.ToString().Split(',');
@@ -501,12 +594,12 @@ public static class AdminAuth
 
             if (result.StartsWith("Error:"))
             {
-                return "Error: CreateUser() Auth " + result.Replace("Error:", "");
+                return "Error: UpsertUser() Auth " + result.Replace("Error:", "");
             }
 
             if (result == "[]")
             {
-                return "Error: CreateUser() Auth No user group found: " + group;
+                return "Error: UpsertUser() Auth No user group found: " + group;
             }
         }
 
@@ -525,16 +618,28 @@ public static class AdminAuth
 
         if (result.StartsWith("Error:"))
         {
-            return "Error: CreateUser() insert " + result.Replace("Error:", "");
+            return "Error: UpsertUser() insert " + result.Replace("Error:", "");
         }
 
-        api.DataMessage.expiry_days = 30;
-
-        result = CreateNewToken(db, api);
+        result = GetTokenFromUser(db, api);
 
         if (result.StartsWith("Error:"))
         {
-            return "Error: CreateUser() " + result.Replace("Error:", "");
+            api.DataMessage.ExpiryTime = DateTime.Now.AddDays(30).ToUniversalTime().ToString("yyyy-MM-dd");
+
+            var new_token = new Tokens();
+            new_token.id = "New";
+            new_token.User = d.User;
+            new_token.ExpiryTime = DateTime.Now.AddDays(30).ToUniversalTime().ToString("yyyy-MM-dd");
+            new_token.UsedFor = "App Login";
+            new_token.Observations = "Created by UpsertUser()";
+            api.DataMessage = new_token;
+            result = SaveToken(db, api);
+
+            if (result.StartsWith("Error:"))
+            {
+                return "Error: UpsertUser() " + result.Replace("Error:", "");
+            }
         }
 
         return $"Ok. User created successfully: " + d.User;
@@ -1053,18 +1158,38 @@ public static class AdminAuth
             return "Error: CreatePermission() Permission_id is null";
         }
 
+        if (d.User == null)
+        {
+            d.User = "";
+        }
+
+        if (d.PinType == null)
+        {
+            d.PinType = "Generic";
+        }
+
+        if (d.PinType == "touser")
+        {
+
+            if (d.User == "")
+            {
+                return "Error: CreatePermission() User is null";
+            }
+            
+            result = db.Prompt($"SELECT * FROM users WHERE id = '{d.User}'");
+
+            if (result.StartsWith("Error:"))
+            {
+                return result;
+            }
+
+            if (result == "[]")
+            {
+                return $"Error: User {d.User} not found";
+            }
+        }
+
         result = db.Prompt($"SELECT * FROM users WHERE id = '{result}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (result == "[]")
-        {
-            return $"Error: User {result} not found";
-        }
-
         DataTable user = JsonConvert.DeserializeObject<DataTable>(result);
 
         result = db.Prompt($"SELECT * FROM branch_stores PARTITION KEY main WHERE id = '{d.Branchstore_id.ToString()}'");
@@ -1076,8 +1201,19 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return $"Error: Branch Store {d.Branchstore_id.ToString()} not found";
+            if (d.Branchstore_id.ToString() != "SYSTEM")
+            {
+                return $"Error: Branch Store {d.Branchstore_id.ToString()} not found";
+            }
         }
+
+        if (d.Minutes == null)
+        {
+            d.Minutes = 30;
+        }
+
+        int minutes = 30;
+        int.TryParse(d.Minutes.ToString(), out minutes);
 
         Pin p = new Pin()
         {
@@ -1086,9 +1222,14 @@ public static class AdminAuth
             authorizer_name = user.Rows[0]["Name"].ToString(),
             branch_store = d.Branchstore_id.ToString(),
             date = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
+            expirytime = DateTime.Now.AddMinutes(minutes).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
             permissions = d.Permission_id.ToString(),
             status = "pending",
-            pin_number = RandomNumberGenerator.GenerateRandomNumber(4)
+            pin_number = RandomNumberGenerator.GenerateRandomNumber(4),
+            user = d.User.ToString(),
+            pintype = d.PinType.ToString(),
+            minutes = minutes,
+            authorizer_message = d.AuthorizerMessage.ToString(),
         };
 
         result = db.Prompt($"UPSERT INTO pins VALUES {JsonConvert.SerializeObject(p, Formatting.Indented)}");
@@ -1138,13 +1279,22 @@ public static class AdminAuth
 
         DataTable user = JsonConvert.DeserializeObject<DataTable>(result);
 
+        DateTime parsedDate;
+
+        DateTime.TryParseExact(d.InitialDate.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+        d.InitialDate = parsedDate.ToUniversalTime().ToString("yyyy-MM-dd");
+        d.FinalDate = d.FinalDate + " 23:59:59";
+
+        DateTime.TryParseExact(d.FinalDate.ToString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+        d.FinalDate = parsedDate.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss");
+
         if (!user.Rows[0]["UserGroups"].ToString().Contains("AUTHORIZERS"))
         {
-            result = db.Prompt($"SELECT * FROM pins WHERE date >= '{d.InitialDate}' AND date <= '{d.FinalDate} 24:00:00' AND authorizer = '{user.Rows[0]["id"]}' ORDER BY date DESC");
+            result = db.Prompt($"SELECT * FROM pins WHERE date >= '{d.InitialDate}' AND date <= '{d.FinalDate}' AND authorizer = '{user.Rows[0]["id"]}' ORDER BY date DESC");
         }
         else
         {
-            result = db.Prompt($"SELECT * FROM pins WHERE date >= '{d.InitialDate}' AND date <= '{d.FinalDate} 24:00:00' ORDER BY date DESC");
+            result = db.Prompt($"SELECT * FROM pins WHERE date >= '{d.InitialDate}' AND date <= '{d.FinalDate}' ORDER BY date DESC");
         }
 
         if (result.StartsWith("Error:"))
@@ -1154,6 +1304,102 @@ public static class AdminAuth
 
         return result;
 
+    }
+
+
+    public static string OperatePin(AngelDB.DB db, AngelApiOperation api)
+    {
+
+        string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS, PINSCONSUMER", "OperatePin");
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        var d = api.DataMessage;
+
+        if (d.Pin == null)
+        {
+            return "Error: OperatePin() Pin is null";
+        }
+
+        if (d.Permission == null)
+        {
+            return "Error: OperatePin() Permission is null";
+        }
+
+        if (d.BranchStore == null)
+        {
+            return "Error: OperatePin() BranchStore is null";
+        }
+
+        if (d.AppUser == null)
+        {
+            return "Error: OperatePin() AppUser is null";
+        }
+
+        if (d.AppUserName == null)
+        {
+            return "Error: OperatePin() AppUserName is null";
+        }
+
+        if (d.PinType == null)
+        {
+            d.PinType = "Generic";
+        }
+
+        string PartitionKey = DateTime.Now.ToUniversalTime().ToString("yyyy-MM");
+        result = db.Prompt($"SELECT * FROM pins PARTION KEY {PartitionKey} WHERE pin_number = '{d.Pin}' AND permissions = '{d.Permission}' AND branch_store = '{d.BranchStore}' AND status = 'pending' ORDER BY date DESC");
+
+        if (result.StartsWith("Error:"))
+        {
+            return "Error: " + result.Replace("Error:", "");
+        }
+
+        if (result == "[]")
+        {
+            return "Error: Pin not found";
+        }
+
+        DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
+        DataRow r = dt.Rows[0];
+
+        if (d.PinType.ToString().Trim().ToLower() == "touser")
+        {
+            if (r["d.User"].ToString().Trim().ToLower() != d.User.ToString().Trim().ToLower())
+            {
+                return "Error: This pin is not for the user who is trying to confirm it";
+            }
+        }
+
+        DateTime expiry = DateTime.Parse(r["expirytime"].ToString());
+
+        if (DateTime.Now.ToUniversalTime() > expiry)
+        {
+            return $"Error: Pin expired {dt.Rows[0]["id"].ToString()}";
+        }
+
+        Pin pin = new Pin()
+        {
+            id = dt.Rows[0]["id"].ToString(),
+            confirmed_date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+            status = "confirmed",
+            user = d.User,
+            message = d.Message,
+            app_user = d.AppUser,
+            app_user_name = d.AppUserName,
+            pintype = d.PinType
+        };
+
+        var settings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        };
+
+        result = db.Prompt($"UPSERT INTO {PartitionKey} pins VALUES {JsonConvert.SerializeObject(pin, Formatting.Indented, settings)}");
+
+        return result;
     }
 
 
@@ -1184,6 +1430,11 @@ public static class AdminAuth
         if (result == "[]")
         {
             return "Error: ValidateAdminUser() User not found: " + dataTableToken.Rows[0]["User"].ToString();
+        }
+
+        if (HasExpired(dataTableToken.Rows[0]["ExpiryTime"].ToString()))
+        {
+            return "Error: ValidateAdminUser() The Token has expired: " + dataTableToken.Rows[0]["User"].ToString();
         }
 
         DataTable dataTable = JsonConvert.DeserializeObject<DataTable>(result);
@@ -1221,6 +1472,7 @@ public static class AdminAuth
     }
 
 
+
     public static class RandomNumberGenerator
     {
         private static Random random = new Random();
@@ -1231,6 +1483,34 @@ public static class AdminAuth
             return randomNumber.ToString().PadLeft(digitCount, '0');
         }
     }
+
+
+    public static bool HasExpired(string expiryTime)
+    {
+        // Parsea las fechas dadas usando un formato de fecha y hora específico
+        DateTime parsedNow = DateTime.Now.ToUniversalTime();
+        DateTime parsedExpiryTime = DateTime.ParseExact(expiryTime, "yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+        // Si la fecha de expiración calculada es anterior o igual a la fecha/hora de expiración dada, retorna verdadero
+        return parsedNow > parsedExpiryTime;
+    }
+
+    public static string ConvertToDateTimeWithMaxTime(string inputDate)
+    {
+        // Parse the date
+        DateTime parsedDate;
+        if (DateTime.TryParseExact(inputDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+        {
+            // Set the time to 23:59:59.000000
+            DateTime maxTimeDate = parsedDate.Date.Add(new TimeSpan(23, 59, 59)).AddTicks(9999999); // 10 million ticks per second - 1 tick = 1 second
+            return maxTimeDate.ToString("yyyy-MM-dd HH:mm:ss.fffffff");
+        }
+        else
+        {
+            return $"Error: Invalid date format. {inputDate}";
+        }
+    }
+
+
 
 
 }

@@ -757,6 +757,8 @@ namespace AngelDB
                         break;
                     case "python":
                         break;
+                    case "write_file":
+                        break;
                     default:
                         return $"Error: You have not indicated your username and password";
                 }
@@ -912,6 +914,21 @@ namespace AngelDB
                 case "write_results_from":
                     result = FileStorage.WriteToFile(d, this);
                     break;
+                case "write_file":
+
+                    try
+                    {
+                        System.IO.File.WriteAllText(d["write_file"], d["values"]);
+                        result = "Ok.";
+
+                    }
+                    catch (Exception e)
+                    {
+                        result = "Error: Write File " + e.Message;
+                    }
+
+                    break;
+
                 case "cmd":
                     result = RunCMD(d["cmd"]);
                     break;
@@ -2251,89 +2268,98 @@ namespace AngelDB
         string SQLServerExecute(string command)
         {
 
-            DbLanguage l = new DbLanguage();
-            l.SetCommands(SQLServerCommands.Commands());
-            Dictionary<string, string> d = l.Interpreter(command);
-
-            if (!string.IsNullOrEmpty(l.errorString)) return l.errorString;
-
-            switch (d.First().Key)
+            try
             {
-                case "connect":
+                DbLanguage l = new DbLanguage();
+                l.SetCommands(SQLServerCommands.Commands());
+                Dictionary<string, string> d = l.Interpreter(command);
 
-                    if (this.SQLServer.ContainsKey(d["alias"]))
-                    {
-                        this.SQLServer.Remove(d["alias"]);
-                    }
+                if (!string.IsNullOrEmpty(l.errorString)) return l.errorString;
 
-                    SQLServerInfo sql = new SQLServerInfo();
-                    sql.ConnectionString = d["connect"];
-                    sql.SQLTools = new SQLServerTools(sql.ConnectionString);
+                switch (d.First().Key)
+                {
+                    case "connect":
 
-                    sql.SQLTools.Connection = new SqlConnection(d["connect"]);
-                    sql.SQLTools.Connection.Open();
-                    sql.SQLTools.SQLCommand = sql.SQLTools.Connection.CreateCommand();
-                    this.SQLServer.Add(d["alias"], sql);
+                        if (this.SQLServer.ContainsKey(d["alias"]))
+                        {
+                            this.SQLServer.Remove(d["alias"]);
+                        }
 
-                    return "Ok.";
+                        SQLServerInfo sql = new SQLServerInfo();
+                        sql.ConnectionString = d["connect"];
+                        sql.SQLTools = new SQLServerTools(sql.ConnectionString);
 
-                case "query":
+                        sql.SQLTools.Connection = new SqlConnection(d["connect"]);
+                        sql.SQLTools.Connection.Open();
+                        sql.SQLTools.SQLCommand = sql.SQLTools.Connection.CreateCommand();
+                        this.SQLServer.Add(d["alias"], sql);
 
-                    if (!this.SQLServer.ContainsKey(d["connection_alias"]))
-                    {
-                        return "Error: It is necessary to first start the SQL SERVER connection use the command CONNECT <connection_string> ALIAS <alias_name>";
-                    }
+                        return "Ok.";
 
-                    return SQLServerQuery(d["query"], d["connection_alias"]);
+                    case "query":
 
-                case "save_accounts_to":
+                        if (!this.SQLServer.ContainsKey(d["connection_alias"]))
+                        {
+                            return "Error: It is necessary to first start the SQL SERVER connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                        }
 
-                    return SaveSQLServerAccountsTo(d);
+                        return SQLServerQuery(d["query"], d["connection_alias"]);
 
-                case "restore_accounts_from":
+                    case "save_accounts_to":
 
-                    return RestoreSQLServerAccounts(d);
+                        return SaveSQLServerAccountsTo(d);
 
-                case "show_connections":
+                    case "restore_accounts_from":
 
-                    return ShowSQLServerConnections();
+                        return RestoreSQLServerAccounts(d);
 
-                case "insert_into":
+                    case "show_connections":
 
-                    return SQLServerInsert(d);
+                        return ShowSQLServerConnections();
 
-                case "update":
+                    case "insert_into":
 
-                    return SQLServerUpdate(d);
+                        return SQLServerInsert(d);
 
-                case "begin_transaction":
+                    case "update":
 
-                    return SQLServerBenginTransaction(d);
+                        return SQLServerUpdate(d);
 
-                case "commit_transaction":
+                    case "begin_transaction":
 
-                    return SQLServerCommitTransaction(d);
+                        return SQLServerBenginTransaction(d);
 
-                case "rollback_transaction":
+                    case "commit_transaction":
 
-                    return SQLServerRollbackTransaction(d);
+                        return SQLServerCommitTransaction(d);
 
-                case "exec":
+                    case "rollback_transaction":
 
-                    if (!this.SQLServer.ContainsKey(d["connection_alias"]))
-                    {
-                        return "Error: It is necessary to first start the SQL SERVER connection use the command CONNECT <connection_string> ALIAS <alias_name>";
-                    }
+                        return SQLServerRollbackTransaction(d);
 
-                    return this.SQLServer[d["connection_alias"]].SQLTools.DirectExec(d["exec"]);
+                    case "exec":
+
+                        if (!this.SQLServer.ContainsKey(d["connection_alias"]))
+                        {
+                            return "Error: It is necessary to first start the SQL SERVER connection use the command CONNECT <connection_string> ALIAS <alias_name>";
+                        }
+
+                        return this.SQLServer[d["connection_alias"]].SQLTools.DirectExec(d["exec"]);
 
 
-                default:
-                    break;
+                    default:
+                        break;
+
+                }
+
+                return $"Error: Not SQL Server Command found {command}";
 
             }
+            catch (Exception e)
+            {
+                return $"Error: SQL Server {e}";
+            }
 
-            return $"Error: Not SQL Server Command found {command}";
         }
 
         public string SQLServerInsert(Dictionary<string, string> d)

@@ -6,7 +6,7 @@
 #load "tokens.csx"
 #load "users.csx"
 #load "usersgroup.csx"
-#load "branch_stores.csx"
+#load "branch_stores.csx" 
 #load "pins.csx"
 
 using System;
@@ -87,8 +87,7 @@ Console.WriteLine("Upsert users: " + result);
 Tokens t = new Tokens();
 t.id = "5c242c01-39f4-43bf-8f63-bf4b19dbe8e3";
 t.User = "authuser";
-t.ExpiryTime = "2200-12-31 23:59:59";
-
+t.ExpiryTime = "2050-12-31 23:59:59.9999999";
 result = db.Prompt("UPSERT INTO tokens VALUES " + JsonConvert.SerializeObject(t));
 Console.WriteLine("Upsert tokens: " + result);
 

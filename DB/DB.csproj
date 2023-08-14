@@ -5,6 +5,7 @@
     <TargetFramework>net7.0</TargetFramework>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+	<ApplicationIcon>AngelDB.ico</ApplicationIcon>
  </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +40,10 @@
     <Compile Remove="AzureSQL.cs" />
     <Compile Remove="AzureTableStorage.cs" />
     <Compile Remove="Globo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="AngelDB.ico" />
   </ItemGroup>
 
   <ItemGroup>

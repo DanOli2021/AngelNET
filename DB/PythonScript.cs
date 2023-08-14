@@ -41,78 +41,87 @@ namespace AngelDB
         public string ExecutePythonScript(string commmand, AngelDB.DB db, AngelDB.DB server_db)
         {
 
-            this.db = db;
-            this.main_db = db;
-
-            if (server_db is not null)
+            try
             {
-                this.db = server_db;
-            }
+                this.db = db;
+                this.main_db = db;
 
-            DbLanguage l = new DbLanguage();
-            l.SetCommands(PythonCommands.Commands());
-            Dictionary<string, string> d = l.Interpreter(commmand);
+                if (server_db is not null)
+                {
+                    this.db = server_db;
+                }
 
-            if (!string.IsNullOrEmpty(l.errorString)) return l.errorString;
+                DbLanguage l = new DbLanguage();
+                l.SetCommands(PythonCommands.Commands());
+                Dictionary<string, string> d = l.Interpreter(commmand);
 
-            if (d.First().Key == "set_path")
-            {
-                Environment.SetEnvironmentVariable("PYTHON_PATH", d["set_path"]);
-                return "Ok.";
-            }
+                if (!string.IsNullOrEmpty(l.errorString)) return l.errorString;
 
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PYTHON_PATH")))
-            {
-                return "Error: PYTHON_PATH not found. Install https://www.python.org/downloads/, Install for all users, then Use command PYTHON SET PATH <C:/Program Files/Python311/python311.dll> ";
-            }
-
-            if (!File.Exists(Environment.GetEnvironmentVariable("PYTHON_PATH"))) return "Error: File not found: " + Environment.GetEnvironmentVariable("PYTHON_PATH");
-
-            if (Runtime.PythonDLL == null)
-            {
-                Runtime.PythonDLL = Environment.GetEnvironmentVariable("PYTHON_PATH");
-            }
-
-            if (PythonEngine.IsInitialized == false)
-            {
-                PythonEngine.Initialize();
-            }
-
-            string result = "";
-
-            switch (d.First().Key)
-            {
-                case "is_installed":
-
-                    result = IsPythonInstalled();
-                    break;
-
-                case "exec":
-
-                    result = PythonExecute(d["exec"], db, server_db, d["message"]);
-                    break;
-
-                case "file":
-
-                    result = ExecutePythonFile(d["file"], d["message"], d["on_application_directory"]);
-                    break;
-
-                case "engine_shutdown":
-
-                    PythonEngine.Shutdown();
+                if (d.First().Key == "set_path")
+                {
+                    Environment.SetEnvironmentVariable("PYTHON_PATH", d["set_path"]);
                     return "Ok.";
+                }
 
-                case "class":
+                if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PYTHON_PATH")))
+                {
+                    return "Error: PYTHON_PATH not found. Install https://www.python.org/downloads/, Install for all users, then Use command PYTHON SET PATH <C:/Program Files/Python311/python311.dll> ";
+                }
 
-                    result = PythonExecuteClass(d["class"], db, server_db, d["message"]);
-                    break;
+                if (!File.Exists(Environment.GetEnvironmentVariable("PYTHON_PATH"))) return "Error: File not found: " + Environment.GetEnvironmentVariable("PYTHON_PATH");
 
-                default:
-                    result = "Error: Command not found: " + commmand;
-                    break;
+                if (Runtime.PythonDLL == null)
+                {
+                    Runtime.PythonDLL = Environment.GetEnvironmentVariable("PYTHON_PATH");
+                }
+
+                if (PythonEngine.IsInitialized == false)
+                {
+                    PythonEngine.Initialize();
+                }
+
+                string result = "";
+
+                switch (d.First().Key)
+                {
+                    case "is_installed":
+
+                        result = IsPythonInstalled();
+                        break;
+
+                    case "exec":
+
+                        result = PythonExecute(d["exec"], db, server_db, d["message"]);
+                        break;
+
+                    case "file":
+
+                        result = ExecutePythonFile(d["file"], d["message"], d["on_application_directory"]);
+                        break;
+
+                    case "engine_shutdown":
+
+                        PythonEngine.Shutdown();
+                        return "Ok.";
+
+                    case "class":
+
+                        result = PythonExecuteClass(d["class"], db, server_db, d["message"]);
+                        break;
+
+                    default:
+                        result = "Error: Command not found: " + commmand;
+                        break;
+                }
+
+                return result;
+
+
             }
-
-            return result;
+            catch (Exception e)
+            {
+                return $"Error: PythonScript {e}";
+            }
 
         }
 
@@ -200,7 +209,11 @@ namespace AngelDB
                 catch (PythonException ex)
                 {
                     result = "Error: Python Script: " + ex.Message;
+                } catch (Exception ex)
+                {
+                    result = "Error: Python Script: " + ex.Message;
                 }
+
             }
 
             PythonEngine.EndAllowThreads(state);

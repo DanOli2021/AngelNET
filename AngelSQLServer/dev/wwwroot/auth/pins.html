@@ -35,24 +35,15 @@
     <script>
 
         document.addEventListener("DOMContentLoaded", function () {
-            setInitialDate( "date1" );
-            setInitialDate( "date2" );
+            setInitialDate("date1");
+            setInitialDate("date2");
             getPins();
         });
 
-        function setInitialDate( dateInput ) 
-        {
+        function setInitialDate(dateInput) {
             var fechaInput = document.getElementById(dateInput);
-            var fechaGuardada = localStorage.getItem(dateInput);
-
-            if (!fechaGuardada) {
-                var fechaActual = currentDate();
-                fechaInput.value = fechaActual;
-                localStorage.setItem("fecha", fechaActual);
-            } else {
-                fechaInput.value = fechaGuardada;
-            }
- 
+            var fechaActual = currentDate();
+            fechaInput.value = fechaActual;
         }
 
         function currentDate() {
@@ -120,10 +111,12 @@
                         <th>Autohrizer</th>
                         <th>Branch Store</th>
                         <th>Date</th>
+                        <th>Expiry Time</th>
                         <th>Permission</th>
                         <th>Confirmated Date</th>
                         <th>User</th>
                         <th>User Name</th>
+                        <th>Expired</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -131,6 +124,14 @@
             </table>
 
             <script>
+
+                function convertToDate(dateString) {
+                    var parts = dateString.split(' ');
+                    var dateParts = parts[0].split('-');
+                    var timeParts = parts[1].split(':');
+                    var milliseconds = parseFloat(timeParts[2]) * 1000; // Convertir segundos y milisegundos en milisegundos totales
+                    return new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], milliseconds / 1000, milliseconds % 1000));
+                }
 
                 var tabla;
 
@@ -142,21 +143,61 @@
                         data: datos,
                         bFilter: true,
                         dom: 'Bfrtip',
-                        buttons: [
-                            'print'
-                        ],
+                        buttons: ['print'],
                         columns: [
                             { data: 'id' },
                             { data: 'pin_number' },
                             { data: 'status' },
                             { data: 'authorizer' },
                             { data: 'branch_store' },
-                            { data: 'date' },
+                            {
+                                data: 'date',
+                                render: function (data, type, row) {
+                                    var localDate = convertToDate(data).toLocaleString();
+                                    return localDate;
+                                }
+                            },
+                            {
+                                data: 'expirytime',
+                                render: function (data, type, row) {
+                                    var localExpiry = convertToDate(data).toLocaleString();
+                                    return localExpiry;
+                                }
+                            },
                             { data: 'permissions' },
                             { data: 'confirmed_date' },
                             { data: 'user' },
                             { data: 'user_name' },
-                        ]
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+                                    var currentDate = convertToDate(row.date);
+                                    var expiryDate = convertToDate(row.expirytime);
+                                    var diffTime = expiryDate - currentDate;
+                                    var diffMinutes = Math.ceil(diffTime / (1000 * 60));
+
+                                    if (row.status == "pending") {
+                                        if (diffMinutes > 30) {
+                                            return "Expired";
+                                        } else {
+                                            return "";
+                                        }
+                                    } else {
+                                        return "";
+                                    }
+                                }
+                            }
+                        ],
+                        createdRow: function (row, data, dataIndex) {
+                            var currentDate = convertToDate(data.date);
+                            var expiryDate = convertToDate(data.expirytime);
+                            var diffTime = expiryDate - currentDate;
+                            var diffMinutes = Math.ceil(diffTime / (1000 * 60));
+
+                            if (diffMinutes > 30) {
+                                $(row).css('background-color', '#FFC0C0'); // Rojo claro
+                            }
+                        }
                     });
                 });
             </script>
@@ -190,7 +231,7 @@
             var date1 = document.getElementById("date1").value;
             var date2 = document.getElementById("date2").value;
 
-            var datos = GetPins(Token.username, Token.token, date1, date2);           
+            var datos = GetPins(Token.username, Token.token, date1, date2);
 
             datos.then(function (query) {
 
