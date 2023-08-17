@@ -73,7 +73,7 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
         return "Error: CreateAccount() " + result.Replace("Error:", "");
     }
 
-    DataTable p = JsonConvert.DeserializeObject<DataTable>(result);
+    DataTable p = server_db.GetDataTable(result);
 
     Pin my_pin = new Pin()
     {
@@ -209,28 +209,35 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
     result = db.CreateTable(my_pin, "pins");
     if (result.StartsWith("Error:")) return "Error: Creating table pins " + result.Replace("Error:", "");
 
-    UsersGroup g = new UsersGroup();
 
+    List<UsersGroup> groups = new List<UsersGroup>();
+
+    UsersGroup g = new UsersGroup();
     g.id = "AUTHORIZERS";
     g.Name = "AUTHORIZERS";
     g.Permissions = "";
+    groups.Add(g);
 
-    result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
-    if (result.StartsWith("Error:")) return "Error: insert group AUTHORIZERS" + result.Replace("Error:", "");
-
+    g = new UsersGroup();
     g.id = "PINSCONSUMER";
     g.Name = "PINSCONSUMER";
     g.Permissions = "";
+    groups.Add(g);
 
-    result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
-    if (result.StartsWith("Error:")) return "Error: insert group PINSCONSUMER" + result.Replace("Error:", "");
-
+    g = new UsersGroup();
     g.id = "SUPERVISORS";
     g.Name = "SUPERVISORS";
     g.Permissions = "";
+    groups.Add(g);
 
-    result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
-    if (result.StartsWith("Error:")) return "Error: insert group SUPERVISORS" + result.Replace("Error:", "");
+    g = new UsersGroup();
+    g.id = "ADMINISTRATIVE";
+    g.Name = "ADMINISTRATIVE";
+    g.Permissions = "";
+    groups.Add(g);
+
+    result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(groups));
+    if (result.StartsWith("Error:")) return "Error: insert group ADMINISTRATIVE " + result.Replace("Error:", "");
 
     Users u = new Users();
     u.id = d.User.ToString();

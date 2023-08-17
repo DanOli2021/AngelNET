@@ -1598,6 +1598,9 @@ public static class AdminAuth
             pintype = "touser"
         };
 
+        result = db.CreateTable(pin, "pins");
+        if (result.StartsWith("Error:")) return "Error: Creating table pins " + result.Replace("Error:", "");
+
         string wwwroot = parameters["wwwroot"].ToString().Trim();
 
         if (!Directory.Exists(wwwroot))

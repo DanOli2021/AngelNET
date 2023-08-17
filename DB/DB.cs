@@ -13,6 +13,7 @@ using System.Globalization;
 using AngelDBTools;
 using System.Data.SqlClient;
 using Python.Runtime;
+using System.Dynamic;
 
 namespace AngelDB
 {
@@ -2809,6 +2810,28 @@ namespace AngelDB
         {
             return JsonConvert.DeserializeObject<DataTable>(Data);
         }
+
+        public DataRow GetDataRow(string Data)
+        {
+            DataTable dt = JsonConvert.DeserializeObject<DataTable>(Data);
+            return dt.Rows[0];
+        }
+
+        public static dynamic DataRowToDynamic(string Data)
+        {
+            var dynamicObject = new ExpandoObject() as IDictionary<string, object>;
+
+            DataTable dt = JsonConvert.DeserializeObject<DataTable>(Data);
+            DataRow row = dt.Rows[0];
+
+            foreach (DataColumn column in row.Table.Columns)
+            {
+                dynamicObject[column.ColumnName] = row[column];
+            }
+
+            return dynamicObject;
+        }
+
 
         public string GetVars(Dictionary<string, object> d)
         {
