@@ -39,7 +39,7 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="config\AngelSQL.csx">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="config\Globals.csx">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -67,6 +67,7 @@
 	<ItemGroup>
 		<Folder Include="Connected Services\" />
 		<Folder Include="Controllers\" />
+		<Folder Include="dev\wwwroot\auth\pins\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>
 

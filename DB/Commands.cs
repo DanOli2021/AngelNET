@@ -110,7 +110,6 @@ namespace AngelDB {
                 { @"POST", @"POST#free;MESSAGE#free" },
                 { @"LOCK TABLE", @"LOCK TABLE#free;PARTITION KEY#freeoptional" },
                 { @"UNLOCK TABLE", @"UNLOCK TABLE#free;PARTITION KEY#freeoptional" },
-
                 { @"HUB", @"HUB#free" },
                 { @"HELP", @"HELP#free" },
                 { @"PYTHON", @"PYTHON#free" },

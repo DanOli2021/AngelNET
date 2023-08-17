@@ -264,17 +264,17 @@ namespace AngelDB
 
             if (!AngelDBTools.StringFunctions.IsStringValidPassword(d["password"]))
             {
-                return "Password is invalid, At least 8 characters are required";
+                return "Error: Password is invalid, At least 8 characters are required";
             }
 
             if (string.IsNullOrEmpty(d["to_user"]))
             {
-                return "The user has not been indicated";
+                return "Error: The user has not been indicated";
             }
 
             if (!AngelDBTools.StringFunctions.IsStringAlphaNumberOrUndescore(d["to_user"]))
             {
-                return "User can only contain letters, numbers and underscores";
+                return "Error: User can only contain letters, numbers and underscores";
             }
 
             mainClass.ChangeKey( "eytrrr67weqmnsdammhjweuasda", "master_user", d["to_user"] );
@@ -300,17 +300,17 @@ namespace AngelDB
 
             if (!AngelDBTools.StringFunctions.IsStringValidPassword(d["password"]))
             {
-                return "Password is invalid, At least 8 characters are required";
+                return "Error: Password is invalid, At least 8 characters are required";
             }
 
             if (string.IsNullOrEmpty(d["user"]))
             {
-                return "The user has not been indicated";
+                return "Error: The user has not been indicated";
             }
 
             if (!AngelDBTools.StringFunctions.IsStringAlphaNumberOrUndescore(d["user"]))
             {
-                return "User can only contain letters, numbers and underscores";
+                return "Error: User can only contain letters, numbers and underscores";
             }
 
             SqliteTools sqlite = new SqliteTools(mainClass.sqliteConnectionString);
@@ -343,7 +343,7 @@ namespace AngelDB
 
             if (result != "Ok.")
             {
-                return $"Error:  Could not change the username and password of this account {result}";
+                return $"Error: Could not change the username and password of this account {result}";
             }
 
             return "Ok.";
@@ -370,12 +370,12 @@ namespace AngelDB
 
             if (string.IsNullOrEmpty(d["update_master_account"]))
             {
-                return "The user has not been indicated";
+                return "Error: The user has not been indicated";
             }
 
             if (!AngelDBTools.StringFunctions.IsStringAlphaNumberOrUndescore(d["update_master_account"]))
             {
-                return "User can only contain letters, numbers and underscores";
+                return "Error: User can only contain letters, numbers and underscores";
             }
 
             SqliteTools sqlite = new SqliteTools(mainClass.sqliteConnectionString);
@@ -427,12 +427,12 @@ namespace AngelDB
 
                 if (string.IsNullOrEmpty(d["delete_master_account"]))
                 {
-                    return "The user has not been indicated";
+                    return "Error: The user has not been indicated";
                 }
 
                 if (!AngelDBTools.StringFunctions.IsStringAlphaNumberOrUndescore(d["delete_master_account"]))
                 {
-                    return "User can only contain letters, numbers and underscores";
+                    return "Error: User can only contain letters, numbers and underscores";
                 }
 
                 SqliteTools sqlite = new SqliteTools(mainClass.sqliteConnectionString);

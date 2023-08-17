@@ -1,29 +1,37 @@
-# If you want to use parameters from db, you need to use the following code:
-class mainclass:
+import pandas as pd
+import json
+from fbprophet import Prophet
 
-    def __init__(self):
-        self.db = None
-        self.server_db = None
-        self.message = None
+# Cargar los datos desde el archivo JSON
+with open('c:/daniel/results.json', 'r') as file:
+    data = json.load(file)
 
+# Convertir los datos a un DataFrame
+df = pd.DataFrame(data)
 
-    def main( self, db, main_db, message):
+# Convertir la columna 'fecha' a tipo datetime
+df['fecha'] = pd.to_datetime(df['fecha'])
 
-        #Your code here
-        self.db = db
-        self.server_db = main_db
-        self.message = message
+# Agrupar los datos por fecha y código de producto para obtener la cantidad total vendida por día
+df_grouped = df.groupby(['fecha', 'articulo'])['cantidad'].sum().reset_index()
 
-        result = db.Prompt("SQL SERVER CONNECT Data Source=.\MYBUSINESSPOS;Initial catalog=MyBusiness20farmapronto;User Id=sa;Password=12345678;Persist Security Info=True; ALIAS main")
-        
-        if result.startswith("Error:"):
-            return result
+# Preparar los datos para Prophet
+df_grouped.rename(columns={'fecha': 'ds', 'cantidad': 'y'}, inplace=True)
 
-        result = db.Prompt( "SQL SERVER QUERY SELECT TOP 100 articulo, cantidad, precio as 'precioventa', descuento, (impuesto / 100) AS 'impuesto', preciobase, observ as 'descripcion', usufecha, usuhora  FROM partvta CONNECTION ALIAS main")
+# Entrenar un modelo para cada código de producto y predecir la cantidad de ventas del siguiente día
+predictions = {}
+unique_articles = df_grouped['articulo'].unique()
 
-        if result.startswith("Error:"):
-            return result
+for article in unique_articles:
+    df_article = df_grouped[df_grouped['articulo'] == article]
+    
+    model = Prophet(daily_seasonality=True)
+    model.fit(df_article)
+    
+    future = model.make_future_dataframe(periods=1, freq='D')
+    forecast = model.predict(future)
+    
+    predictions[article] = forecast['yhat'].values[-1]
 
-        db.Prompt("WRITE ")
-
-        return result
+# El diccionario 'predictions' contiene las predicciones para cada código de producto
+print(predictions)

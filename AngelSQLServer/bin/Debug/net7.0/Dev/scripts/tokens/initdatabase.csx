@@ -13,16 +13,9 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-string db_user = db.Prompt("VAR db_user");
-string db_password = db.Prompt("VAR db_password");
-string db_account = db.Prompt("VAR db_account");
-
-Console.WriteLine("Account:" + db_account);
-
 Console.WriteLine("Creating tables...");
 
 string result = "";
-
 Console.WriteLine("Creating tokens catalog...");
 Tokens tokens = new Tokens();
 result = db.CreateTable(tokens);

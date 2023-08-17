@@ -8,7 +8,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-string main_url = "http://localhost:11000";
+string main_url = "";
 
 Dictionary<string, string> parameters = new Dictionary<string, string>
 {

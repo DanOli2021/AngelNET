@@ -381,7 +381,6 @@ namespace AngelDB
 
             if (user == config["master_user"])
             {
-
                 if (password.Trim() != config["master_password"].Trim())
                 {
                     return "Error: Invalid user or password";
@@ -591,11 +590,24 @@ namespace AngelDB
             if (always_use_AngelSQL)
             {
 
-                if (command.Trim().ToLower() == "angel stop")
+                if (command.Trim().StartsWith("BATCH ANGEL STOP")) 
                 {
                     this.always_use_AngelSQL = false;
                     return "Ok.";
                 }
+
+                if (command.Trim() == "ANGEL STOP")
+                {
+                    this.always_use_AngelSQL = false;
+                    return "Ok.";
+                }
+
+                if (command.Trim() == "DISCONNECT ANGEL")
+                {
+                    this.always_use_AngelSQL = false;
+                    return "Ok.";
+                }
+
 
                 result = AngelExecute($"COMMAND {command}");
 
@@ -2795,16 +2807,7 @@ namespace AngelDB
 
         public DataTable GetDataTable(string Data)
         {
-
-            try
-            {
-                return JsonConvert.DeserializeObject<DataTable>(Data);
-            }
-            catch (Exception)
-            {
-                this._Error = Data;
-                return null;
-            }
+            return JsonConvert.DeserializeObject<DataTable>(Data);
         }
 
         public string GetVars(Dictionary<string, object> d)

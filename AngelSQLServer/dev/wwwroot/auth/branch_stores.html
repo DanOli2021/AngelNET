@@ -60,7 +60,7 @@
             <div class="row" style="margin-bottom: 10px;">
                 <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
                     onclick="showBranchStoreDialog('', true)" style="margin-bottom: 20px;">
-                    New Group (F2)
+                    New (F2)
                 </button>
 
                 <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
@@ -332,8 +332,6 @@
 
                     let responce_query = JSON.parse(query);
 
-                    console.log(responce_query);
-
                     if (responce_query.result.startsWith("Error:")) {
                         console.log(responce_query.result);
                         return;
@@ -374,9 +372,6 @@
             BranchStore.address = document.getElementById('address').value;
             BranchStore.phone = document.getElementById('phone').value;
             BranchStore.authorizer = document.getElementById('authorizer').value;
-
-            console.log(document.getElementById('authorizer').innerText);
-            console.log(BranchStore.authorizer);
 
             var data_result = SaveBranchStore(Token.username, Token.token, BranchStore);
 

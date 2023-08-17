@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
 
     <link rel="stylesheet" href="./css/styles.css">
-    <script src="./js/scripts.js"></script>
+    <script src="./js/main.js"></script>
 </head>
 
 <body>
@@ -49,6 +49,14 @@
         </div>
     </dialog>
 
+    <dialog id="myMessage">
+        <div class="form-group">
+            <h1 id="dialogTittle1" class="form-group">Title</h1>
+            <h3 id="dialogMessage1" class="form-group">Message</h3>
+        </div>
+    </dialog>
+
+
     <script>
 
         function RequestPin() {
@@ -56,6 +64,8 @@
             var email = document.getElementById("email").value;
 
             let responce = SendPinToEmail(email)
+
+            showDialogMessage("Alert", "Wait for the email to arrive.");
 
             responce.then(function (query) {
 
@@ -88,11 +98,15 @@
         }
 
         function showDialog(title, message) {
-
             document.getElementById('dialogTittle').innerText = title;
             document.getElementById('dialogMessage').innerText = '⚠️' + message;
-
             document.getElementById('myDialog').showModal();
+        }
+
+        function showDialogMessage(title, message) {
+            document.getElementById('dialogTittle1').innerText = title;
+            document.getElementById('dialogMessage1').innerText = message;
+            document.getElementById('myMessage').showModal();
         }
 
         function closeDialog() {
@@ -118,7 +132,7 @@
 
     </script>
 
-    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

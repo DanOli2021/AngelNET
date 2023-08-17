@@ -124,6 +124,19 @@ async function SaveToken(user, token, Token)
     return sendToAngelPOST( user, "tokens/admintokens", token, "SaveToken", Token );
 }
 
+async function SendPinToEmail(email) {
+  return sendToAngelPOST( "", "tokens/admintokens", "", "SendPinToEmail", { Email: email } );
+}
+
+async function CreateAccount(register_info) {
+  return sendToAngelPOST( "", "tokens/createaccount", "", "CreateAccount", register_info );
+}
+
+async function RecoverMasterPassword(email) {
+    return sendToAngelPOST("", "tokens/admintokens", "", "RecoverMasterPassword", { Email: email } );
+}
+
+
 async function sendToAngelPOST(user, api_name, token, OperationType, object_data) {
 
   account = ""; 

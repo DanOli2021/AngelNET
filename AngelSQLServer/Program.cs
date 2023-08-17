@@ -12,6 +12,12 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 
+//if is a Windows service, set the current directory to the same as the executable
+if (WindowsServiceHelpers.IsWindowsService())
+{
+    Environment.CurrentDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+}
+
 string commandLine = string.Join(" ", args);
 string api_file = Environment.CurrentDirectory + "/config/AngelAPI.csx";
 string config_file = Environment.CurrentDirectory + "/config/AngelSQL.csx";
@@ -33,11 +39,6 @@ NumberFormatInfo nfi = new NumberFormatInfo();
 nfi.NumberDecimalSeparator = ".";
 CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
 
-//if is a Windows service, set the current directory to the same as the executable
-if (WindowsServiceHelpers.IsWindowsService())
-{
-    Environment.CurrentDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-}
 
 AngelDB.DB server_db = new AngelDB.DB();
 string result = server_db.Prompt($"SCRIPT FILE {config_file}");
@@ -79,6 +80,17 @@ if (parameters.ContainsKey("python_path"))
     Environment.SetEnvironmentVariable("PYTHON_PATH", parameters["python_path"]);
 }
 
+if (parameters.ContainsKey("accounts_directory"))
+{
+    if (string.IsNullOrEmpty(parameters["accounts_directory"]))
+    {
+        parameters["accounts_directory"] = Environment.CurrentDirectory + "/data/accounts";
+    }
+}
+else
+{
+    parameters.Add("accounts_directory", Environment.CurrentDirectory + "/data/accounts");
+}
 
 string wwww_directory = Path.Combine(Environment.CurrentDirectory, "wwwroot");
 
@@ -103,6 +115,10 @@ if (!Directory.Exists(wwww_directory))
     string content = $"<html><head><title>AngelSQLServer</title></head><body><h1>AngelSQLServer</h1><p>AngelSQLServer is running</p><p>{index_html}</p></body></html>";
     File.WriteAllText(index_html, content);
 }
+
+parameters["wwwroot"] = wwww_directory;
+Environment.SetEnvironmentVariable("ANGELSQL_PARAMETERS", JsonConvert.SerializeObject(parameters, Formatting.Indented));
+
 
 // Create a bulder for the web app
 //if is a Windows service, set the current directory to the same as the executable
@@ -394,6 +410,8 @@ string QueryResponce(AngelSQL.Query query)
     }
 }
 
+
+
 string scripts_directory = Environment.CurrentDirectory + "/scripts";
 
 if (parameters.ContainsKey("scripts_directory"))
@@ -507,7 +525,7 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                 }
                 else
                 {
-                    string result = db.Prompt($"SELECT * FROM accounts WHERE id = '{api.account.ToString().Trim().ToLower()}'", true);
+                    string result = server_db.Prompt($"SELECT * FROM accounts WHERE id = '{api.account.ToString().Trim().ToLower()}'", true);
 
                     if (result.StartsWith("Error:"))
                     {
@@ -544,7 +562,7 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                             result = db.Prompt("ALWAYS USE ANGELSQL");
                         }
 
-                        if (result.StartsWith("Error:"))
+                        if (result.StartsWith("Error: AngelPOST"))
                         {
                             return result;
                         }
@@ -552,6 +570,11 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                         db.Prompt($"VAR db_user = '{db_user}'", true);
                         db.Prompt($"VAR db_password = '{db_password}'", true);
                         db.Prompt($"VAR db_account = '{api.account}'", true);
+
+                        db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
+                        db.Prompt($"USE ACCOUNT {account}", true);
+                        db.Prompt($"CREATE DATABASE {db_database}", true);
+                        db.Prompt($"USE DATABASE {db_database}", true);
 
                     }
                     else

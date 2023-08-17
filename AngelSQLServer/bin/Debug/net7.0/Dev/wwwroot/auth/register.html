@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
 
     <link rel="stylesheet" href="./css/styles.css">
-    <script src="./js/scripts.js"></script>
+    <script src="./js/main.js"></script>
 
 </head>
 
@@ -19,7 +19,7 @@
             <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block"
                 style="margin-top: 10px; width: 300px">
 
-            <p class="text-center">MyBusiness POS Authorizer (Registration)</p>
+            <p class="text-center">MyBusiness POS Authorizer (Check in)</p>
 
             <div class="col-md-12">
                 <div class="row">
@@ -51,15 +51,6 @@
 
                 <div class="row">
                     <div class="col-sm-3">
-                        <label for="email"><b>Email</b></label>
-                    </div>
-                    <div class="col-sm-9">
-                        <input type="email" class="form-control" placeholder="Enter your email" id="email" required>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-3">
                         <label for="codigoPais">Country code</label>
                         <select class="form-control" id="country_code">
                             <option value="+1">+1 (US)</option>
@@ -76,6 +67,16 @@
 
                 <div class="row">
                     <div class="col-sm-3">
+                        <label for="user"><b>System User</b></label>
+                    </div>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" placeholder="System user" id="user" required>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-sm-3">
                         <label for="password"><b>Password</b></label>
                     </div>
                     <div class="col-sm-9">
@@ -88,8 +89,7 @@
                         <label for="password"><b>Retype Password</b></label>
                     </div>
                     <div class="col-sm-9">
-                        <input type="password" class="form-control" placeholder="Retype password" id="retypepassword"
-                            required>
+                        <input type="password" class="form-control" placeholder="Retype password" id="retypepassword" required>
                     </div>
                 </div>
 
@@ -136,16 +136,88 @@
         </div>
     </dialog>
 
+    <dialog id="myMessage">
+        <div class="form-group">
+            <h1 id="dialogTittle1" class="form-group">Title</h1>
+            <h3 id="dialogMessage1" class="form-group">Message</h3>
+        </div>
+    </dialog>
+
     <script>
 
         function tryRegister() {
 
-
-
-            var username = document.getElementById("username").value;
+            var user = document.getElementById("user").value;
             var password = document.getElementById("password").value;
+            var retypepassword = document.getElementById("retypepassword").value;
+            var account = document.getElementById("account").value;
+            var name = document.getElementById("name").value;
+            var phone = document.getElementById("country_code").value + " " + document.getElementById("phone").value;
+            var pin = document.getElementById("pin").value;            
 
-            let responce = login(username, password);
+            if (user == "") {
+                showDialog("Alert", "Username are required");
+                document.getElementById("username").focus();
+                return;
+            }
+
+            if (password == "") {
+                showDialog("Alert", "Password are required");
+                document.getElementById("password").focus();
+                return;
+            }
+
+            if(password != retypepassword){
+                showDialog("Alert", "Passwords do not match");
+                document.getElementById("retypepassword").focus();
+                return;
+            }
+
+            if( account == ""){
+                showDialog("Alert", "Account are required");
+                document.getElementById("account").focus();
+                return;
+            }
+
+            if( name == ""){
+                showDialog("Alert", "Name are required");
+                document.getElementById("name").focus();
+                return;
+            }
+
+            if( phone == ""){
+                showDialog("Alert", "Phone are required");
+                document.getElementById("phone").focus();
+                return;
+            }
+
+            console.log(pin);
+
+            if( pin == ""){
+                showDialog("Alert", "Pin are required");
+                document.getElementById("pin").focus();
+                return;
+            }
+
+            if( !document.getElementById("terms").checked){
+                showDialog("Alert", "You must accept the terms and conditions of use");
+                document.getElementById("terms").focus();
+                return;
+            }
+
+            var register = 
+            {
+                Pin: pin,
+                AccountName: account,
+                Name: name,
+                Phone: phone,
+                User: user,
+                Password: password
+            };
+
+            showDialogMessage("Registering", "Please wait...");
+
+            let responce = CreateAccount(register);
 
             responce.then(function (query) {
 
@@ -154,23 +226,12 @@
                     return;
                 }
 
-                console.log(query);
                 let responce_query = JSON.parse(query);
-
-                console.log(responce_query);
 
                 if (responce_query.result.startsWith("Error:")) {
                     showDialog("Alert", responce_query.result);
                 } else {
-
-                    let token =
-                    {
-                        "username": username,
-                        "token": responce_query.result
-                    }
-
-                    sessionStorage.setItem('Token', JSON.stringify(token));
-                    window.location.href = "menu.html";
+                    window.location.href = "index.html?user=" + user.trim().toLowerCase() + "@" + account.trim().toLowerCase();
                 }
 
             });
@@ -178,11 +239,15 @@
         }
 
         function showDialog(title, message) {
-
             document.getElementById('dialogTittle').innerText = title;
             document.getElementById('dialogMessage').innerText = '⚠️' + message;
-
             document.getElementById('myDialog').showModal();
+        }
+
+        function showDialogMessage(title, message) {
+            document.getElementById('dialogTittle1').innerText = title;
+            document.getElementById('dialogMessage1').innerText = '⚠️' + message;
+            document.getElementById('myMessage').showModal();
         }
 
         function closeDialog() {
@@ -209,7 +274,7 @@
 
     </script>
 
-    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

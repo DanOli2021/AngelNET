@@ -18,7 +18,7 @@ Dictionary<string, object> servers = JsonConvert.DeserializeObject<Dictionary<st
 string result = "";
 
 // Obtenemos el token de autenticación
-result = SendToAngelPOST("tokens/admintokens", db_account, "GetTokenFromUser", new
+result = SendToAngelPOST("tokens/admintokens", "", db_account, "GetTokenFromUser", new
 {
     User = "authuser",
     Password = "mysecret"
@@ -30,8 +30,14 @@ AngelDB.AngelResponce responce = JsonConvert.DeserializeObject<AngelDB.AngelResp
 string token = responce.result;
 
 
+dynamic param_data = new
+{
+    User = "authuser",
+    Password = "mysecret"
+};
+
 // Obtenemos el token de autenticación
-result = SendToAngelPOST("tokens/admintokens", db_account, "GetTokenFromUser", new
+result = SendToAngelPOST("tokens/admintokens", "", db_account, "GetTokenFromUser", new
 {
     User = "authuser",
     Password = "mysecret"
@@ -148,7 +154,7 @@ Console.WriteLine("CreateNewTocken " + result);
 // Borramos el token creado anteriormente
 result = SendToAngelPOST("auth/adminbranchstores", token, db_account, "DeleteToken", new
 {
-    TokenToDelete = new_token
+    TokenToDelete = result
 });
 
 Console.WriteLine("DeleteToken " + result);
@@ -197,7 +203,7 @@ string SendToAngelPOST(string api_name, string token, string db_account, string 
 
     string result = db.Prompt($"POST {servers["tokens_url"]} MESSAGE {JsonConvert.SerializeObject(d, Formatting.Indented)}");
 
-    if (result.StartWith("Error:"))
+    if (result.StartsWith("Error:"))
     {
         return $"Error: ApiName {api_name} Account {db_account} OperationType {OPerationType} --> Result -->" + result;
     }

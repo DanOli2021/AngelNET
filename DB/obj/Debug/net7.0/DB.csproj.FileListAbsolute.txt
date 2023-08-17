@@ -1008,7 +1008,6 @@ C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\ru\Microsoft.CodeAnalysis.Scripting.r
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\tr\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
-C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win-arm64\native\sni.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win-x64\native\sni.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win-x86\native\sni.dll
@@ -1018,8 +1017,6 @@ C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win-x64\native\SQLite.Intero
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win-x86\native\SQLite.Interop.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
-C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
-C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.csproj.AssemblyReference.cache
@@ -1036,3 +1033,5 @@ C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.pdb
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\DB.genruntimeconfig.cache
 C:\Desarrollo\AngelNET\DB\obj\Debug\net7.0\ref\DB.dll
 C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\MathNet.Numerics.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\net7.0\Microsoft.Win32.SystemEvents.dll
+C:\Desarrollo\AngelNET\DB\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll

@@ -38,75 +38,14 @@
                 </a>
             </div>
 
-
             <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block"
                 style="margin-top: 20px;width:256px">
 
             <h1 class="text-center" style="font-size: 40px; font-weight: bolder;" id="supervisor_name">Supervisor</h1>
 
-            <div class="col-md-12">
-
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        let response = GetGroupsUsingTocken(Token.username, Token.token);
-
-                        response.then(function (query) {
-                            let response_query = JSON.parse(query);
-
-                            if (response_query.result.startsWith("Error:")) {
-                                showDialog("Alert", response_query.result);
-                            } else {
-                                sessionStorage.setItem('user_groups', response_query.result);
-                                generateButtons();
-                            }
-                        });
-
-                    });
-
-                    function generateButtons() {
-
-                        generateButton("pins.html", "brilliant_networking_groupware_128.png", "Generated Pins", "btn btn-info btn-block btn-lg form-control");
-
-                        if (sessionStorage.getItem("user_groups") != null) {
-                            let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
-                            
-                            if (user_groups.groups.includes("SUPERVISORS")) {
-                                let responce = GetBranchStoresByUser(Token.username, Token.token);
-
-                                responce.then(function (query) {
-                                    let response_query = JSON.parse(query);
-
-                                    if (response_query.result.startsWith("Error:")) {
-                                        showDialog("Alert", response_query.result);
-                                    } else {
-                                        let BranchStores = JSON.parse(response_query.result);
-
-                                        let event_row = false;
-
-                                        BranchStores.forEach(element => {
-
-                                            let event_string = "";
-
-                                            if (event_row == false) {
-                                                event_row = true;
-                                                event_string = "btn-primary";
-                                            }
-                                            else {
-                                                event_row = false;
-                                                event_string = "btn-secondary";
-                                            }
-
-                                            generateButton("create_authorization.html?branchstore=" + element.id, "brilliant_shopping_fish_shop_128.png", element.id, "btn " + event_string + " btn-block btn-lg form-control");
-                                        });
-                                    }
-                                });
-                            }
-                        }
-
-                    }
-
-                </script>
+            <div class="col-md-12" id="buttonszone">
             </div>
+
         </div>
     </div>
 
@@ -118,13 +57,69 @@
         </div>
     </dialog>
 
+
+    <dialog id="user_pin_dialog" style="width: 90%;">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="form-group">
+                    <label for="authorizer">User</label>
+                    <select class="form-select" aria-label="Default select example" id="user" name="user">
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="permissions">Permission</label>
+                    <select class="form-select" aria-label="Default select example" id="permissions" name="permissions">
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Pin message</label>
+                    <input type="text" class="form-control" id="message" name="message">
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary" "
+                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="CreatePin()">
+                        Save
+                    </button>
+                </div>
+
+                <div class="col-sm-6">
+                    <button id="closeSkuEdit" class="btn btn-secondary"
+                        style="text-align: right; margin-top: 20px; width: 100%;" onclick="closePinDialog()"
+                        style="text-align: right;">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </dialog>
+
+    <dialog id="DialogPin">
+        <div class="form-group">
+            <h1 id="dialogTittle_pin" class="form-group">Title</h1>
+            <hr />
+            <h2 id="pin" class="form-group">Pin:</h2>
+            <h2 id="permission" class="form-group">Permission:</h2>
+            <hr />
+            <button id="closeButton_pin" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
+    </dialog>
+
     <script>
 
         function showDialog(title, message) {
-
             document.getElementById('dialogTittle').innerText = title;
             document.getElementById('dialogMessage').innerText = '⚠️' + message;
-
             document.getElementById('myDialog').showModal();
         }
 
@@ -132,9 +127,171 @@
             document.getElementById('myDialog').close();
         }
 
+        function closeDialogPin() {
+            document.getElementById('myDialog').close();
+        }
+
         document.querySelector('#closeButton').addEventListener('click', function () {
             document.querySelector('#myDialog').close();
         });
+
+        document.querySelector('#closeButton_pin').addEventListener('click', function () {
+            document.querySelector('#DialogPin').close();
+        });
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let response = GetGroupsUsingTocken(Token.username, Token.token);
+
+            response.then(function (query) {
+                let response_query = JSON.parse(query);
+
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                } else {
+                    sessionStorage.setItem('user_groups', response_query.result);
+                    generateButtons();
+                }
+            });
+        });
+
+
+        function openPinDialog() {
+
+            let select = document.getElementById('user');
+
+            while (select.options.length > 0) {
+                select.remove(0);
+            }
+
+            let select_permisions = document.getElementById('permissions');
+
+            while (select_permisions.options.length > 0) {
+                select_permisions.remove(0);
+            }
+
+            var users = GetUsers(Token.username, Token.token, { Where: "UserGroups = 'PINSCONSUMER'" });;
+
+            users.then(function (query) {
+                let response_query = JSON.parse(query);
+
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                } else {
+                    let users = JSON.parse(response_query.result);
+
+                    users.forEach(element => {
+                        var opt = document.createElement('option');
+                        opt.value = element.id;
+                        opt.innerHTML = element.Name;
+                        select.appendChild(opt);
+                    });
+                }
+            });
+
+            let this_user = GetUser(Token.username, Token.token, Token.username);
+
+            this_user.then(function (query) {
+                let response_query = JSON.parse(query);
+
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                } else {
+                    let user = JSON.parse(response_query.result);
+                    var arrayElementos = user.permissions_list.split(',');
+
+                    arrayElementos.forEach(element => {
+                        var opt = document.createElement('option');
+                        opt.value = element;
+                        opt.innerHTML = element;
+                        select_permisions.appendChild(opt);
+                    });
+                }
+            });
+
+            document.getElementById('user_pin_dialog').showModal();
+        }
+
+
+        function showDialoPin(title, message) {
+            var pin = JSON.parse(message);
+            document.getElementById('dialogTittle_pin').innerText = title;
+            document.getElementById('pin').innerText = "Pin: " + pin.pin_number;
+            document.getElementById('permission').innerText = "Permission:" + pin.permissions;
+            document.getElementById('DialogPin').showModal();
+        }
+
+
+        function CreatePin() {
+
+            let select_permisions = document.getElementById('permissions');
+            let response = CreatePermission(Token.username, Token.token, "SYSTEM", select_permisions.value, "touser", document.getElementById('message').value);
+
+            response.then(function (query) {
+                let response_query = JSON.parse(query);
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                }
+                else {
+                    showDialoPin("A pin has been generated", response_query.result);
+                }
+            });
+
+        }
+
+
+        function closePinDialog() {
+            document.getElementById('user_pin_dialog').close();
+        }
+
+        function generateButtons() {
+
+            generateButton("pins.html", "brilliant_networking_groupware_128.png", "Generated Pins", "btn btn-info btn-block btn-lg form-control");
+            generateButton("#", "beta_networking_groupware_128.png", "Pin to user", "btn btn-success btn-block btn-lg form-control", function () { openPinDialog() });
+
+            generateParagraph("h2", "Branch Stores", "text-center", "center");
+
+            if (sessionStorage.getItem("user_groups") != null) {
+                let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
+
+                if (user_groups.groups.includes("SUPERVISORS")) {
+                    let responce = GetBranchStoresByUser(Token.username, Token.token);
+
+                    responce.then(function (query) {
+                        let response_query = JSON.parse(query);
+
+                        if (response_query.result.startsWith("Error:")) {
+                            showDialog("Alert", response_query.result);
+                        } else {
+                            let BranchStores = JSON.parse(response_query.result);
+
+                            let event_row = false;
+
+                            BranchStores.forEach(element => {
+
+                                let event_string = "";
+
+                                if (event_row == false) {
+                                    event_row = true;
+                                    event_string = "btn-primary";
+                                }
+                                else {
+                                    event_row = false;
+                                    event_string = "btn-secondary";
+                                }
+
+                                generateButton("create_authorization.html?branchstore=" + element.id, "brilliant_shopping_fish_shop_128.png", element.id, "btn " + event_string + " btn-block btn-lg form-control");
+                            });
+                        }
+                    });
+                }
+            }
+
+        }
+
 
     </script>
 

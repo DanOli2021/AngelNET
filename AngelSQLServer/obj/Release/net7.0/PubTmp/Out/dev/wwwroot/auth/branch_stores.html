@@ -256,7 +256,7 @@
 
         function DeleteBranchStoreData() {
             var id = document.getElementById('id').value;
-            var data_result = DeleteBranchStore(Token.username, Token.token, id );
+            var data_result = DeleteBranchStore(Token.username, Token.token, id);
 
             data_result.then(function (query) {
 
@@ -272,10 +272,8 @@
                 closeBranchStoreDialog();
                 GetBranchStoresData();
                 return;
-
             });
         }
-
 
         function closeDialogAcceptCancelDialog() {
             document.getElementById('DialogAcceptCancel').close();
@@ -306,7 +304,7 @@
                     return;
                 }
 
-                authorizers_list = JSON.parse(responce_query.result);
+                let authorizers_list = JSON.parse(responce_query.result);
 
                 for (let i = 0; i < authorizers_list.length; i++) {
                     let option = document.createElement('option');
@@ -315,50 +313,49 @@
                     select.appendChild(option);
                 }
 
-            });
+                if (new_Group) {
+                    var dialog = document.getElementById("branch_store_dialog");
+                    dialog.showModal();
 
-
-            if (new_Group) {
-                var dialog = document.getElementById("branch_store_dialog");
-                dialog.showModal();
-
-                document.getElementById('id').value = "";
-                document.getElementById('id').readOnly = false;
-                document.getElementById('name').value = "";
-                document.getElementById('address').value = "";
-                document.getElementById('phone').value = "";
-                document.getElementById('authorizer').value = "";
-                return;
-            }
-
-            var data_result = GetBranchStore(Token.username, Token.token, User_data.id);
-
-            data_result.then(function (query) {
-
-                let responce_query = JSON.parse(query);
-
-                console.log(responce_query);
-
-                if (responce_query.result.startsWith("Error:")) {
-                    console.log(responce_query.result);
+                    document.getElementById('id').value = "";
+                    document.getElementById('id').readOnly = false;
+                    document.getElementById('name').value = "";
+                    document.getElementById('address').value = "";
+                    document.getElementById('phone').value = "";
+                    document.getElementById('authorizer').value = "";
                     return;
                 }
 
-                let branch_store = JSON.parse(responce_query.result);
-                var dialog = document.getElementById("branch_store_dialog");
-                dialog.showModal();
+                var data_result = GetBranchStore(Token.username, Token.token, User_data.id);
 
-                let id = document.getElementById('id');
-                id.readOnly = true;
+                data_result.then(function (query) {
 
-                document.getElementById('id').value = branch_store.id;
-                document.getElementById('name').value = branch_store.name;
-                document.getElementById('address').value = branch_store.address;
-                document.getElementById('phone').value = branch_store.phone;
-                document.getElementById('authorizer').value = branch_store.authorizer;
+                    let responce_query = JSON.parse(query);
 
-                let description = document.getElementById('name');
-                description.focus();
+                    console.log(responce_query);
+
+                    if (responce_query.result.startsWith("Error:")) {
+                        console.log(responce_query.result);
+                        return;
+                    }
+
+                    let branch_store = JSON.parse(responce_query.result);
+                    var dialog = document.getElementById("branch_store_dialog");
+                    dialog.showModal();
+
+                    let id = document.getElementById('id');
+                    id.readOnly = true;
+
+                    document.getElementById('id').value = branch_store.id;
+                    document.getElementById('name').value = branch_store.name;
+                    document.getElementById('address').value = branch_store.address;
+                    document.getElementById('phone').value = branch_store.phone;
+                    document.getElementById('authorizer').value = branch_store.authorizer;
+
+                    let description = document.getElementById('name');
+                    description.focus();
+
+                });
 
             });
 
@@ -379,7 +376,7 @@
             BranchStore.authorizer = document.getElementById('authorizer').value;
 
             console.log(document.getElementById('authorizer').innerText);
-            console.log(BranchStore.authorizer); 
+            console.log(BranchStore.authorizer);
 
             var data_result = SaveBranchStore(Token.username, Token.token, BranchStore);
 

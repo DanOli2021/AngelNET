@@ -41,7 +41,7 @@
                     <span style="float: left;">
                         <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px;">
                     </span>
-                    Branch Stores List
+                    My authorizations
                 </a>
 
             </div>
@@ -210,15 +210,12 @@
         </div>
     </dialog>
 
-
-
     <script>
 
         function showDialog(title, message) {
 
             document.getElementById('dialogTittle').innerText = title;
             document.getElementById('dialogMessage').innerText = '⚠️' + message;
-
             document.getElementById('myDialog').showModal();
         }
 
@@ -227,7 +224,6 @@
         }
 
         function showDialoPin(title, message) {
-
             var pin = JSON.parse(message);
             document.getElementById('dialogTittle_pin').innerText = title;
             document.getElementById('pin').innerText = "Pin: " + pin.pin_number;

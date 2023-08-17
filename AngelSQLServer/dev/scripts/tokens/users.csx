@@ -14,5 +14,6 @@ public class Users
     public string Email { get; set; }
     public string Phone { get; set; }
     public string permissions_list { get; set; }
+    public string master { get; set; }
 }
 

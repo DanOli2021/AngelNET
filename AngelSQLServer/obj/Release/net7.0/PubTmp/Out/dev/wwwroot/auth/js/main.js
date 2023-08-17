@@ -39,9 +39,9 @@ async function SaveUser(user, token, userToSave)
     return sendToAngelPOST(user, "tokens/admintokens", token, "UpsertUser", userToSave);
 }
 
-async function GetUsers(user, token)
+async function GetUsers(user, token, Where = {})
 {
-    return sendToAngelPOST(user, "tokens/admintokens", token, "GetUsers",  {});
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetUsers",  Where);
 }
 
 async function GetGroups(user, token)
@@ -94,14 +94,48 @@ async function GetBranchStoresByUser(user, token)
     return sendToAngelPOST(user, "tokens/admintokens", token, "GetBranchStoresByUser", {});
 }
 
-async function CreatePermission(user, token, Branchstore_id, Permission_id)
+async function CreatePermission(user, token, Branchstore_id, Permission_id, PinType = null, AuthorizerMessage = null)
 {
-    return sendToAngelPOST(user, "tokens/admintokens", token, "CreatePermission", { Branchstore_id: Branchstore_id, Permission_id: Permission_id });
+    return sendToAngelPOST(user, "tokens/admintokens", token, "CreatePermission", { Branchstore_id: Branchstore_id, Permission_id: Permission_id, User: user, PinType: PinType, AuthorizerMessage: AuthorizerMessage });
 }
 
 async function GetPins(user, token, InitialDate, FinalDate)
 {
     return sendToAngelPOST(user, "tokens/admintokens", token, "GetPins", { InitialDate: InitialDate, FinalDate: FinalDate });
+}
+
+async function DeleteToken(user, token, TokenToDelete)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "DeleteToken", { TokenToDelete: TokenToDelete });
+}
+
+async function GetTokens(user, token)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetTokens", {});
+}
+
+async function GetToken(user, token, TokenId)
+{
+    return sendToAngelPOST(user, "tokens/admintokens", token, "GetToken", { TokenId: TokenId });
+}
+
+async function SaveToken(user, token, Token)
+{
+    return sendToAngelPOST( user, "tokens/admintokens", token, "SaveToken", Token );
+}
+
+async function SendPinToEmail(email) {
+
+    var data = { OperationType: "SendPinToEmail", DataMessage: { email: email } };
+
+    var api = {
+        api: "accounts/accounts",
+        account: "",
+        message: JSON.stringify(data),
+        language: "C#"
+    };
+
+    return await sendPOST(api);;
 }
 
 
@@ -130,7 +164,7 @@ async function sendToAngelPOST(user, api_name, token, OperationType, object_data
 }
 
 
-function generateButton(href, iconSrc, buttonText, buttonClass) {
+function generateButton(href, iconSrc, buttonText, buttonClass, onclick = {}) {
   let button = document.createElement("a");
   button.href = href;
   button.className = buttonClass;
@@ -150,9 +184,21 @@ function generateButton(href, iconSrc, buttonText, buttonClass) {
   button.appendChild(iconSpan);
   button.appendChild(text);
 
-  document.body.appendChild(button);
+  button.onclick = onclick;
+
+  let div = document.getElementById("buttonszone");
+  div.appendChild(button);
+
 }
 
+function generateParagraph(element, text, classstring, stylestring  ) {
+  let p = document.createElement(element);
+  p.innerText = text;
+  p.style.textAlign = stylestring;
+  p.className = classstring;
+  let div = document.getElementById("buttonszone");
+  div.appendChild(p);  
+}
 
 
 // Función para verificar si la URL es una imagen válida
@@ -166,4 +212,32 @@ function isValidImageUrl(url) {
   }
 
   return false;
+}
+
+
+function isValidDateFormat(dateStr) {
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+  // Verifica si cumple con el formato
+  if (!regex.test(dateStr)) {
+      return false;
+  }
+
+  // Trata de crear un objeto Date con la fecha
+  const dateObj = new Date(dateStr);
+
+  // Verifica que sea una fecha válida (esto evita fechas como 2023-02-30, por ejemplo)
+  if (dateObj.toISOString().slice(0, 10) !== dateStr) {
+      return false;
+  }
+
+  return true;
+}
+
+function parseDate(input) {
+  var parts = input.split(' ');
+  var dateParts = parts[0].split('-');
+  var timeParts = parts[1].split(':');
+  // new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
+  return new Date(dateParts[0], dateParts[1]-1, dateParts[2], timeParts[0], timeParts[1], timeParts[2]);
 }

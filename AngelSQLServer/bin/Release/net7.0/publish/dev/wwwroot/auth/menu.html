@@ -14,7 +14,7 @@
             window.location.href = "index.html";
         }
 
-        const Token = JSON.parse( sessionStorage.getItem("Token") );
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
 
 
     </script>
@@ -37,50 +37,14 @@
         </div>
 
         <div class="row justify-content-center">
-            <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px;width:256px">
+            <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block"
+                style="margin-top: 20px;width:256px">
 
             <h1 class="text-center" style="font-size: 40px; font-weight: bolder;">MyBusiness POS Authorizer</h1>
 
-            <div class="col-sm-12">
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        let response = GetGroupsUsingTocken(Token.username, Token.token);
-
-                        response.then(function (query) {
-                            let response_query = JSON.parse(query);
-
-                            if (response_query.result.startsWith("Error:")) {
-                                showDialog("Alert", response_query.result);
-                            } else {
-                                sessionStorage.setItem('user_groups', response_query.result);
-                                generateButtons();
-                            }
-                        });
-                    });
-
-                    function generateButtons() {
-
-                        generateButton("pins.html", "brilliant_networking_groupware_128.png", "Generated Pins", "btn btn-info btn-block btn-lg form-control");
-
-                        if (sessionStorage.getItem("user_groups") != null) {
-                            let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
-
-                            if( user_groups.groups.includes("SUPERVISORS") )  
-                            {
-                                generateButton("supervisor.html", "futurexp_security_security_test_128.png", "My Branch Stores", "btn btn-success btn-block btn-lg form-control");
-                            }
-
-                            if( user_groups.groups.includes("AUTHORIZERS") ) 
-                            {
-                                generateButton("branch_stores.html", "brilliant_shopping_fish_shop_128.png", "Branch Stores", "btn btn-primary btn-block btn-lg form-control");
-                                generateButton("users_groups.html", "golden_educationicons_classmate_128.png", "User Groups", "btn btn-secondary btn-block btn-lg form-control");
-                                generateButton("users.html", "beta_accounting_executive_128.png", "System Users", "btn btn-primary btn-block btn-lg form-control");
-                            }
-                        }
-                    }
-
-                </script>
+            <div class="col-sm-12" id="buttonszone">
             </div>
+
         </div>
     </div>
 
@@ -110,7 +74,44 @@
             document.querySelector('#myDialog').close();
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
+            let response = GetGroupsUsingTocken(Token.username, Token.token);
+
+            response.then(function (query) {
+                let response_query = JSON.parse(query);
+
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                } else {
+                    sessionStorage.setItem('user_groups', response_query.result);
+                    generateButtons();
+                }
+            });
+        });
+
+        function generateButtons() {
+
+            generateButton("pins.html", "brilliant_networking_groupware_128.png", "Generated Pins", "btn btn-info btn-block btn-lg form-control");
+
+            if (sessionStorage.getItem("user_groups") != null) {
+                let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
+
+                if (user_groups.groups.includes("SUPERVISORS")) {
+                    generateButton("supervisor.html", "futurexp_security_security_test_128.png", "My authorizations", "btn btn-success btn-block btn-lg form-control");
+                }
+
+                if (user_groups.groups.includes("AUTHORIZERS")) {
+                    generateButton("branch_stores.html", "brilliant_shopping_fish_shop_128.png", "Branch Stores", "btn btn-primary btn-block btn-lg form-control");
+                    generateButton("users_groups.html", "golden_educationicons_classmate_128.png", "User Groups", "btn btn-secondary btn-block btn-lg form-control");
+                    generateButton("users.html", "beta_accounting_executive_128.png", "System Users", "btn btn-primary btn-block btn-lg form-control");
+                    generateButton("tokens.html", "golden_networking_net_admin_128.png", "Admin Access Tokens", "btn btn-secondary btn-block btn-lg form-control");
+                }
+            }
+        }
+
     </script>
+
+
 
     <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 
