@@ -2,96 +2,45 @@
 <html>
 
 <head>
-    <title>POS - Inicio de sesión</title>
+    <title>Inventory Management</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
-    
-    <script src="./js/scripts.js"></script>
+
+    <script src="./js/main.js"></script>
 
     <script>
-        const Token = sessionStorage.getItem("Token");
-
-        if (Token == null) {
+        if (sessionStorage.getItem("Token") == null) {
             window.location.href = "index.html";
         }
 
-    </script>
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
 
+    </script>
 
 </head>
 
 <body>
-
     <div class="container">
+
 
         <div class="row justify-content-center">
 
-            <nav class="navbar">
-                <div class="container-fluid">
-                    <a class="btn btn-primary btn-block" href="menu.html" style="width: 100%;">
-                        <span style="float: left;">
-                            <img src="images/icons/beta_general_back_128.png" alt="logo" class="logo"
-                                style="width:24px">
-                        </span>
-                        Menu
-                    </a>
-                </div>
-            </nav>
-
-            <img src="./images/icons/brilliant_computergadgets_barcode_scanner_256.png" alt="logo"
-                 class="img-fluid mx-auto d-block" style="margin-top: 20px;width:170px">
-
-            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;">Inventory Management</h1>
-            <div class="col-md-12">
-
-                <script>
-
-                    document.addEventListener("DOMContentLoaded", function () {
-                        let response = getPermissions(Token);
-
-                        response.then(function (query) {
-                            let response_query = JSON.parse(query);
-                            if (response_query.result.startsWith("Error:")) {
-                                showDialog("Alert", response_query.result);
-                            } else {
-                                sessionStorage.setItem('Group', response_query.result);
-                                generateButtons();
-                            }
-                        });
-                    });
-
-                    function generateButtons() {
-                        if (sessionStorage.getItem("Group") != null) {
-
-                            let Group = JSON.parse(sessionStorage.getItem("Group"));
-
-                            if (Group.id != "KIOSK") {
-                                window.location.href = "index.html";
-                            }
-
-                            let permissions = JSON.parse(Group.permissions);
-
-                            if (permissions.Skus.includes("Query")) {
-                                generateButton("skus.html", "diamond_business_market_128.png", "SKU (Stock Keeping Unit)", "btn btn-primary btn-block btn-lg form-control");
-                            }
-
-                            if (permissions.Inventory_inbound_outbound.includes("Query")) {
-                                generateButton("inbound.html", "brilliant_shopping_product_display_128.png", "Inbound / Outbound", "btn btn-info btn-block btn-lg form-control");
-                            }
-
-                            if (permissions.Physical_inventory.includes("Query")) {
-                                generateButton("physical_Inventory.html", "diamond_business_report_128.png", "Physical Inventory Count", "btn btn-primary btn-block btn-lg form-control");
-                            }
-
-                            if (permissions.Physical_inventory_shrinkage.includes("Query")) {
-                                generateButton("Shrinkage.html", "brilliant_shopping_checkout_128.png", "Shrinkage", "btn btn-info btn-block btn-lg form-control");
-                            }
-                        }
-                    }
-
-                </script>
+            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                <a class="btn btn-primary btn-block" href="menu.html" style="width: 100%;">
+                    <span style="float: left;">
+                        <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                    </span>
+                    Menu
+                </a>
             </div>
+
+            <img src="./images/icons/brilliant_computergadgets_barcode_scanner_256.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px;width:170px">
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;">Inventory Management</h1>
+            <div class="col-sm-12" id="buttonszone">
+            </div>
+
         </div>
     </div>
 
@@ -122,9 +71,37 @@
             document.querySelector('#myDialog').close();
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
+            let response = GetGroupsUsingTocken(Token.username, Token.token);
 
+            response.then(function (query) {
+                let response_query = JSON.parse(query);
+
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                } else {
+                    sessionStorage.setItem('user_groups', response_query.result);
+                    generateButtons();
+                }
+            });
+        });
+
+        function generateButtons() {
+
+            if (sessionStorage.getItem("user_groups") != null) {
+                let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
+
+                if (user_groups.groups.includes("ADMINISTRATIVE")) {
+                    generateButton("skus.html", "diamond_business_market_128.png", "SKU (Stock Keeping Unit)", "btn btn-primary btn-block btn-lg form-control");
+                    generateButton("inbound.html", "brilliant_shopping_product_display_128.png", "Inbound / Outbound", "btn btn-info btn-block btn-lg form-control");
+                    generateButton("physical_Inventory.html", "diamond_business_report_128.png", "Physical Inventory Count", "btn btn-primary btn-block btn-lg form-control");
+                    generateButton("Shrinkage.html", "brilliant_shopping_checkout_128.png", "Shrinkage", "btn btn-info btn-block btn-lg form-control");
+                }
+            }
+        }
 
     </script>
+
 
     <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 

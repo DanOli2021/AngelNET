@@ -1,6 +1,11 @@
-async function sendPOST(data) {
+async function sendPOST(data, fetch_url = "") {
 
     url = window.location.protocol + '//' + window.location.host + "/AngelPOST";
+
+    if (fetch_url != "")
+    {
+        url = fetch_url;
+    }    
 
     const response = await fetch(url, {
         method: 'POST',
@@ -19,7 +24,7 @@ async function sendPOST(data) {
 }
 
 
-async function sendToAngelPOST(user, api_name, token, OperationType, object_data) {
+async function sendToAngelPOST(user, api_name, token, OperationType, object_data, fetch_url = "") {
 
     account = "";
 
@@ -39,18 +44,26 @@ async function sendToAngelPOST(user, api_name, token, OperationType, object_data
         }
     };
 
-    return await sendPOST(api);
+    return await sendPOST(api, fetch_url);
 
 }
 
 
 async function login(user, password) {
-    return sendToAngelPOST(user, "tokens/admintokens", "", "GetTokenFromUser", { User: user, Password: password });
+    var url = window.location.protocol + '//' + window.location.host + "/AngelPOST";
+    return sendToAngelPOST(user, "tokens/admintokens", "", "GetTokenFromUser", { User: user, Password: password }, url);
 }
 
 async function GetGroupsUsingTocken(user, token) {
-    return sendToAngelPOST(user, "tokens/admintokens", "", "GetGroupsUsingTocken", { TokenToObtainPermission: token });
+    var url = window.location.protocol + '//' + window.location.host + "/AngelPOST";
+    return sendToAngelPOST(user, "tokens/admintokens", "", "GetGroupsUsingTocken", { TokenToObtainPermission: token }, url);
 }
+
+async function SearchSkus(user, token, where) {
+    return sendToAngelPOST(user, "kiosk/adminskus", token, "SearchSkus", { Where: where });
+}
+
+
 
 
 
@@ -58,6 +71,9 @@ function generateButton(href, iconSrc, buttonText, buttonClass, onclick = {}) {
     let button = document.createElement("a");
     button.href = href;
     button.className = buttonClass;
+    button.style.paddingLeft = "10px"
+    button.style.paddingRight = "100px"
+    
 
     let iconSpan = document.createElement("span");
     iconSpan.className = "material-symbols-outlined";

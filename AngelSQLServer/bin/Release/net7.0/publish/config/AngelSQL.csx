@@ -8,7 +8,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-string main_url = "";
+string main_url = "http://localhost:11000";
 
 Dictionary<string, string> parameters = new Dictionary<string, string>
 {
@@ -26,6 +26,7 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
     { "request_timeout", "4" },
     { "wwwroot", "dev/wwwroot" },
     { "scripts_directory", "dev/scripts" },
+    { "accounts_directory", "" },
     { "smtp", "" },
     { "smtp_port", "" },
     { "email_address", "" },
@@ -35,9 +36,6 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
     { "service_command", "config/Tasks.csx" },
     { "service_delay", "300000" },
 };
-
-
-Environment.SetEnvironmentVariable("ANGELSQL_PARAMETERS", JsonConvert.SerializeObject(parameters, Formatting.Indented));
 
 Dictionary<string, string> servers = new Dictionary<string, string>
 {

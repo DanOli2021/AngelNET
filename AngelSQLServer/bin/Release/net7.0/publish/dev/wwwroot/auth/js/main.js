@@ -125,17 +125,15 @@ async function SaveToken(user, token, Token)
 }
 
 async function SendPinToEmail(email) {
+  return sendToAngelPOST( "", "tokens/admintokens", "", "SendPinToEmail", { Email: email } );
+}
 
-    var data = { OperationType: "SendPinToEmail", DataMessage: { email: email } };
+async function CreateAccount(register_info) {
+  return sendToAngelPOST( "", "tokens/createaccount", "", "CreateAccount", register_info );
+}
 
-    var api = {
-        api: "accounts/accounts",
-        account: "",
-        message: JSON.stringify(data),
-        language: "C#"
-    };
-
-    return await sendPOST(api);;
+async function RecoverMasterPassword(email) {
+    return sendToAngelPOST("", "tokens/admintokens", "", "RecoverMasterPassword", { Email: email } );
 }
 
 

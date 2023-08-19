@@ -1,668 +1,219 @@
-// GLOBALS
+﻿// GLOBALS
 // These lines of code go in each script
 #load "Globals.csx"
 // END GLOBALS
 
-// Script for managing skus (product codes)
+// Script for system access management, it is based on the generation of Tokens, 
+// for which first user groups must be created, which define their access levels, 
+// the necessary users are created indicating the group they belong to and in the end, 
+//an access token is generated indicating the user it is intended to assign 
+//for use in all operations within the system
 // Daniel() Oliver Rojas
 // 2023-05-19
 
+
 #load "skus.csx"
-#load "shared.csx"
 
 using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Net.Mail;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Net.Http;
+using System.Text;
+using System.Xml.Linq;
 
-AdminSkus admin_skus = new AdminSkus();
- 
-AngelApiOperation operation_type = JsonConvert.DeserializeObject<AngelApiOperation>(message);
-
-Dictionary<string, string> servers = JsonConvert.DeserializeObject<Dictionary<string, string>>(Environment.GetEnvironmentVariable("ANGELSQL_SERVERS"));
- 
-switch (operation_type.OperationType)
+public class AngelApiOperation
 {
+    public string OperationType { get; set; }
+    public string Token { get; set; }
+    public dynamic DataMessage { get; set; }
+}
 
-    case "UpsertClasifications":
+AngelApiOperation api = JsonConvert.DeserializeObject<AngelApiOperation>(message);
 
-        return admin_skus.UpsertClasifications(db, servers, operation_type.Token, operation_type.DataMessage);
+string db_account = server_db.Prompt("VAR db_account");
+string tokens_url = server_db.Prompt("VAR server_tokens_url");
+string token = api.Token;
 
-    case "DeleteClasifications":
-
-        return admin_skus.DeleteClasifications(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "GetClasifications":
-
-        return admin_skus.GetClasifications(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "UpsertMaker":
-
-        return admin_skus.UpsertMaker(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "DeleteMaker":
-
-        return admin_skus.DeleteMaker(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "GetMakers":
-
-        return admin_skus.GetMakers(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "UpsertLocation":
-
-        return admin_skus.UpsertLocation(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "DeleteLocation":
-
-        return admin_skus.DeleteLocation(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "GetLocations":
-
-        return admin_skus.GetLocations(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "UpsertCurrency":
-    
-            return admin_skus.UpsertCurrency(db, servers, operation_type.Token, operation_type.DataMessage);   
-
-    case "DeleteCurrency":
-
-        return admin_skus.DeleteCurrency(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "GetCurrencies":
-
-        return admin_skus.GetCurrencies(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "UpsertPriceCode":
-
-        return admin_skus.UpsertPriceCode(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "DeletePriceCode":
-    
-            return admin_skus.DeletePriceCode(db, servers, operation_type.Token, operation_type.DataMessage);   
-
-    case "GetPriceCodes":   
-
-        return admin_skus.GetPriceCodes(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "UpsertSku":
-
-        return admin_skus.UpsertSku(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "DeleteSku":
-
-        return admin_skus.DeleteSku(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "GetSkus":
-
-        return admin_skus.GetSkus(db, servers, operation_type.Token, operation_type.DataMessage);
-
+switch (api.OperationType)
+{
     case "SearchSkus":
-
-        return admin_skus.SearchSkus(db, servers, operation_type.Token, operation_type.DataMessage);
-
-    case "GetSku":
-
-        return admin_skus.GetSku(db, servers, operation_type.Token, operation_type.DataMessage);
-
+        return SearchSkus();
     default:
-        return "Error: No service found";
+        return "Error: OperationType not found";
 }
 
 
-public class AdminSkus
+    // Adminin Skus class
+string SearchSkus() 
 {
+    string result = ValidateUser("", "SearchSkus", "AUTHORIZERS, SUPERVISORS, PINSCONSUMER, CASHIER, ADMINISTRATIVE");
 
+    if( string.IsNullOrEmpty(result) ) return "Error: SearchSkus() " + result.Replace("Error:", "" );
 
-    public string UpsertClasifications(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
+    dynamic d = api.DataMessage;
+
+    if( d.Where == null) 
     {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK",  "Clasifications", "Upsert");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        Console.WriteLine("---->" + message);
-
-        result = db.Prompt($"UPSERT INTO clasifications VALUES {JsonConvert.SerializeObject(message, Formatting.Indented)}");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: UpsertClasifications() " + result.Replace("Error:", "");
-        }
-
-        return result;
+        return "Error: SearchSkus() Where is null";
     }
 
-    public string DeleteClasifications(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
+    result = db.Prompt( $"SELECT * FROM skus_search WHERE {d.Where}" );
 
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Clasifications", "Delete");
+    if( result.StartsWith("Error:") ) return "Error: SearchSkus() " + result.Replace("Error:", "" );
 
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
 
-        result = db.Prompt($"DELETE FROM clasifications PARTITION KEY main WHERE id = '{message["id"]}'");
 
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string GetClasifications(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Clasifications", "Query");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (message.ContainsKey("where"))
-        {
-            result = db.Prompt($"SELECT * FROM clasifications PARTITION KEY main WHERE {message["where"]}");
-        }
-        else if (message.ContainsKey("id"))
-        {
-            result = db.Prompt($"SELECT * FROM clasifications PARTITION KEY main WHERE id = '{message["id"]}'");
-        }
-        else
-        {
-            result = db.Prompt($"SELECT * FROM clasifications PARTITION KEY main");
-        }
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-
-    public string UpsertMaker(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Makers", "Upsert");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"UPSERT INTO makers VALUES {JsonConvert.SerializeObject(message, Formatting.Indented)}");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-
-    public string DeleteMaker(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Makers", "Delete");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"DELETE FROM makers PARTITION KEY main WHERE id = '{message["id"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string GetMakers(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Makers", "Query");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (message.ContainsKey("where"))
-        {
-            result = db.Prompt($"SELECT * FROM makers PARTITION KEY main WHERE {message["where"]}");
-        }
-        else if (message.ContainsKey("id"))
-        {
-            result = db.Prompt($"SELECT * FROM makers PARTITION KEY main WHERE id = '{message["id"]}'");
-        }
-        else
-        {
-            result = db.Prompt($"SELECT * FROM makers PARTITION KEY main");
-        }
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-
-    public string UpsertLocation(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Locations", "Upsert");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"UPSERT INTO locations VALUES {JsonConvert.SerializeObject(message, Formatting.Indented)}");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string DeleteLocation(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Locations", "Delete");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"DELETE FROM locations PARTITION KEY main WHERE id = '{message["id"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string GetLocations(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Locations", "Query");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (message.ContainsKey("where"))
-        {
-            result = db.Prompt($"SELECT * FROM locations PARTITION KEY main WHERE {message["where"]}");
-        }
-        else if (message.ContainsKey("id"))
-        {
-            result = db.Prompt($"SELECT * FROM locations PARTITION KEY main WHERE id = '{message["id"]}'");
-        }
-        else
-        {
-            result = db.Prompt($"SELECT * FROM locations PARTITION KEY main");
-        }
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string UpsertCurrency(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Currencies", "Upsert");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"UPSERT INTO currencies VALUES {JsonConvert.SerializeObject(message, Formatting.Indented)}");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string DeleteCurrency(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Currencies", "Delete");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"DELETE FROM Currencies PARTITION KEY main WHERE id = '{message["id"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string GetCurrencies(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Currencies", "Query");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (message.ContainsKey("where"))
-        {
-            result = db.Prompt($"SELECT * FROM Currencies PARTITION KEY main WHERE {message["where"]}");
-        }
-        else if (message.ContainsKey("id"))
-        {
-            result = db.Prompt($"SELECT * FROM Currencies PARTITION KEY main WHERE id = '{message["id"]}'");
-        }
-        else
-        {
-            result = db.Prompt($"SELECT * FROM Currencies PARTITION KEY main");
-        }
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-
-    public string UpsertPriceCode(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "PriceCodes", "Upsert");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"SELECT * FROM Currencies WHERE id = '{message["currency"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        if( result == "[]" ) 
-        {
-            return "Error: Currency not found";
-        }
-
-        result = db.Prompt($"UPSERT INTO price_codes VALUES {JsonConvert.SerializeObject(message, Formatting.Indented)}");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string DeletePriceCode(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "PriceCodes", "Delete");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"DELETE FROM price_codes PARTITION KEY main WHERE id = '{message["id"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-
-    public string GetPriceCodes(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "PriceCodes", "Query");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (message.ContainsKey("where"))
-        {
-            result = db.Prompt($"SELECT * FROM price_codes PARTITION KEY main WHERE {message["where"]}");
-        }
-        else if (message.ContainsKey("id"))
-        {
-            result = db.Prompt($"SELECT * FROM price_codes PARTITION KEY main WHERE id = '{message["id"]}'");
-        }
-        else
-        {
-            result = db.Prompt($"SELECT * FROM price_codes PARTITION KEY main");
-        }
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string UpsertSku(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Skus", "Upsert");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"SELECT id FROM currencies WHERE id = '{message["currency"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: currencies " + result.Replace("Error:", ",");
-        }
-
-        if( result == "[]" ) 
-        {
-            return "Error: Currency not found";
-        }
-
-        result = db.Prompt($"SELECT id FROM makers WHERE id = '{message["maker"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: makers " + result.Replace("Error:", ",");
-        }
-
-        if( result == "[]" ) 
-        {
-            return "Error: Maker not found";
-        }
-        
-        result = db.Prompt($"SELECT id FROM locations WHERE id = '{message["location"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: locations " + result.Replace("Error:", ",");
-        }
-
-        if( result == "[]" ) 
-        {
-            return "Error: Location not found";
-        }
-
-        result = db.Prompt($"UPSERT INTO skus_catalog PARTITION KEY main VALUES {JsonConvert.SerializeObject(message, Formatting.Indented)}");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        result = db.Prompt($"UPSERT INTO skus_search PARTITION KEY main VALUES {JsonConvert.SerializeObject(message, Formatting.Indented)}");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-
-        return result;
-    }
-
-
-    public string DeleteSku(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Skus", "Delete");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        result = db.Prompt($"DELETE FROM skus_catalog PARTITION KEY main WHERE id = '{message["id"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        result = db.Prompt($"DELETE FROM skus_search PARTITION KEY main WHERE id = '{message["id"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-
-    public string GetSkus(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Skus", "Query");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (message.ContainsKey("where"))
-        {
-            result = db.Prompt($"SELECT * FROM Skus_Catalog PARTITION KEY main WHERE {message["where"]}");
-        }
-        else if (message.ContainsKey("id"))
-        {
-            result = db.Prompt($"SELECT * FROM Skus_Catalog PARTITION KEY main WHERE id = '{message["id"]}'");
-        }
-        else
-        {
-            result = db.Prompt($"SELECT * FROM Skus_Catalog PARTITION KEY main");
-        }
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string SearchSkus(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Skus", "Query");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (!message.ContainsKey("query"))
-        {
-            result = "Error: Missing where clause";
-        }
-
-        result = db.Prompt($"SELECT id, description, price, clasification FROM skus_search PARTITION KEY main WHERE {message["query"]}");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        return result;
-    }
-
-    public string GetSku(AngelDB.DB db, Dictionary<string, string> servers, string token, dynamic message)
-    {
-
-        string result = ValidatePermisions(db, servers, token, "KIOSK", "Skus", "Query");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
-
-        if (!message.ContainsKey("id"))
-        {
-            result = "Error: Missing sku id";
-        }
-
-        result = db.Prompt($"SELECT * FROM skus_catalog PARTITION KEY main WHERE id = '{message["id"]}'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return "Error: " + result.Replace("Error:", "");
-        }
-
-        List<Skus_Catalog> sku = JsonConvert.DeserializeObject<List<Skus_Catalog>>(result);
-        return JsonConvert.SerializeObject(sku[0]);
-
-    }
+    return result;
 
 }
 
+
+string ValidateUser(string groups, string api_name) 
+{
+        // Obtenemos el token de autenticación
+    string result = SendToAngelPOST("tokens/admintokens", "", db_account, "GetGroupsUsingTocken", new
+    {
+        TokenToObtainPermission = token,
+    });
+
+    if( result.StartsWith("Error:") ) return "Error: ValidateUser() " + result.Replace( "Error:", "" );
+
+    AngelDB.AngelResponce responce = JsonConvert.DeserializeObject<AngelDB.AngelResponce>(result);
+
+    if (responce.result.StartsWith("Error:")) return "Error: ValidateUser() " + responce.result.Replace("Error:", "");
+
+    List<string> authorizedGroups = groups.Split(',').ToList();
+    List<string> userGroups = responce.result.Split(',').ToList();
+
+    bool found = false;
+
+    foreach (string item in authorizedGroups)
+    {
+        foreach (string item2 in userGroups)
+        {
+            if (item.Trim() == item2.Trim())
+            {
+                found = true;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        return $"Error: ValidateAdminUser() {api_name} User not authorized";
+    }
+
+    string token = responce.result;
+
+}
+
+
+string CreateTables() 
+{
+    Console.WriteLine("Creating skus catalog...");
+    Skus_Catalog sku = new Skus_Catalog();
+    result = db.CreateTable(sku);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Skus_Catalog " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating skus catalog search table...");
+    Skus_Catalog sku_search = new Skus_Catalog();
+    result = db.CreateTable(sku, "skus_search", true);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Skus_Search " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating Componens catalog...");
+    Components component = new Components();
+    result = db.CreateTable(component);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Components " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating Clasifications catalog...");
+    Clasifications clasifications = new Clasifications();
+    result = db.CreateTable(clasifications);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Clasifications " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating Makers catalog...");
+    Makers maker = new Makers();
+    result = db.CreateTable(maker);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Makers " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating Sku_Dictionaries catalog...");
+    Sku_Dictionary sku_dictionary = new Sku_Dictionary();
+    result = db.CreateTable(sku_dictionary);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Sku_Dictionary " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating Locations catalog...");
+    Locations locations = new Locations();
+    result = db.CreateTable(locations);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Locations " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating Price codes catalog...");
+    Price_Codes price = new Price_Codes();
+    result = db.CreateTable(price);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Price_Codes " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating currencies catalog...");
+    Currencies currency = new Currencies();
+    result = db.CreateTable(currency);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Currencies " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating tokens catalog...");
+    Tokens tokens = new Tokens();
+    result = db.CreateTable(tokens);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Tokens " + result.Replace("Error:", "");
+
+    Console.WriteLine("Creating Users catalog...");
+    Users users = new Users();
+    result = db.CreateTable(users);
+    if( result.StartsWith("Error:") ) return "Error: Creating table Users " + result.Replace("Error:", "");    
+
+    Console.WriteLine("Creating User Groups catalog...");
+    UsersGroup usersgroup = new UsersGroup();
+    result = db.CreateTable(usersgroup);
+    if( result.StartsWith("Error:") ) return "Error: Creating table UsersGroup " + result.Replace("Error:", "");
+
+
+}
+
+
+
+string SendToAngelPOST(string api_name, string OPerationType, dynamic object_data)
+{
+    var d = new
+    {
+        api = api_name,
+        account = db_account,
+        language = "C#",
+        message = new
+        {
+            OperationType = OPerationType,
+            Token = token,
+            DataMessage = object_data
+        }
+    };
+
+    string result = db.Prompt($"POST {tokens_url} MESSAGE {JsonConvert.SerializeObject(d, Formatting.Indented)}");
+
+    if (result.StartsWith("Error:"))
+    {
+        return $"Error: ApiName {api_name} Account {db_account} OperationType {OPerationType} --> Result -->" + result;
+    }
+
+    AngelDB.AngelResponce responce = JsonConvert.DeserializeObject<AngelDB.AngelResponce>(result);
+    return responce.result;
+}
 

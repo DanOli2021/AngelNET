@@ -62,7 +62,21 @@ g.Name = "SUPERVISORS";
 g.Permissions = "";
 
 result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
-Console.WriteLine("Upsert group: " + result); 
+Console.WriteLine("Upsert group: " + result);
+
+g.id = "CASHIER";
+g.Name = "CASHIER";
+g.Permissions = "";
+
+result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
+Console.WriteLine("Upsert group: " + result);
+
+g.id = "ADMINISTRATIVE";
+g.Name = " ADMINISTRATIVE";
+g.Permissions = "";
+
+result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(g));
+Console.WriteLine("Upsert group: " + result);
 
 Users u = new Users();
 u.id = "authuser";

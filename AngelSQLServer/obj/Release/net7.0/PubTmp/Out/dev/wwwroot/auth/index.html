@@ -40,6 +40,17 @@
                         <input type="button" class="btn btn-primary btn-lg form-control" onclick="tryLogin()"
                             value="Log in (F2)" style="margin-bottom: 20px;">
                     </div>
+
+                    <div class="form-group">
+                        <input type="button" class="btn btn-secondary btn-lg form-control" value="Forgot your password?" onclick="gotoRecover()"
+                            style="margin-bottom: 20px;">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="button" class="btn btn-info btn-lg form-control" onclick="gotoRegister()"
+                            value="Register" style="margin-bottom: 20px;">
+                    </div>
+
                 </form>
             </div>
         </div>
@@ -61,7 +72,7 @@
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
 
-            let responce =  login(username, password);
+            let responce = login(username, password);
 
             responce.then(function (query) {
 
@@ -90,6 +101,21 @@
 
         }
 
+        document.addEventListener("DOMContentLoaded", function () {
+            var url = new URL(window.location.href);
+                    var params = new URLSearchParams(url.search);
+                    var user = params.get('user');
+
+                    if( user != null ) 
+                    {
+                        document.getElementById("username").value = user;
+                        document.getElementById("password").focus();
+                    }
+                    
+
+        });
+
+
         function showDialog(title, message) {
 
             document.getElementById('dialogTittle').innerText = title;
@@ -104,6 +130,10 @@
 
         function gotoRegister() {
             window.location.href = "sendpin.html";
+        }
+
+        function gotoRecover() {
+            window.location.href = "recover.html";
         }
 
         document.querySelector('#closeButton').addEventListener('click', function () {
@@ -122,7 +152,7 @@
 
     </script>
 
-    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 
     <div class="bottom-bar">
         <a href="privacy.html" target="_blank">Privacy Policy</a>

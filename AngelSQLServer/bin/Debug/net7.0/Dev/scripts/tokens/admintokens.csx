@@ -914,8 +914,8 @@ public static class AdminAuth
         {
             return "Error: DeleteGroup() UserGroupToDelete is null";
         }
-
-        List<string> system_groups = new List<string> { "AUTHORIZERS", "SUPERVISORS", "PINSCONSUMER" };
+        
+        List<string> system_groups = new List<string> { "AUTHORIZERS", "SUPERVISORS", "PINSCONSUMER", "CASHIER", "ADMINISTRATIVE" };
 
         foreach (string item in system_groups)
         {
@@ -1597,6 +1597,9 @@ public static class AdminAuth
             authorizer_message = "Created by SendPinToEmail()",
             pintype = "touser"
         };
+
+        //result = db.CreateTable(pin, "pins");
+        //if (result.StartsWith("Error:")) return "Error: Creating table pins " + result.Replace("Error:", "");
 
         string wwwroot = parameters["wwwroot"].ToString().Trim();
 

@@ -209,7 +209,6 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
     result = db.CreateTable(my_pin, "pins");
     if (result.StartsWith("Error:")) return "Error: Creating table pins " + result.Replace("Error:", "");
 
-
     List<UsersGroup> groups = new List<UsersGroup>();
 
     UsersGroup g = new UsersGroup();
@@ -248,8 +247,14 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
     g.Permissions = "";
     groups.Add(g);
 
+    g = new UsersGroup();
+    g.id = "CASHIER";
+    g.Name = "CASHIER";
+    g.Permissions = "";
+    groups.Add(g);
+
     result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(groups));
-    if (result.StartsWith("Error:")) return "Error: insert group ADMINISTRATIVE " + result.Replace("Error:", "");
+    if (result.StartsWith("Error:")) return "Error: insert group ADMINISTRATIVE " + result.Replace("Error:", "");    
 
     Users u = new Users();
     u.id = d.User.ToString();

@@ -2,26 +2,28 @@
 <html>
 
 <head>
-    <title>POS - Inicio de sesión</title>
+    <title>Skus</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
-
 
     <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="./css/responsive.dataTables.css">
     <script src="./js/code.jquery.com_jquery-3.7.0.min.js"></script>
     <script src="./js/jquery.dataTables.min.js"></script>
     <script src="./js/dataTables.responsive.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
 
-    <script src="./js/scripts.js"></script>
+    <script src="./js/main.js"></script>
 
     <script>
-        const Token = sessionStorage.getItem("Token");
 
-        if (Token == null) {
+        if (sessionStorage.getItem("Token") == null) {
             window.location.href = "index.html";
         }
+
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
 
     </script>
 
@@ -60,21 +62,21 @@
                 <a href="#">
                     <span style="float: left;">
                         <img src="images/icons/diamond_business_market_128.png" alt="logo" class="logo"
-                            style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
+                             style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
                     </span>
-                    <h2>SKU (Stock Keeping Unit)</h2>
+                    <h2>Skus (Stock Keeping Unit)</h2>
                 </a>
             </div>
 
             <br />
 
             <div class="form-group">
-                <input type="search" id="SearchSku" class="form-control" />
+                <input type="search" id="SearchSku" class="form-control" style="margin-top: 10px" />
             </div>
 
             <div class="form-group">
                 <div class="text-center">
-                    <button type="button" id="ButtonSearch" class="btn btn-primary">
+                    <button type="button" id="ButtonSearch" class="btn btn-primary" style="margin-bottom: 10px;margin-top: 10px">
                         Search (F2)
                     </button>
                 </div>
@@ -95,41 +97,6 @@
                 <tbody>
                 </tbody>
             </table>
-
-            <script>
-
-                var tabla;
-
-                $(document).ready(function () {
-                    var datos = [];
-
-                    tabla = $('#dataTable').DataTable({
-                        responsive: true,
-                        data: datos,
-                        bFilter: false,
-                        columns: [
-                            {
-                                // Columna de botón
-                                data: null,
-                                render: function (data, type, row) {
-                                    return '<button class="btn btn-primary">Plus</button>';
-                                }
-                            },
-                            { data: 'id' },
-                            { data: 'description' },
-                            { data: 'price' },
-                            { data: 'clasification' },
-                        ]
-                    });
-
-                    $('#dataTable').on('click', 'td:first-child', function () {
-                        var datosFila = tabla.row($(this).parents('tr')).data();
-                        showSkuDialog(datosFila);
-                        // Aquí se ejecuta el código al hacer doble clic en la columna de botón
-                    });
-
-                });
-            </script>
 
         </div>
 
@@ -172,13 +139,12 @@
                     <img id="image_element" src="" alt="Imagen">
                 </div>
 
-
                 <br />
 
-
-
                 <button type="button" id="button_details" class="btn btn-primary"
-                    onclick="toggleDiv()">Detalles</button>
+                        onclick="toggleDiv()">
+                    Detalles
+                </button>
 
                 <br />
 
@@ -232,7 +198,7 @@
                     <div class="form-group">
                         <label for="clasification">Clasification</label>
                         <select class="form-select" aria-label="Default select example" id="clasification"
-                            name="clasification">
+                                name="clasification">
                         </select>
                     </div>
 
@@ -260,55 +226,55 @@
                     <div class="form-group">
                         <label for="requires_inventory">Requires Inventory</label>
                         <input type="checkbox" class="form-check-input" id="requires_inventory"
-                            name="requires_inventory" style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               name="requires_inventory" style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
                     <div class="form-group">
                         <label for="is_for_sale">Is for sale</label>
                         <input type="checkbox" class="form-check-input" id="is_for_sale" name="is_for_sale"
-                            style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
                     <div class="form-group">
                         <label for="is_for_sale">Bulk sale</label>
                         <input type="checkbox" class="form-check-input" id="bulk_sale" name="bulk_sale"
-                            style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
                     <div class="form-group">
                         <label for="require_series">Require series</label>
                         <input type="checkbox" class="form-check-input" id="require_series" name="require_series"
-                            style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
                     <div class="form-group">
                         <label for="require_lots">Require lots</label>
                         <input type="checkbox" class="form-check-input" id="require_lots" name="require_lots"
-                            style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
                     <div class="form-group">
                         <label for="kit">Is Kit</label>
                         <input type="checkbox" class="form-check-input" id="kit" name="kit"
-                            style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
                     <div class="form-group">
                         <label for="sell_below_cost">Sell below cost</label>
                         <input type="checkbox" class="form-check-input" id="sell_below_cost" name="sell_below_cost"
-                            style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
                     <div class="form-group">
                         <label for="locked">Locked</label>
                         <input type="checkbox" class="form-check-input" id="locked" name="locked"
-                            style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
                     <div class="form-group">
                         <label for="weight_request">Weight request</label>
                         <input type="checkbox" class="form-check-input" id="weight_request" name="weight_request"
-                            style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
+                               style="top: 1.2rem; width: 5.0rem; height: 2.0rem;">
                     </div>
 
 
@@ -319,9 +285,14 @@
                 <br />
 
                 <button type="button" class="btn btn-primary" style="text-align: right;"
-                    onclick="SaveSku()">Guardar</button>
+                        onclick="SaveSku()">
+                    Guardar
+                </button>
+
                 <button id="closeSkuEdit" class="btn btn-secondary" onclick="closeSkuDialog()"
-                    style="text-align: right;">Cerrar</button>
+                        style="text-align: right;">
+                    Cerrar
+                </button>
 
 
             </div>
@@ -575,12 +546,36 @@
 
         }
 
+        document.addEventListener("DOMContentLoaded", function () {
+            var tabla;
 
-        toggleDiv();
+            var datos = [];
 
-    </script>
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: false,
+                columns: [
+                    {
+                        // Columna de botón
+                        data: null,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary">Plus</button>';
+                        }
+                    },
+                    { data: 'id' },
+                    { data: 'description' },
+                    { data: 'price' },
+                    { data: 'clasification' },
+                ]
+            });
 
-    <script>
+            $('#dataTable').on('click', 'td:first-child', function () {
+                var datosFila = tabla.row($(this).parents('tr')).data();
+                showSkuDialog(datosFila);
+                // Aquí se ejecuta el código al hacer doble clic en la columna de botón
+            });
+        });
 
         function isNullOrEmpty(str) {
             return !str || str.trim() === '';
@@ -592,7 +587,7 @@
 
             if (isNullOrEmpty(search_data)) return;
 
-            var datos = sendToAngelPOST("kiosk/adminskus", "SearchSkus", Token, { query: "skus_search = '" + document.getElementById("SearchSku").value + "'" });
+            var datos = SearchSkus(Token.username, Token.token, "skus_search = '" + document.getElementById("SearchSku").value + "'" );
 
             datos.then(function (query) {
 
@@ -639,6 +634,7 @@
         });
 
         document.getElementById("SearchSku").focus();
+        //toggleDiv();
 
     </script>
 

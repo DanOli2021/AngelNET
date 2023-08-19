@@ -1371,13 +1371,11 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\images\
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\images\sales.png
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\index.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\inventorymanagement.html
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\AngelSQL.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\code.jquery.com_jquery-3.7.0.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\dataTables.responsive.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\jquery.dataTables.min.js
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\scripts.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\menu.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\sales.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\skus.html
@@ -1420,4 +1418,7 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\recover.
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\register.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\sendpin.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\scripts\kiosk\adminskus_old.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\js\main.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\pins\images\7707.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\pins\images\8928.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\js\index.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\main.js

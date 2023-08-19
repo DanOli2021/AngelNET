@@ -141,18 +141,6 @@ if (WindowsServiceHelpers.IsWindowsService())
     builder.Host.UseWindowsService();
 }
 
-// Create the master database
-server_db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
-server_db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
-server_db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
-server_db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
-server_db.Prompt($"USE DATABASE {parameters["database"]}", true);
-
-// Create the accounts table
-server_db.Prompt($"CREATE TABLE accounts FIELD LIST db_user, name, email, connection_string, db_password, database, data_directory, account, super_user, super_user_password, active, created", true);
-// Create the hub users table
-server_db.Prompt($"CREATE TABLE hub_users FIELD LIST account, name, email, phone, password, role, active, last_access, created", true);
-
 // Initial script
 string start_file = "";
 
@@ -567,10 +555,6 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                             return result;
                         }
 
-                        db.Prompt($"VAR db_user = '{db_user}'", true);
-                        db.Prompt($"VAR db_password = '{db_password}'", true);
-                        db.Prompt($"VAR db_account = '{api.account}'", true);
-
                         db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
                         db.Prompt($"USE ACCOUNT {account}", true);
                         db.Prompt($"CREATE DATABASE {db_database}", true);
@@ -601,7 +585,6 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                         db.Prompt($"USE DATABASE {db_database}", true);
 
                     }
-
 
                     db.Prompt($"VAR db_user = '{db_user}'", true);
                     db.Prompt($"VAR db_password = '{db_password}'", true);

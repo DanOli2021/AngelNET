@@ -5,16 +5,16 @@ async function runExample() {
     const url = 'https://localhost:7170/AngelSQL';
 
     const angelSql = new AngelSQL(user, password, url);
-    
-    try {
-      const startResult = await angelSql.start();
-      console.log('Start Result:', startResult);
 
-      var result = await angelSql.prompt('GET ACCOUNTS');
-      console.log('Prompt Result:', result);
+    try {
+        const startResult = await angelSql.start();
+        console.log('Start Result:', startResult);
+
+        var result = await angelSql.prompt('GET ACCOUNTS');
+        console.log('Prompt Result:', result);
 
     } catch (error) {
-      console.error('Error:', error);
+        console.error('Error:', error);
     }
 }
 
@@ -25,13 +25,12 @@ function StartAngelSQL(user, password, url) {
 
     let result = angelSql.start();
 
-    if( result.startsWith("Error:") ) 
-    {
-      console.log('Start Result:', result);
-      return result;
+    if (result.startsWith("Error:")) {
+        console.log('Start Result:', result);
+        return result;
     }
 
     sessionStorage.setItem('AngelSQLToken', angelSql.GetToken());
     return "Ok.";
 
-  }
+}
