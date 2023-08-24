@@ -16,6 +16,7 @@
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
 
+    <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -70,23 +71,25 @@
         <div class="row justify-content-center">
 
             <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
-                <a class="btn btn-primary btn-block" href="supervisor.html" id="nav_link" style="width: 100%;">
+                <a class="btn btn-primary btn-block" href="menu.html" id="nav_link" style="width: 100%;">
                     <span style="float: left;">
                         <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                     </span>
-                    Menu
+                    <span id="pins_menu">
+                        Menu
+                    </span>                    
                 </a>
             </div>
 
             <div class="row">
 
                 <div class="col-sm-6">
-                    <label for="fecha1">Initial date:</label>
+                    <label for="fecha1" id="pins_start_date">Initial date:</label>
                     <input type="date" class="form-control" id="date1">
                 </div>
 
                 <div class="col-sm-6">
-                    <label for="fecha2">Final date</label>
+                    <label for="fecha2" id="pins_end_date">Final date</label>
                     <input type="date" class="form-control" id="date2">
                 </div>
 
@@ -96,7 +99,9 @@
             <div class="row" style="margin-bottom: 10px; margin-top: 10px;">
                 <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 100%;"
                     onclick="getPins()" style="margin-bottom: 20px;margin-bottom: 20px;">
-                    Refresh (F4)
+                    <span id="pins_refresh">
+                        Refresh (F4)
+                    </span>                    
                 </button>
             </div>
 
@@ -108,14 +113,14 @@
                         <th>Id</th>
                         <th>Pin</th>
                         <th>Status</th>
-                        <th>Autohrizer</th>
-                        <th>Branch Store</th>
-                        <th>Date</th>
-                        <th>Expiry Time</th>
-                        <th>Permission</th>
-                        <th>Confirmated Date</th>
-                        <th>User</th>
-                        <th>User Name</th>
+                        <th id="pins_authorizer">Autohrizer</th>
+                        <th id="pins_branch_store">Branch Store</th>
+                        <th id="pins_date">Date</th>
+                        <th id="pins_expiry_time">Expiry Time</th>
+                        <th id="pins_permission">Permission</th>
+                        <th id="pins_confirmated_date">Confirmated Date</th>
+                        <th id="pins_user">User</th>
+                        <th id="pins_user_name">User Name</th>
                         <th>Expired</th>
                     </tr>
                 </thead>
@@ -135,7 +140,7 @@
 
                 var tabla;
 
-                $(document).ready(function () {
+                document.addEventListener("DOMContentLoaded", function () {
                     var datos = [];
 
                     tabla = $('#dataTable').DataTable({
@@ -198,6 +203,12 @@
                             }
                         }
                     });
+
+                    translate_pins("es");
+                });
+
+
+                $(document).ready(function () {
                 });
             </script>
 

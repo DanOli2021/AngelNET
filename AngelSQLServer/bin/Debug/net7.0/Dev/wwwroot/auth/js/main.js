@@ -166,17 +166,18 @@ function generateButton(href, iconSrc, buttonText, buttonClass, onclick = {}) {
   let button = document.createElement("a");
   button.href = href;
   button.className = buttonClass;
+  button.style.paddingRight = "120px";
 
   let iconSpan = document.createElement("span");
   iconSpan.className = "material-symbols-outlined";
-  iconSpan.style.float = "left";
+  iconSpan.style.float = "left";  
 
   let iconImg = document.createElement("img");
   iconImg.src = "images/icons/" + iconSrc;
   iconImg.style.width = "96px";
 
   let text = document.createElement("h2");
-  text.innerText = buttonText;
+  text.innerText = translate_buttons("es", buttonText);
 
   iconSpan.appendChild(iconImg);
   button.appendChild(iconSpan);

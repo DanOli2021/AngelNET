@@ -2,13 +2,14 @@
 <html>
 
 <head>
-    <title>AUTHORIZERS - Inicio de sesión</title>
+    <title>AUTHORIZERS - Session start</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
 
     <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
 </head>
 
@@ -19,36 +20,35 @@
             <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block"
                 style="margin-top: 20px; width: 250px">
 
-            <h1 class="text-center">MyBusiness POS Authorizer</h1>
+            <h1 class="text-center" id="auth_title">MyBusiness POS Authorizer</h1>
 
             <div class="col-md-12">
                 <form action="/login" method="post">
 
                     <div class="form-group">
-                        <label for="username"><b>User</b></label>
-                        <input type="text" class="form-control" placeholder="Enter your username" id="username"
-                            required>
+                        <label for="username"><b id="auth_for_username">User</b></label>
+                        <input type="text" class="form-control" placeholder="Enter your username" id="username" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="password"><b>Password</b></label>
+                        <label for="password"><b id="auth_for_password">Password</b></label>
                         <input type="password" class="prymary form-control" placeholder="Enter your password"
                             id="password" required style="margin-bottom: 20px;">
                     </div>
 
                     <div class="form-group">
                         <input type="button" class="btn btn-primary btn-lg form-control" onclick="tryLogin()"
-                            value="Log in (F2)" style="margin-bottom: 20px;">
+                            value="Log in (F2)" style="margin-bottom: 20px;" id="login_button">
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <input type="button" class="btn btn-secondary btn-lg form-control" value="Forgot your password?" onclick="gotoRecover()"
-                            style="margin-bottom: 20px;">
-                    </div>
+                            style="margin-bottom: 20px;" id="button_recover_password">
+                    </div> -->
 
                     <div class="form-group">
                         <input type="button" class="btn btn-info btn-lg form-control" onclick="gotoRegister()"
-                            value="Register" style="margin-bottom: 20px;">
+                            value="Register" style="margin-bottom: 20px;" id="button_register">
                     </div>
 
                 </form>
@@ -147,6 +147,10 @@
             }
         });
 
+        document.addEventListener("DOMContentLoaded", function () 
+        {
+            translate_login("es");            
+        });
 
         document.getElementById("username").focus();
 

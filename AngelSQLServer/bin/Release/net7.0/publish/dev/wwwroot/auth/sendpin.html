@@ -13,32 +13,22 @@
 
 <body>
     <div class="container">
-
         <div class="row justify-content-center">
             <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px; width: 30%">
-
             <h1 class="text-center">MyBusiness POS Authorizer</h1>
-            <p class="text-center">Send PIN for registration</p>
-            
+            <p class="text-center">Send PIN for registration</p>            
             <div class="col-md-12">
                 <form action="/login" method="post">
-
                     <div class="form-group">
                         <label for="username"><b>Email</b></label>
                         <input type="text" class="form-control" placeholder="Enter your email" id="email" required>
                     </div>
-
                     <div class="form-group">
                         <input type="button" class="btn btn-primary btn-lg form-control" onclick="RequestPin()" value="Request PIN" style="margin-bottom: 20px;">    
                     </div>
-
-                </form>
-    
+                </form>    
             </div>
-
-
         </div>
-
     </div>
 
     <dialog id="myDialog">
@@ -55,7 +45,6 @@
             <h3 id="dialogMessage1" class="form-group">Message</h3>
         </div>
     </dialog>
-
 
     <script>
 
@@ -82,14 +71,25 @@
                 } 
                 else 
                 {
-                    if(responce_query.result != "Ok.")
+                    if( responce_query.result.includes("Ok.") != true )
                     {
                         showDialog("Alert", responce_query.result);
                     } 
                     else 
                     {
+
                         sessionStorage.setItem('email', email);
-                        window.location.href = "register.html";
+
+                        if( responce_query.result.includes("Pin") ) 
+                        {
+                            sessionStorage.setItem('email', email);
+                            window.location.href = "register.html?pin=" + responce_query.result.split("->")[2];
+                        } 
+                        else 
+                        {
+                            window.location.href = "register.html";
+                        }
+
                     }
                 }
 

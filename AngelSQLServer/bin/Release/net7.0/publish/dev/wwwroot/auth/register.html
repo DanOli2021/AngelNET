@@ -220,7 +220,6 @@
             let responce = CreateAccount(register);
 
             responce.then(function (query) {
-
                 if (query.startsWith("Error:")) {
                     showDialog("Alert", query);
                     return;
@@ -230,12 +229,12 @@
 
                 if (responce_query.result.startsWith("Error:")) {
                     showDialog("Alert", responce_query.result);
-                } else {
+                } 
+                else 
+                {
                     window.location.href = "index.html?user=" + user.trim().toLowerCase() + "@" + account.trim().toLowerCase();
                 }
-
             });
-
         }
 
         function showDialog(title, message) {
@@ -269,6 +268,14 @@
             }
         });
 
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        var pin = params.get('pin');
+
+        if( pin != null ) 
+        {
+            document.getElementById("pin").value = pin.trim();
+        }
 
         document.getElementById("pin").focus();
 

@@ -48,61 +48,35 @@ AngelApiOperation api = JsonConvert.DeserializeObject<AngelApiOperation>(message
 //Server parameters
 Dictionary<string, string> parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(Environment.GetEnvironmentVariable("ANGELSQL_PARAMETERS"));
 
-switch (api.OperationType)
+return api.OperationType switch
 {
-    case "UpsertGroup":
-        return AdminAuth.UpsertGroup(db, api);
-    case "GetGroups":
-        return AdminAuth.GetGroups(db, api);
-    case "DeleteGroup":
-        return AdminAuth.DeleteGroup(db, api);
-    case "UpsertUser":
-        return AdminAuth.UpsertUser(db, api);
-    case "DeleteUser":
-        return AdminAuth.DeleteUser(db, api);
-    case "GetUsers":
-        return AdminAuth.GetUsers(db, api);
-    case "GetUser":
-        return AdminAuth.GetUser(db, api);
-    case "SaveToken":
-        return AdminAuth.SaveToken(db, api);
-    case "DeleteToken":
-        return AdminAuth.DeleteToken(db, api);
-    case "ValidateToken":
-        return AdminAuth.ValidateToken(db, api);
-    case "GetTokenFromUser":
-        return AdminAuth.GetTokenFromUser(db, api);
-    case "GetGroupsUsingTocken":
-        return AdminAuth.GetGroupsUsingTocken(db, api);
-    case "GetUserUsingToken":
-        return AdminAuth.GetUserUsingToken(db, api);
-    case "GetTokens":
-        return AdminAuth.GetTokens(db, api);
-    case "GetToken":
-        return AdminAuth.GetToken(db, api);
-    case "UpsertBranchStore":
-        return AdminAuth.UpsertBranchStore(db, api);
-    case "GetBranchStores":
-        return AdminAuth.GetBranchStores(db, api);
-    case "DeleteBranchStore":
-        return AdminAuth.DeleteBranchStore(db, api);
-    case "GetBranchStore":
-        return AdminAuth.GetBranchStore(db, api);
-    case "GetBranchStoresByUser":
-        return AdminAuth.GetBranchStoresByUser(db, api);
-    case "CreatePermission":
-        return AdminAuth.CreatePermission(db, api);
-    case "GetPins":
-        return AdminAuth.GetPins(db, api);
-    case "OperatePin":
-        return AdminAuth.OperatePin(db, api);
-    case "SendPinToEmail":
-        return AdminAuth.SendPinToEmail(db, api, parameters, server_db);
-    case "RecoverMasterPassword":
-        return AdminAuth.RecoverMasterPassword(db, api, parameters, server_db);
-    default:
-        return $"Error: No service found {api.OperationType}";
-}
+    "UpsertGroup" => AdminAuth.UpsertGroup(db, api),
+    "GetGroups" => AdminAuth.GetGroups(db, api),
+    "DeleteGroup" => AdminAuth.DeleteGroup(db, api),
+    "UpsertUser" => AdminAuth.UpsertUser(db, api),
+    "DeleteUser" => AdminAuth.DeleteUser(db, api),
+    "GetUsers" => AdminAuth.GetUsers(db, api),
+    "GetUser" => AdminAuth.GetUser(db, api),
+    "SaveToken" => AdminAuth.SaveToken(db, api),
+    "DeleteToken" => AdminAuth.DeleteToken(db, api),
+    "ValidateToken" => AdminAuth.ValidateToken(db, api),
+    "GetTokenFromUser" => AdminAuth.GetTokenFromUser(db, api),
+    "GetGroupsUsingTocken" => AdminAuth.GetGroupsUsingTocken(db, api),
+    "GetUserUsingToken" => AdminAuth.GetUserUsingToken(db, api),
+    "GetTokens" => AdminAuth.GetTokens(db, api),
+    "GetToken" => AdminAuth.GetToken(db, api),
+    "UpsertBranchStore" => AdminAuth.UpsertBranchStore(db, api),
+    "GetBranchStores" => AdminAuth.GetBranchStores(db, api),
+    "DeleteBranchStore" => AdminAuth.DeleteBranchStore(db, api),
+    "GetBranchStore" => AdminAuth.GetBranchStore(db, api),
+    "GetBranchStoresByUser" => AdminAuth.GetBranchStoresByUser(db, api),
+    "CreatePermission" => AdminAuth.CreatePermission(db, api),
+    "GetPins" => AdminAuth.GetPins(db, api),
+    "OperatePin" => AdminAuth.OperatePin(db, api),
+    "SendPinToEmail" => AdminAuth.SendPinToEmail(api, parameters, server_db),
+    "RecoverMasterPassword" => AdminAuth.RecoverMasterPassword(db, api, parameters, server_db),
+    _ => $"Error: No service found {api.OperationType}",
+};
 
 public class OperationTypeClass
 {
@@ -114,7 +88,7 @@ public static class AdminAuth
 {
     public static string SaveToken(AngelDB.DB db, AngelApiOperation api)
     {
-        string result = "";
+        string result;
 
         result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "SaveToken");
 
@@ -167,7 +141,7 @@ public static class AdminAuth
             return $"Error: User not found {d.User}";
         }
 
-        Tokens t = new Tokens();
+        Tokens t = new();
 
         if (d.id == "New")
         {
@@ -225,8 +199,11 @@ public static class AdminAuth
 
         DataTable t = JsonConvert.DeserializeObject<DataTable>(result);
 
-        DataColumn newColumn = new DataColumn("ServerTime", typeof(System.String));
-        newColumn.DefaultValue = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
+        DataColumn newColumn = new("ServerTime", typeof(System.String))
+        {
+            DefaultValue = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff")
+        };
+
         t.Columns.Add(newColumn);
 
         return JsonConvert.SerializeObject(t);
@@ -264,13 +241,15 @@ public static class AdminAuth
 
         DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
 
-        Tokens t = new Tokens();
-        t.id = dt.Rows[0]["id"].ToString();
-        t.User = dt.Rows[0]["User"].ToString();
-        t.ExpiryTime = dt.Rows[0]["ExpiryTime"].ToString();
-        t.UsedFor = dt.Rows[0]["UsedFor"].ToString();
-        t.Observations = dt.Rows[0]["Observations"].ToString();
-        t.CreationTime = dt.Rows[0]["CreationTime"].ToString();
+        Tokens t = new()
+        {
+            id = dt.Rows[0]["id"].ToString(),
+            User = dt.Rows[0]["User"].ToString(),
+            ExpiryTime = dt.Rows[0]["ExpiryTime"].ToString(),
+            UsedFor = dt.Rows[0]["UsedFor"].ToString(),
+            Observations = dt.Rows[0]["Observations"].ToString(),
+            CreationTime = dt.Rows[0]["CreationTime"].ToString()
+        };
 
         return JsonConvert.SerializeObject(t, Formatting.Indented);
 
@@ -279,7 +258,7 @@ public static class AdminAuth
 
     public static string DeleteToken(AngelDB.DB db, AngelApiOperation api)
     {
-        string result = "";
+        string result;
 
         result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "DeleteToken");
 
@@ -332,13 +311,10 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
-
-
         if (d.TokenToObtainPermission == null)
         {
             return "Error: GetGroupsUsingTocken() TokenToObtainPermission is null";
         }
-
 
         string result = db.Prompt($"SELECT * FROM tokens WHERE id = '{d.TokenToObtainPermission}'");
 
@@ -367,8 +343,6 @@ public static class AdminAuth
         {
             return "Error: User not found";
         }
-
-        DataRow r = JsonConvert.DeserializeObject<DataTable>(result).Rows[0];
 
         var group = new
         {
@@ -444,7 +418,7 @@ public static class AdminAuth
 
     public static string ValidateToken(AngelDB.DB db, string token)
     {
-        string result = "";
+        string result;
 
         result = db.Prompt($"SELECT * FROM tokens WHERE id = '{token}'");
 
@@ -482,7 +456,7 @@ public static class AdminAuth
     public static string GetTokenFromUser(AngelDB.DB db, AngelApiOperation api)
     {
 
-        string result = "";
+        string result;
 
         //result = ValidateAdminUser(db, to.Token);
 
@@ -526,7 +500,7 @@ public static class AdminAuth
             return "Error: Invalid password";
         }
 
-        result = db.Prompt($"SELECT * FROM tokens WHERE user = '{d.User}' AND ExpiryTime > '{DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff")}'");
+        result = db.Prompt($"SELECT * FROM tokens WHERE user = '{d.User}' AND ExpiryTime > '{DateTime.Now.ToUniversalTime():yyyy-MM-dd HH:mm:ss.fffffff}'");
 
         if (result.StartsWith("Error:"))
         {
@@ -552,7 +526,7 @@ public static class AdminAuth
 
     public static string UpsertUser(AngelDB.DB db, AngelApiOperation api)
     {
-        string result = "";
+        string result;
 
         result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "UpsertUser");
 
@@ -627,16 +601,17 @@ public static class AdminAuth
             }
         }
 
-        Users t = new Users();
-
-        t.id = d.User;
-        t.UserGroups = d.UserGroups;
-        t.Name = d.Name;
-        t.Password = d.Password;
-        t.Organization = d.Organization;
-        t.Email = d.Email;
-        t.Phone = d.Phone;
-        t.permissions_list = d.permissions_list;
+        Users t = new()
+        {
+            id = d.User,
+            UserGroups = d.UserGroups,
+            Name = d.Name,
+            Password = d.Password,
+            Organization = d.Organization,
+            Email = d.Email,
+            Phone = d.Phone,
+            permissions_list = d.permissions_list
+        };
 
         result = db.Prompt($"UPSERT INTO users VALUES {JsonConvert.SerializeObject(t)}");
 
@@ -651,12 +626,15 @@ public static class AdminAuth
         {
             api.DataMessage.ExpiryTime = DateTime.Now.AddDays(30).ToUniversalTime().ToString("yyyy-MM-dd");
 
-            var new_token = new Tokens();
-            new_token.id = "New";
-            new_token.User = d.User;
-            new_token.ExpiryTime = DateTime.Now.AddDays(30).ToUniversalTime().ToString("yyyy-MM-dd");
-            new_token.UsedFor = "App Login";
-            new_token.Observations = "Created by UpsertUser()";
+            var new_token = new Tokens
+            {
+                id = "New",
+                User = d.User,
+                ExpiryTime = DateTime.Now.AddDays(30).ToUniversalTime().ToString("yyyy-MM-dd"),
+                UsedFor = "App Login",
+                Observations = "Created by UpsertUser()"
+            };
+            
             api.DataMessage = new_token;
             result = SaveToken(db, api);
 
@@ -673,7 +651,7 @@ public static class AdminAuth
 
     public static string GetUsers(AngelDB.DB db, AngelApiOperation api)
     {
-        string result = "";
+        string result;
 
         result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "GetUsers");
 
@@ -683,8 +661,6 @@ public static class AdminAuth
         }
 
         var d = api.DataMessage;
-
-        string user = result;
 
         if (d.Where == null)
         {
@@ -719,7 +695,7 @@ public static class AdminAuth
 
     public static string GetUser(AngelDB.DB db, AngelApiOperation api)
     {
-        string result = "";
+        string result;
 
         result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS", "GetUser");
 
@@ -771,7 +747,7 @@ public static class AdminAuth
 
     public static string DeleteUser(AngelDB.DB db, AngelApiOperation api)
     {
-        string result = "";
+        string result;
 
         result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "DeleteUser");
 
@@ -814,7 +790,7 @@ public static class AdminAuth
 
     public static string UpsertGroup(AngelDB.DB db, AngelApiOperation api)
     {
-        string result = "";
+        string result;
 
         result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "UpsertGroup");
 
@@ -844,12 +820,17 @@ public static class AdminAuth
 
         result = db.Prompt($"SELECT * FROM UsersGroup WHERE id = '{d.UserGroup}'");
 
-        dynamic NewPermissions = d.Permissions;
-        UsersGroup t = new UsersGroup();
+        if( result.StartsWith("Error:"))
+        {
+            return "Error: UpsertGroup() " + result.Replace("Error:", "");
+        }
 
-        t.id = d.UserGroup.ToString().ToUpper().Trim();
-        t.Name = d.Name;
-        t.Permissions = d.Permissions;
+        UsersGroup t = new()
+        {
+            id = d.UserGroup.ToString().ToUpper().Trim(),
+            Name = d.Name,
+            Permissions = d.Permissions
+        };
 
         result = db.Prompt($"UPSERT INTO UsersGroup VALUES {JsonConvert.SerializeObject(t, Formatting.Indented)}");
 
@@ -915,7 +896,7 @@ public static class AdminAuth
             return "Error: DeleteGroup() UserGroupToDelete is null";
         }
         
-        List<string> system_groups = new List<string> { "AUTHORIZERS", "SUPERVISORS", "PINSCONSUMER", "CASHIER", "ADMINISTRATIVE" };
+        List<string> system_groups = new() { "AUTHORIZERS", "SUPERVISORS", "PINSCONSUMER", "CASHIER", "ADMINISTRATIVE" };
 
         foreach (string item in system_groups)
         {
@@ -985,7 +966,7 @@ public static class AdminAuth
             d.authorizer = "";
         }
 
-        branch_stores branch_store = new branch_stores
+        branch_stores branch_store = new()
         {
             id = d.id.ToString().Trim().ToUpper(),
             name = d.name.ToString(),
@@ -1091,12 +1072,14 @@ public static class AdminAuth
 
         DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
 
-        branch_stores b = new branch_stores();
-        b.id = dt.Rows[0]["id"].ToString();
-        b.name = dt.Rows[0]["name"].ToString();
-        b.address = dt.Rows[0]["address"].ToString();
-        b.phone = dt.Rows[0]["phone"].ToString();
-        b.authorizer = dt.Rows[0]["authorizer"].ToString();
+        branch_stores b = new()
+        {
+            id = dt.Rows[0]["id"].ToString(),
+            name = dt.Rows[0]["name"].ToString(),
+            address = dt.Rows[0]["address"].ToString(),
+            phone = dt.Rows[0]["phone"].ToString(),
+            authorizer = dt.Rows[0]["authorizer"].ToString()
+        };
 
         return JsonConvert.SerializeObject(b, Formatting.Indented);
 
@@ -1239,10 +1222,10 @@ public static class AdminAuth
             d.Minutes = 30;
         }
 
-        int minutes = 30;
-        int.TryParse(d.Minutes.ToString(), out minutes);
 
-        Pin p = new Pin()
+        int.TryParse(d.Minutes.ToString(), out int minutes);
+
+        Pin p = new()
         {
             id = Guid.NewGuid().ToString(),
             authorizer = user.Rows[0]["id"].ToString(),
@@ -1306,9 +1289,7 @@ public static class AdminAuth
 
         DataTable user = JsonConvert.DeserializeObject<DataTable>(result);
 
-        DateTime parsedDate;
-
-        DateTime.TryParseExact(d.InitialDate.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate);
+        DateTime.TryParseExact(d.InitialDate.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate);
         d.InitialDate = parsedDate.ToUniversalTime().ToString("yyyy-MM-dd");
         d.FinalDate = d.FinalDate + " 23:59:59";
 
@@ -1404,10 +1385,10 @@ public static class AdminAuth
 
         if (DateTime.Now.ToUniversalTime() > expiry)
         {
-            return $"Error: Pin expired {dt.Rows[0]["id"].ToString()}";
+            return $"Error: Pin expired {dt.Rows[0]["id"]}";
         }
 
-        Pin pin = new Pin()
+        Pin pin = new()
         {
             id = dt.Rows[0]["id"].ToString(),
             confirmed_date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -1524,10 +1505,6 @@ public static class AdminAuth
                             </body>
                             </html>";
 
-        return "Ok.";
-
-        //result = SendMailFromSoap(htmlCode, Email, "MyBusiness POS Authorizer (Recover)").GetAwaiter().GetResult();
-
         // result = EmailSender.SendEmail(parameters["email_address"],
         //                                 parameters["email_password"],
         //                                 "MyBusiness POS Authorizer (Recover)",
@@ -1544,15 +1521,17 @@ public static class AdminAuth
         //    return result;
         //}
 
-        //XDocument doc = XDocument.Parse(result);
-        //XNamespace ns = "http://wsCorreo.mybusinesspos.com/";
-        //result = doc.Descendants(ns + "EnviaCorreoHResult").First().Value;
-        //return result;
+        result = SendMailFromSoap(htmlCode, Email, parameters["email_address"], parameters["email_password"],"MyBusiness POS Authorizer (Recover)").GetAwaiter().GetResult();
+
+        XDocument doc = XDocument.Parse(result);
+        XNamespace ns = "http://wsCorreo.mybusinesspos.com/";
+        result = doc.Descendants(ns + "EnviaCorreoHResult").First().Value;
+        return result;
 
     }
 
 
-    public static string SendPinToEmail(AngelDB.DB db, AngelApiOperation api, Dictionary<string, string> parameters, AngelDB.DB server_db)
+    public static string SendPinToEmail(AngelApiOperation api, Dictionary<string, string> parameters, AngelDB.DB server_db)
     {
 
         var d = api.DataMessage;
@@ -1581,7 +1560,7 @@ public static class AdminAuth
             return "Error: CreateAccount() Email already exists in another account";
         }
 
-        Pin pin = new Pin()
+        Pin pin = new()
         {
             id = Guid.NewGuid().ToString(),
             pin_number = RandomNumberGenerator.GenerateRandomNumber(4),
@@ -1631,29 +1610,30 @@ public static class AdminAuth
             return result;
         }
 
-        string htmlCode = $@"<!DOCTYPE html>
-                            <html>
-                            <head>
-                                <meta charset='UTF-8'>
-                                <title>Confirmation PIN</title>
-                            </head>
-                            <body>
-                                <h1>Confirmation PIN</h1>
-                                <p>Dear User,</p>
-                                <p>Here is your confirmation PIN:</p>
-                                <img src='{"https://tokens.mybusinesspos.net/auth/pins/images/" + pin.pin_number + ".png"}' alt='Confirmation PIN Image'>
-                                <p>If you are unable to view the image, please click on the following link:</p>
-                                <a href='https://tokens.mybusinesspos.net/auth/pins/{pin.pin_number}.html'>Click here</a>
-                                <p>Thank you!</p>
-                            </body>
-                            </html>";
+        result = server_db.CreateTable(pin, "pins");
+        if (result.StartsWith("Error:")) return "Error: Creating table pins " + result.Replace("Error:", "");
 
-        result = "Ok.";
 
-        //string html_file = Path.Combine(wwwroot, "auth/pins/" + pin.pin_number + ".html");
-        //File.WriteAllText(html_file, htmlCode);
+        // string htmlCode = $@"<!DOCTYPE html>
+        //                     <html>
+        //                     <head>
+        //                         <meta charset='UTF-8'>
+        //                         <title>Confirmation PIN</title>
+        //                     </head>
+        //                     <body>
+        //                         <h1>Confirmation PIN</h1>
+        //                         <p>Dear User,</p>
+        //                         <p>Here is your confirmation PIN:</p>
+        //                         <img src='{"https://tokens.mybusinesspos.net/auth/pins/images/" + pin.pin_number + ".png"}' alt='Confirmation PIN Image'>
+        //                         <p>If you are unable to view the image, please click on the following link:</p>
+        //                         <a href='https://tokens.mybusinesspos.net/auth/pins/{pin.pin_number}.html'>Click here</a>
+        //                         <p>Thank you!</p>
+        //                     </body>
+        //                     </html>";
 
-        //result = SendMailFromSoap(htmlCode, email).GetAwaiter().GetResult();
+        // string html_file = Path.Combine(wwwroot, "auth/pins/" + pin.pin_number + ".html");
+        // File.WriteAllText(html_file, htmlCode);
+        // result = SendMailFromSoap(htmlCode, email, parameters["email_address"], parameters["email_password"]).GetAwaiter().GetResult();
 
         // result = EmailSender.SendEmail(parameters["email_address"],
         //                                 parameters["email_password"],
@@ -1666,52 +1646,49 @@ public static class AdminAuth
         //                                 int.Parse(parameters["smtp_port"].ToString().Trim()),
         //                                 false);
 
-        //if (result.StartsWith("Error:"))
-        //{
-        //    return result;
-        //}
+        // if (result.StartsWith("Error:"))
+        // {
+        //     return result;
+        // }
 
-        //XDocument doc = XDocument.Parse(result);
-        //XNamespace ns = "http://wsCorreo.mybusinesspos.com/";
-        //result = doc.Descendants(ns + "EnviaCorreoHResult").First().Value;
+        // XDocument doc = XDocument.Parse(result);
+        // XNamespace ns = "http://wsCorreo.mybusinesspos.com/";
+        // result = doc.Descendants(ns + "EnviaCorreoHResult").First().Value;
 
-        //result = server_db.CreateTable(pin, "pins");
-        //if (result.StartsWith("Error:")) return "Error: Creating table pins " + result.Replace("Error:", "");
+        // if (result == "Ok.")
+        // {
+        //     result = server_db.Prompt($"UPSERT INTO pins VALUES {JsonConvert.SerializeObject(pin, Formatting.Indented)}");
+        // }
 
-        if (result == "Ok.")
-        {
-            result = server_db.Prompt($"UPSERT INTO pins VALUES {JsonConvert.SerializeObject(pin, Formatting.Indented)}");
-        }
-
-        return result;
-
+        return "Ok.->Pin->" + pin.pin_number.ToString();
     }
 
-    static async Task<string> SendMailFromSoap(string html, string email, string default_subject = "Tokens Administration PIN")
+    static async Task<string> SendMailFromSoap(string html, string email, string fromAddress, string password, string default_subject = "Tokens Administration PIN")
     {
-        string fromAddressName = "tokens@mybusinesspos.net";
-        //string fromAddressPassword = "TokenNewService3456()";
-        string toAddress = email;
-        string toAddressName = "";
+        string fromAddressName = fromAddress;
+        string fromAddressPass = password;
+        string toAddress = email;        
+        string toAddressName = email;
         string subject = default_subject;
         string alternate = html;
-        string password = "Your mail password from mybusiness email service";
 
         string soapEnvelope = $@"
             <soap12:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap12=""http://www.w3.org/2003/05/soap-envelope"">
                 <soap12:Body>
                     <EnviaCorreoH xmlns=""http://wsCorreo.mybusinesspos.com/"">
-                        <fromAddressName>{System.Security.SecurityElement.Escape(fromAddressName)}</fromAddressName>
+                        <fromAddress>{System.Security.SecurityElement.Escape(fromAddressName)}</fromAddress>
+                        <fromAddressPass>{System.Security.SecurityElement.Escape(fromAddressPass)}</fromAddressPass>
+                        <fromAddressName>{System.Security.SecurityElement.Escape(fromAddressName)}</fromAddressName>                        
                         <toAddress>{System.Security.SecurityElement.Escape(toAddress)}</toAddress>
                         <toAddressName>{System.Security.SecurityElement.Escape(toAddressName)}</toAddressName>
                         <Subjet>{System.Security.SecurityElement.Escape(subject)}</Subjet>
-                        <alternate>{System.Security.SecurityElement.Escape(alternate)}</alternate>
-                        <password>{System.Security.SecurityElement.Escape(password)}</password>
+                        <alternate>{System.Security.SecurityElement.Escape(alternate)}</alternate>                                                
+                        <Trick></Trick>
                     </EnviaCorreoH>
                 </soap12:Body>
             </soap12:Envelope>";
 
-        var url = "https://wscorreo.mybusinesspos.com:25100/wscorreo.asmx";
+        var url = "https://wscorreoa.mybusinesspos.net/WSCorreo.asmx";
         return await PostSOAPRequestAsync(url, soapEnvelope);
 
     }
@@ -1721,17 +1698,13 @@ public static class AdminAuth
     {
         var httpClient = new HttpClient();
 
-        using (HttpContent content = new StringContent(text, Encoding.UTF8, "text/xml"))
-        using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url))
-        {
-            request.Headers.Add("SOAPAction", "http://wsCorreo.mybusinesspos.com/EnviaCorreoH");
-            request.Content = content;
-            using (HttpResponseMessage response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
-            {
-                response.EnsureSuccessStatusCode(); // throws an Exception if 404, 500, etc.
-                return await response.Content.ReadAsStringAsync();
-            }
-        }
+        using HttpContent content = new StringContent(text, Encoding.UTF8, "text/xml");
+        using HttpRequestMessage request = new(HttpMethod.Post, url);
+        request.Headers.Add("SOAPAction", "http://wsCorreo.mybusinesspos.com/EnviaCorreoH");
+        request.Content = content;
+        using HttpResponseMessage response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+        response.EnsureSuccessStatusCode(); // throws an Exception if 404, 500, etc.
+        return await response.Content.ReadAsStringAsync();
     }
 
     public static string ValidateAdminUser(AngelDB.DB db, string Token, string groups = "AUTHORIZERS", string api_name = "")
@@ -1751,7 +1724,7 @@ public static class AdminAuth
 
         DataTable dataTableToken = JsonConvert.DeserializeObject<DataTable>(result);
 
-        result = db.Prompt($"SELECT * FROM users WHERE id = '{dataTableToken.Rows[0]["User"].ToString()}'");
+        result = db.Prompt($"SELECT * FROM users WHERE id = '{dataTableToken.Rows[0]["User"]}'");
 
         if (result.StartsWith("Error:"))
         {
@@ -1803,7 +1776,7 @@ public static class AdminAuth
 
     public static class RandomNumberGenerator
     {
-        private static Random random = new Random();
+        private static readonly Random random = new();
 
         public static string GenerateRandomNumber(int digitCount)
         {
@@ -1825,8 +1798,7 @@ public static class AdminAuth
     public static string ConvertToDateTimeWithMaxTime(string inputDate)
     {
         // Parse the date
-        DateTime parsedDate;
-        if (DateTime.TryParseExact(inputDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+        if (DateTime.TryParseExact(inputDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
         {
             // Set the time to 23:59:59.000000
             DateTime maxTimeDate = parsedDate.Date.Add(new TimeSpan(23, 59, 59)).AddTicks(9999999); // 10 million ticks per second - 1 tick = 1 second
@@ -1875,7 +1847,7 @@ public static string CreateImageFromText(string text, string filename)
     try
     {
         // Define el tipo de fuente y tamaño
-        Font font = new Font("Arial", 50, FontStyle.Regular);
+        Font font = new("Arial", 50, FontStyle.Regular);
 
         // Crea un bitmap en base al texto y la fuente
         SizeF textSize;
@@ -1885,26 +1857,22 @@ public static string CreateImageFromText(string text, string filename)
         }
 
         // Crea una nueva imagen del tamaño necesario para el texto
-        using (Bitmap image = new Bitmap((int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height)))
+        using Bitmap image = new((int)Math.Ceiling(textSize.Width), (int)Math.Ceiling(textSize.Height));
+        using (Graphics graphics = Graphics.FromImage(image))
         {
-            using (Graphics graphics = Graphics.FromImage(image))
-            {
-                // Define el color de fondo y el color del texto
-                graphics.Clear(Color.White);
-                using (Brush brush = new SolidBrush(Color.Black))
-                {
-                    graphics.DrawString(text, font, brush, 0, 0);
-                }
-            }
-
-            if (File.Exists(filename))
-            {
-                File.Delete(filename);
-            }
-
-            // Guarda la imagen a un archivo
-            image.Save(filename, ImageFormat.Png);
+            // Define el color de fondo y el color del texto
+            graphics.Clear(Color.White);
+            using Brush brush = new SolidBrush(Color.Black);
+            graphics.DrawString(text, font, brush, 0, 0);
         }
+
+        if (File.Exists(filename))
+        {
+            File.Delete(filename);
+        }
+
+        // Guarda la imagen a un archivo
+        image.Save(filename, ImageFormat.Png);
 
         return "Ok.";
 
@@ -1935,7 +1903,7 @@ public static class EmailSender
             var fromAddress = new MailAddress(fromEmail, fromName);
             var toAddress = new MailAddress(toEmail);
 
-            NetworkCredential credentials = new NetworkCredential(fromAddress.Address, fromPassword);
+            NetworkCredential credentials = new(fromAddress.Address, fromPassword);
 
             if (useDefaultCredentials)
             {
@@ -1953,23 +1921,22 @@ public static class EmailSender
             };
 
 
-            using (var message = new MailMessage(fromAddress, toAddress)
+            using var message = new MailMessage(fromAddress, toAddress)
             {
                 Subject = subject,
                 Body = bodyHtml,
                 IsBodyHtml = true
-            })
+            };
+
+            if (!string.IsNullOrWhiteSpace(cc))
             {
-                if (!string.IsNullOrWhiteSpace(cc))
-                {
-                    message.CC.Add(cc);
-                }
-
-                ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-
-                smtp.Send(message);
-                ServicePointManager.ServerCertificateValidationCallback = null;
+                message.CC.Add(cc);
             }
+
+            ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+
+            smtp.Send(message);
+            ServicePointManager.ServerCertificateValidationCallback = null;
 
             return "Ok.";
 

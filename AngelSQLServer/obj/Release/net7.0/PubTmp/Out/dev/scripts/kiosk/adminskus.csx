@@ -44,19 +44,18 @@ string db_account = server_db.Prompt("VAR db_account");
 string tokens_url = server_db.Prompt("VAR server_tokens_url");
 string token = api.Token;
 
-switch (api.OperationType)
+return api.OperationType switch
 {
-    case "SearchSkus":
-        return SearchSkus();
-    default:
-        return "Error: OperationType not found";
-}
+    "SearchSkus" => SearchSkus(),
+    "CreateTables" => CreateTables(),
+    _ => $"Error: OperationType not found {api.OperationType}",    
+};
 
 
-    // Adminin Skus class
+// Adminin Skus class
 string SearchSkus() 
 {
-    string result = ValidateUser("", "SearchSkus", "AUTHORIZERS, SUPERVISORS, PINSCONSUMER, CASHIER, ADMINISTRATIVE");
+    string result = ValidateUser("AUTHORIZERS, SUPERVISORS, PINSCONSUMER, CASHIER, ADMINISTRATIVE", "SearchSkus");
 
     if( string.IsNullOrEmpty(result) ) return "Error: SearchSkus() " + result.Replace("Error:", "" );
 
@@ -71,8 +70,6 @@ string SearchSkus()
 
     if( result.StartsWith("Error:") ) return "Error: SearchSkus() " + result.Replace("Error:", "" );
 
-
-
     return result;
 
 }
@@ -80,17 +77,23 @@ string SearchSkus()
 
 string ValidateUser(string groups, string api_name) 
 {
-        // Obtenemos el token de autenticación
-    string result = SendToAngelPOST("tokens/admintokens", "", db_account, "GetGroupsUsingTocken", new
+    // Obtenemos el token de autenticación
+    string result = SendToAngelPOST("tokens/admintokens", "GetGroupsUsingTocken", new
     {
         TokenToObtainPermission = token,
     });
 
-    if( result.StartsWith("Error:") ) return "Error: ValidateUser() " + result.Replace( "Error:", "" );
+    if (result.StartsWith("Error:"))
+    {
+        return "Error: ValidateUser() " + result.Replace("Error:", "");
+    }
 
     AngelDB.AngelResponce responce = JsonConvert.DeserializeObject<AngelDB.AngelResponce>(result);
 
-    if (responce.result.StartsWith("Error:")) return "Error: ValidateUser() " + responce.result.Replace("Error:", "");
+    if (responce.result.StartsWith("Error:"))
+    {
+        return "Error: ValidateUser() " + responce.result.Replace("Error:", "");
+    }
 
     List<string> authorizedGroups = groups.Split(',').ToList();
     List<string> userGroups = responce.result.Split(',').ToList();
@@ -119,7 +122,7 @@ string ValidateUser(string groups, string api_name)
         return $"Error: ValidateAdminUser() {api_name} User not authorized";
     }
 
-    string token = responce.result;
+    return "Ok.";
 
 }
 
@@ -127,66 +130,49 @@ string ValidateUser(string groups, string api_name)
 string CreateTables() 
 {
     Console.WriteLine("Creating skus catalog...");
-    Skus_Catalog sku = new Skus_Catalog();
-    result = db.CreateTable(sku);
+    Skus_Catalog sku = new();
+    string result = db.CreateTable(sku);
     if( result.StartsWith("Error:") ) return "Error: Creating table Skus_Catalog " + result.Replace("Error:", "");
 
     Console.WriteLine("Creating skus catalog search table...");
-    Skus_Catalog sku_search = new Skus_Catalog();
+    Skus_Catalog sku_search = new();
     result = db.CreateTable(sku, "skus_search", true);
     if( result.StartsWith("Error:") ) return "Error: Creating table Skus_Search " + result.Replace("Error:", "");
 
     Console.WriteLine("Creating Componens catalog...");
-    Components component = new Components();
+    Components component = new();
     result = db.CreateTable(component);
     if( result.StartsWith("Error:") ) return "Error: Creating table Components " + result.Replace("Error:", "");
 
     Console.WriteLine("Creating Clasifications catalog...");
-    Clasifications clasifications = new Clasifications();
+    Clasifications clasifications = new();
     result = db.CreateTable(clasifications);
     if( result.StartsWith("Error:") ) return "Error: Creating table Clasifications " + result.Replace("Error:", "");
 
     Console.WriteLine("Creating Makers catalog...");
-    Makers maker = new Makers();
+    Makers maker = new();
     result = db.CreateTable(maker);
     if( result.StartsWith("Error:") ) return "Error: Creating table Makers " + result.Replace("Error:", "");
 
     Console.WriteLine("Creating Sku_Dictionaries catalog...");
-    Sku_Dictionary sku_dictionary = new Sku_Dictionary();
+    Sku_Dictionary sku_dictionary = new();
     result = db.CreateTable(sku_dictionary);
-    if( result.StartsWith("Error:") ) return "Error: Creating table Sku_Dictionary " + result.Replace("Error:", "");
+    if(result.StartsWith("Error:") ) return "Error: Creating table Sku_Dictionary " + result.Replace("Error:", "");
 
     Console.WriteLine("Creating Locations catalog...");
-    Locations locations = new Locations();
+    Locations locations = new();
     result = db.CreateTable(locations);
-    if( result.StartsWith("Error:") ) return "Error: Creating table Locations " + result.Replace("Error:", "");
+    if(result.StartsWith("Error:") ) return "Error: Creating table Locations " + result.Replace("Error:", "");
 
     Console.WriteLine("Creating Price codes catalog...");
-    Price_Codes price = new Price_Codes();
+    Price_Codes price = new();
     result = db.CreateTable(price);
-    if( result.StartsWith("Error:") ) return "Error: Creating table Price_Codes " + result.Replace("Error:", "");
+    if(result.StartsWith("Error:") ) return "Error: Creating table Price_Codes " + result.Replace("Error:", "");
 
     Console.WriteLine("Creating currencies catalog...");
-    Currencies currency = new Currencies();
+    Currencies currency = new();
     result = db.CreateTable(currency);
-    if( result.StartsWith("Error:") ) return "Error: Creating table Currencies " + result.Replace("Error:", "");
-
-    Console.WriteLine("Creating tokens catalog...");
-    Tokens tokens = new Tokens();
-    result = db.CreateTable(tokens);
-    if( result.StartsWith("Error:") ) return "Error: Creating table Tokens " + result.Replace("Error:", "");
-
-    Console.WriteLine("Creating Users catalog...");
-    Users users = new Users();
-    result = db.CreateTable(users);
-    if( result.StartsWith("Error:") ) return "Error: Creating table Users " + result.Replace("Error:", "");    
-
-    Console.WriteLine("Creating User Groups catalog...");
-    UsersGroup usersgroup = new UsersGroup();
-    result = db.CreateTable(usersgroup);
-    if( result.StartsWith("Error:") ) return "Error: Creating table UsersGroup " + result.Replace("Error:", "");
-
-
+    return result.StartsWith("Error:") ? "Error: Creating table Currencies " + result.Replace("Error:", "") : "Ok.";
 }
 
 
