@@ -35,12 +35,6 @@
 
     <script>
 
-        document.addEventListener("DOMContentLoaded", function () {
-            setInitialDate("date1");
-            setInitialDate("date2");
-            getPins();
-        });
-
         function setInitialDate(dateInput) {
             var fechaInput = document.getElementById(dateInput);
             var fechaActual = currentDate();
@@ -77,36 +71,30 @@
                     </span>
                     <span id="pins_menu">
                         Menu
-                    </span>                    
+                    </span>
                 </a>
             </div>
 
             <div class="row">
-
                 <div class="col-sm-6">
                     <label for="fecha1" id="pins_start_date">Initial date:</label>
                     <input type="date" class="form-control" id="date1">
                 </div>
-
                 <div class="col-sm-6">
                     <label for="fecha2" id="pins_end_date">Final date</label>
                     <input type="date" class="form-control" id="date2">
                 </div>
-
             </div>
-
 
             <div class="row" style="margin-bottom: 10px; margin-top: 10px;">
                 <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 100%;"
-                    onclick="getPins()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
                     <span id="pins_refresh">
                         Refresh (F4)
-                    </span>                    
+                    </span>
                 </button>
             </div>
-
             <br />
-
             <table id="dataTable" class="display" style="width:100%">
                 <thead>
                     <tr>
@@ -127,94 +115,7 @@
                 <tbody>
                 </tbody>
             </table>
-
-            <script>
-
-                function convertToDate(dateString) {
-                    var parts = dateString.split(' ');
-                    var dateParts = parts[0].split('-');
-                    var timeParts = parts[1].split(':');
-                    var milliseconds = parseFloat(timeParts[2]) * 1000; // Convertir segundos y milisegundos en milisegundos totales
-                    return new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], milliseconds / 1000, milliseconds % 1000));
-                }
-
-                var tabla;
-
-                document.addEventListener("DOMContentLoaded", function () {
-                    var datos = [];
-
-                    tabla = $('#dataTable').DataTable({
-                        responsive: true,
-                        data: datos,
-                        bFilter: true,
-                        dom: 'Bfrtip',
-                        buttons: ['print'],
-                        columns: [
-                            { data: 'id' },
-                            { data: 'pin_number' },
-                            { data: 'status' },
-                            { data: 'authorizer' },
-                            { data: 'branch_store' },
-                            {
-                                data: 'date',
-                                render: function (data, type, row) {
-                                    var localDate = convertToDate(data).toLocaleString();
-                                    return localDate;
-                                }
-                            },
-                            {
-                                data: 'expirytime',
-                                render: function (data, type, row) {
-                                    var localExpiry = convertToDate(data).toLocaleString();
-                                    return localExpiry;
-                                }
-                            },
-                            { data: 'permissions' },
-                            { data: 'confirmed_date' },
-                            { data: 'user' },
-                            {
-                                data: null,
-                                render: function (data, type, row) {
-                                    var currentDate = convertToDate(row.date);
-                                    var expiryDate = convertToDate(row.expirytime);
-                                    var diffTime = expiryDate - currentDate;
-                                    var diffMinutes = Math.ceil(diffTime / (1000 * 60));
-
-                                    if (row.status == "pending") {
-                                        if (diffMinutes > 30) {
-                                            return "Expired";
-                                        } else {
-                                            return "";
-                                        }
-                                    } else {
-                                        return "";
-                                    }
-                                }
-                            }
-                        ],
-                        createdRow: function (row, data, dataIndex) {
-                            var currentDate = convertToDate(data.date);
-                            var expiryDate = convertToDate(data.expirytime);
-                            var diffTime = expiryDate - currentDate;
-                            var diffMinutes = Math.ceil(diffTime / (1000 * 60));
-
-                            if (diffMinutes > 30) {
-                                $(row).css('background-color', '#FFC0C0'); // Rojo claro
-                            }
-                        }
-                    });
-
-                    translate_pins("es");
-                });
-
-
-                $(document).ready(function () {
-                });
-            </script>
-
         </div>
-
-
     </div>
 
     <dialog id="myDialog" class="dialog-box">
@@ -225,18 +126,7 @@
 
     <script>
 
-        function showDialog(title, message) {
-
-            document.getElementById('dialogTittle').innerText = title;
-            document.getElementById('dialogMessage').innerText = '⚠️' + message;
-            document.getElementById('myDialog').showModal();
-        }
-
-        function closeDialog() {
-            document.getElementById('myDialog').close();
-        }
-
-        function getPins() {
+        function GetData() {
 
             var date1 = document.getElementById("date1").value;
             var date2 = document.getElementById("date2").value;
@@ -261,8 +151,91 @@
         document.addEventListener('keydown', function (event) {
 
             if (event.key === "F4") {
-                getPins();
+                GetData();
             }
+
+        });
+
+        function convertToDate(dateString) {
+            var parts = dateString.split(' ');
+            var dateParts = parts[0].split('-');
+            var timeParts = parts[1].split(':');
+            var milliseconds = parseFloat(timeParts[2]) * 1000; // Convertir segundos y milisegundos en milisegundos totales
+            return new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], milliseconds / 1000, milliseconds % 1000));
+        }
+
+        var tabla;
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            setInitialDate("date1");
+            setInitialDate("date2");
+
+            var datos = [];
+
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: true,
+                dom: 'Bfrtip',
+                buttons: ['print'],
+                columns: [
+                    { data: 'id' },
+                    { data: 'pin_number' },
+                    { data: 'status' },
+                    { data: 'authorizer' },
+                    { data: 'branch_store' },
+                    {
+                        data: 'date',
+                        render: function (data, type, row) {
+                            var localDate = convertToDate(data).toLocaleString();
+                            return localDate;
+                        }
+                    },
+                    {
+                        data: 'expirytime',
+                        render: function (data, type, row) {
+                            var localExpiry = convertToDate(data).toLocaleString();
+                            return localExpiry;
+                        }
+                    },
+                    { data: 'permissions' },
+                    { data: 'confirmed_date' },
+                    { data: 'user' },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            var currentDate = convertToDate(row.date);
+                            var expiryDate = convertToDate(row.expirytime);
+                            var diffTime = expiryDate - currentDate;
+                            var diffMinutes = Math.ceil(diffTime / (1000 * 60));
+
+                            if (row.status == "pending") {
+                                if (diffMinutes > 30) {
+                                    return "Expired";
+                                } else {
+                                    return "";
+                                }
+                            } else {
+                                return "";
+                            }
+                        }
+                    }
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    var currentDate = convertToDate(data.date);
+                    var expiryDate = convertToDate(data.expirytime);
+                    var diffTime = expiryDate - currentDate;
+                    var diffMinutes = Math.ceil(diffTime / (1000 * 60));
+
+                    if (diffMinutes > 30) {
+                        $(row).css('background-color', '#FFC0C0'); // Rojo claro
+                    }
+                }
+            });
+
+            GetData();
+            translate_pins("es");            
 
         });
 

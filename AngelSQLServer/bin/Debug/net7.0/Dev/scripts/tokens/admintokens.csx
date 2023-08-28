@@ -117,7 +117,7 @@ public static class AdminAuth
             return "Error: SaveToken() ExpiryTime is null";
         }
 
-        if (d.id == null)
+        if (d.Id == null)
         {
             return "Error: SaveToken() id (Token) is null"; ;
         }
@@ -148,7 +148,7 @@ public static class AdminAuth
             d.id = System.Guid.NewGuid().ToString();
         }
 
-        t.id = d.id;
+        t.Id = d.id;
         t.User = d.User;
         t.UsedFor = d.UsedFor;
         t.CreationTime = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
@@ -162,7 +162,7 @@ public static class AdminAuth
             return "Error: SaveToken() insert " + result.Replace("Error:", "");
         }
 
-        return t.id;
+        return t.Id;
 
     }
 
@@ -243,7 +243,7 @@ public static class AdminAuth
 
         Tokens t = new()
         {
-            id = dt.Rows[0]["id"].ToString(),
+            Id = dt.Rows[0]["id"].ToString(),
             User = dt.Rows[0]["User"].ToString(),
             ExpiryTime = dt.Rows[0]["ExpiryTime"].ToString(),
             UsedFor = dt.Rows[0]["UsedFor"].ToString(),
@@ -519,7 +519,7 @@ public static class AdminAuth
             return "Error: GetTokenFromUser() Token expired";
         }
 
-        return t[0].id;
+        return t[0].Id;
 
     }
 
@@ -584,6 +584,8 @@ public static class AdminAuth
             return "Error: UpsertUser() password is null or empty";
         }
 
+        d.User = d.User.ToString().ToLower().Trim();
+
         string[] groups = d.UserGroups.ToString().Split(',');
 
         foreach (string group in groups)
@@ -603,14 +605,14 @@ public static class AdminAuth
 
         Users t = new()
         {
-            id = d.User,
+            Id = d.User,
             UserGroups = d.UserGroups,
             Name = d.Name,
             Password = d.Password,
             Organization = d.Organization,
             Email = d.Email,
             Phone = d.Phone,
-            permissions_list = d.permissions_list
+            Permissions_list = d.permissions_list
         };
 
         result = db.Prompt($"UPSERT INTO users VALUES {JsonConvert.SerializeObject(t)}");
@@ -628,7 +630,7 @@ public static class AdminAuth
 
             var new_token = new Tokens
             {
-                id = "New",
+                Id = "New",
                 User = d.User,
                 ExpiryTime = DateTime.Now.AddDays(30).ToUniversalTime().ToString("yyyy-MM-dd"),
                 UsedFor = "App Login",
@@ -966,13 +968,13 @@ public static class AdminAuth
             d.authorizer = "";
         }
 
-        branch_stores branch_store = new()
+        Branch_stores branch_store = new()
         {
-            id = d.id.ToString().Trim().ToUpper(),
-            name = d.name.ToString(),
-            address = d.address.ToString(),
-            phone = d.phone.ToString(),
-            authorizer = d.authorizer.ToString().Trim()
+            Id = d.id.ToString().Trim().ToUpper(),
+            Name = d.name.ToString(),
+            Address = d.address.ToString(),
+            Phone = d.phone.ToString(),
+            Authorizer = d.authorizer.ToString().Trim()
         };
 
         if (!string.IsNullOrEmpty(d.authorizer.ToString()))
@@ -1072,13 +1074,13 @@ public static class AdminAuth
 
         DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
 
-        branch_stores b = new()
+        Branch_stores b = new()
         {
-            id = dt.Rows[0]["id"].ToString(),
-            name = dt.Rows[0]["name"].ToString(),
-            address = dt.Rows[0]["address"].ToString(),
-            phone = dt.Rows[0]["phone"].ToString(),
-            authorizer = dt.Rows[0]["authorizer"].ToString()
+            Id = dt.Rows[0]["id"].ToString(),
+            Name = dt.Rows[0]["name"].ToString(),
+            Address = dt.Rows[0]["address"].ToString(),
+            Phone = dt.Rows[0]["phone"].ToString(),
+            Authorizer = dt.Rows[0]["authorizer"].ToString()
         };
 
         return JsonConvert.SerializeObject(b, Formatting.Indented);
@@ -1227,19 +1229,19 @@ public static class AdminAuth
 
         Pin p = new()
         {
-            id = Guid.NewGuid().ToString(),
-            authorizer = user.Rows[0]["id"].ToString(),
-            authorizer_name = user.Rows[0]["Name"].ToString(),
-            branch_store = d.Branchstore_id.ToString(),
-            date = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
-            expirytime = DateTime.Now.AddMinutes(minutes).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
-            permissions = d.Permission_id.ToString(),
-            status = "pending",
-            pin_number = RandomNumberGenerator.GenerateRandomNumber(4),
-            user = d.User.ToString(),
-            pintype = d.PinType.ToString(),
-            minutes = minutes,
-            authorizer_message = d.AuthorizerMessage.ToString(),
+            Id = Guid.NewGuid().ToString(),
+            Authorizer = user.Rows[0]["id"].ToString(),
+            Authorizer_name = user.Rows[0]["Name"].ToString(),
+            Branch_store = d.Branchstore_id.ToString(),
+            Date = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
+            Expirytime = DateTime.Now.AddMinutes(minutes).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
+            Permissions = d.Permission_id.ToString(),
+            Status = "pending",
+            Pin_number = RandomNumberGenerator.GenerateRandomNumber(4),
+            User = d.User.ToString(),
+            Pintype = d.PinType.ToString(),
+            Minutes = minutes,
+            Authorizer_message = d.AuthorizerMessage.ToString(),
         };
 
         result = db.Prompt($"UPSERT INTO pins VALUES {JsonConvert.SerializeObject(p, Formatting.Indented)}");
@@ -1390,14 +1392,14 @@ public static class AdminAuth
 
         Pin pin = new()
         {
-            id = dt.Rows[0]["id"].ToString(),
-            confirmed_date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-            status = "confirmed",
-            user = d.User,
-            message = d.Message,
-            app_user = d.AppUser,
-            app_user_name = d.AppUserName,
-            pintype = d.PinType
+            Id = dt.Rows[0]["id"].ToString(),
+            Confirmed_date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+            Status = "confirmed",
+            User = d.User,
+            Message = d.Message,
+            App_user = d.AppUser,
+            App_user_name = d.AppUserName,
+            Pintype = d.PinType
         };
 
         var settings = new JsonSerializerSettings
@@ -1562,19 +1564,19 @@ public static class AdminAuth
 
         Pin pin = new()
         {
-            id = Guid.NewGuid().ToString(),
-            pin_number = RandomNumberGenerator.GenerateRandomNumber(4),
-            authorizer = "SYSTEM",
-            authorizer_name = "SYSTEM",
-            branch_store = "SYSTEM",
-            date = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
-            expirytime = DateTime.Now.AddMinutes(30).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
-            permissions = "Create account",
-            status = "pending",
-            user = email,
-            minutes = 30,
-            authorizer_message = "Created by SendPinToEmail()",
-            pintype = "touser"
+            Id = Guid.NewGuid().ToString(),
+            Pin_number = RandomNumberGenerator.GenerateRandomNumber(4),
+            Authorizer = "SYSTEM",
+            Authorizer_name = "SYSTEM",
+            Branch_store = "SYSTEM",
+            Date = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
+            Expirytime = DateTime.Now.AddMinutes(30).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
+            Permissions = "Create account",
+            Status = "pending",
+            User = email,
+            Minutes = 30,
+            Authorizer_message = "Created by SendPinToEmail()",
+            Pintype = "touser"
         };
 
         //result = db.CreateTable(pin, "pins");
@@ -1601,9 +1603,9 @@ public static class AdminAuth
             Directory.CreateDirectory(pins_directory);
         }
 
-        string image_name = images_directory + "/" + pin.pin_number + ".png";
+        string image_name = images_directory + "/" + pin.Pin_number + ".png";
 
-        result = CreateImageFromText(pin.pin_number, image_name);
+        result = CreateImageFromText(pin.Pin_number, image_name);
 
         if (result.StartsWith("Error:"))
         {
@@ -1660,7 +1662,7 @@ public static class AdminAuth
         //     result = server_db.Prompt($"UPSERT INTO pins VALUES {JsonConvert.SerializeObject(pin, Formatting.Indented)}");
         // }
 
-        return "Ok.->Pin->" + pin.pin_number.ToString();
+        return "Ok.->Pin->" + pin.Pin_number.ToString();
     }
 
     static async Task<string> SendMailFromSoap(string html, string email, string fromAddress, string password, string default_subject = "Tokens Administration PIN")

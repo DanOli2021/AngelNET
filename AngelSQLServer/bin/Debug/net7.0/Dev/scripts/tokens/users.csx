@@ -6,14 +6,14 @@ using System;
 // Daniel() Oliver Rojas
 public class Users
 {
-    public string id { get; set; }
+    public string Id { get; set; }
     public string UserGroups { get; set; }
     public string Name { get; set; }
     public string Password { get; set; }
     public string Organization { get; set; }
     public string Email { get; set; }
     public string Phone { get; set; }
-    public string permissions_list { get; set; }
-    public string master { get; set; }
+    public string Permissions_list { get; set; }
+    public string Master { get; set; }
 }
 

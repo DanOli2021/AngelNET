@@ -75,27 +75,27 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
 
     Pin my_pin = new()
     {
-        id = p.Rows[0]["id"].ToString(),
-        pin_number = p.Rows[0]["pin_number"].ToString(),
-        user = p.Rows[0]["user"].ToString(),
-        status = p.Rows[0]["status"].ToString(),
-        expirytime = p.Rows[0]["expirytime"].ToString(),
-        date = p.Rows[0]["date"].ToString()
+        Id = p.Rows[0]["id"].ToString(),
+        Pin_number = p.Rows[0]["pin_number"].ToString(),
+        User = p.Rows[0]["user"].ToString(),
+        Status = p.Rows[0]["status"].ToString(),
+        Expirytime = p.Rows[0]["expirytime"].ToString(),
+        Date = p.Rows[0]["date"].ToString()
     };
 
-    DateTime expirytime = DateTime.ParseExact( my_pin.expirytime, "yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture );
+    DateTime expirytime = DateTime.ParseExact( my_pin.Expirytime, "yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture );
 
     if (DateTime.Now.ToUniversalTime() > expirytime)
     {
         return "Error: CreateAccount() Pin has expired";
     }
 
-    if (my_pin.status != "pending")
+    if (my_pin.Status != "pending")
     {
         return "Error: CreateAccount() status is not pending"; 
     }
 
-    if (my_pin.pin_number != d.Pin.ToString())
+    if (my_pin.Pin_number != d.Pin.ToString())
     {
         return "Error: CreateAccount() Pin does not match";
     }
@@ -168,7 +168,7 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
         id = d.AccountName,
         db_user = d.User.ToString(),
         name = d.Name,
-        email = my_pin.user,
+        email = my_pin.User,
         connection_string = $"DB USER {d.User} PASSWORD {d.Password} DATA DIRECTORY {parameters["accounts_directory"]}/{d.AccountName}",
         db_password = d.Password.ToString(),
         database = $"{d.AccountName}_data1",
@@ -199,7 +199,7 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
     result = db.CreateTable(usersgroup);
     if (result.StartsWith("Error:")) return "Error: Creating table UsersGroup " + result.Replace("Error:", "");
 
-    branch_stores branch_store = new();
+    Branch_stores branch_store = new();
     result = db.CreateTable(branch_store);
     if (result.StartsWith("Error:")) return "Error: Creating table branch_stores " + result.Replace("Error:", "");
 
@@ -270,15 +270,15 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
 
     Users u = new()
     {
-        id = d.User.ToString(),
+        Id = d.User.ToString(),
         Name = d.Name.ToString(),
         Password = d.Password.ToString(),
         UserGroups = "AUTHORIZERS, SUPERVISORS, PINSCONSUMER, ADMINISTRATIVE, CASHIER",
         Organization = "",
-        Email = my_pin.user,
+        Email = my_pin.User,
         Phone = "",
-        permissions_list = "Any",
-        master = "true"
+        Permissions_list = "Any",
+        Master = "true"
     };
 
     result = db.Prompt("UPSERT INTO users VALUES " + JsonConvert.SerializeObject(u));

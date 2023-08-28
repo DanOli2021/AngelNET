@@ -53,6 +53,9 @@
 		<None Update="dev\py\AnalisysSample.py">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="dev\py\ForeCast.py">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="EULA.txt">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

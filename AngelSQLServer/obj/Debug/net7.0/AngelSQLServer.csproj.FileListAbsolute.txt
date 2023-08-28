@@ -1445,3 +1445,4 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\pins\ima
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\AngelSQL.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\scripts.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\index_translate.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\py\ForeCast.py

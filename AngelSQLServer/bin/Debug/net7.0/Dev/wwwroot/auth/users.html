@@ -16,6 +16,7 @@
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
 
+    <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -39,7 +40,10 @@
                 <span style="float: left;">
                     <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                 </span>
-                Menu
+                <span id="users_menu">
+                    Menu
+                </span>
+
             </a>
         </div>
 
@@ -51,7 +55,7 @@
                         <img src="images/icons/beta_accounting_executive_128.png" alt="logo" class="logo"
                             style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
                     </span>
-                    <h2>System Users</h2>
+                    <h2 id="users_system_users">System Users</h2>
                 </a>
             </div>
 
@@ -60,12 +64,16 @@
             <div class="row" style="margin-bottom: 10px;">
                 <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
                     onclick="showUserDialog('', true)" style="margin-bottom: 20px;">
-                    New User (F2)
+                    <span id="users_new">
+                        New User (F2)
+                    </span>
                 </button>
 
                 <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
-                    onclick="getUsers()" style="margin-bottom: 20px;margin-bottom: 20px;">
-                    Refresh (F4)
+                    onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    <span id="users_refresh">
+                        Refresh (F4)
+                    </span>
                 </button>
             </div>
 
@@ -77,60 +85,17 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>User</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Group</th>
+                        <th id="users_user">User</th>
+                        <th id="users_name">Name</th>
+                        <th id="users_phone">Phone</th>
+                        <th id="users_email">Email</th>
+                        <th id="users_group">Group</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
-
-            <script>
-
-                var tabla;
-
-                $(document).ready(function () {
-                    var datos = [];
-
-                    tabla = $('#dataTable').DataTable({
-                        responsive: true,
-                        data: datos,
-                        bFilter: true,
-                        dom: 'Bfrtip',
-                        buttons: [
-                            'print'
-                        ],
-                        columns: [
-                            {
-                                // Columna de botón
-                                data: null,
-                                render: function (data, type, row) {
-                                    return '<button class="btn btn-primary">+</button>';
-                                }
-                            },
-                            { data: 'id' },
-                            { data: 'Name' },
-                            { data: 'Phone' },
-                            { data: 'Email' },
-                            { data: 'UserGroups' },
-                        ]
-                    });
-
-                    $('#dataTable').on('click', 'td:first-child', function () {
-                        var datosFila = tabla.row($(this).parents('tr')).data();
-                        showUserDialog(datosFila);
-                        // Aquí se ejecuta el código al hacer doble clic en la columna de botón
-                    });
-
-                });
-            </script>
-
         </div>
-
-
     </div>
 
     <dialog id="myDialog" class="dialog-box">
@@ -157,61 +122,59 @@
         </div>
     </dialog>
 
-
-
     <dialog id="user_dialog" style="width: 90%;">
 
         <div class="row">
             <div class="col-md-12">
 
                 <div class="form-group">
-                    <label for="id">Autohrizer</label>
+                    <label for="id" id="users_label_id">User</label>
                     <input type="text" class="form-control" id="id" name="id">
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Name</label>
+                    <label for="name" id="users_label_name">Name</label>
                     <input type="text" class="form-control" id="name" name="name">
                 </div>
 
                 <div class="form-group">
-                    <label for="phone">Phone</label>
+                    <label for="phone" id="users_label_phone">Phone</label>
                     <input type="text" class="form-control" id="phone" name="phone">
                 </div>
 
                 <div class="form-group">
-                    <label for="User">Email</label>
+                    <label for="email" id="users_label_email">Email</label>
                     <input type="text" class="form-control" id="email" name="email">
                 </div>
 
                 <div class="form-group">
-                    <label for="UserGroups">User Groups</label>
+                    <label for="UserGroups" id="users_label_user_groups">User Groups</label>
                     <select class="form-select" aria-label="Default select example" id="UserGroups" name="UserGroups">
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="user_groups_list">User Groups List (Comma separated)</label>
+                    <label for="user_groups_list" id="users_label_user_groups_list">User Groups List (Comma separated)</label>
                     <input type="text" class="form-control" id="user_groups_list" name="user_groups_list">
                 </div>
 
                 <div class="form-group">
-                    <label for="organization">Organization</label>
+                    <label for="organization" id="users_label_organization">Organization</label>
                     <input type="text" class="form-control" id="organization" name="organization">
                 </div>
 
                 <div class="form-group">
-                    <label for="organization">Permissions List (Comma separated)</label>
+                    <label for="organization" id="users_permissions_list">Permissions List (Comma separated)</label>
                     <input type="text" class="form-control" id="permissions_list" name="permissions_list">
                 </div>
 
                 <div class="form-group">
-                    <label for="Password">Password</label>
+                    <label for="Password" id="users_label_password">Password</label>
                     <input type="password" class="form-control" id="password" name="password">
                 </div>
 
                 <div class="form-group">
-                    <label for="retype_password">Retype Password</label>
+                    <label for="retype_password" id="users_label_password_confirmation">Retype Password</label>
                     <input type="password" class="form-control" id="retype_password" name="retype_password">
                 </div>
 
@@ -221,15 +184,19 @@
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-primary" "
                         style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveUserData()">
-                        Save
+                        <span id="users_button_save">
+                            Save
+                        </span>
                     </button>
                 </div>
 
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-danger"
                         style="text-align: right; margin-top: 20px; width: 100%;"
-                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the User?', 'DeleteUser')">
-                        Delete
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the User?', DeleteUserData)">
+                        <span id="users_button_delete">                            
+                            Delete
+                        </span>
                     </button>
                 </div>
             </div>
@@ -239,51 +206,23 @@
                     <button id="closeSkuEdit" class="btn btn-secondary"
                         style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeUsersDialog()"
                         style="text-align: right;">
-                        Close
+                        <span id="users_button_close">
+                            Close
+                        </span>
                     </button>
                 </div>
             </div>
-
-
         </div>
     </dialog>
 
     <script>
 
-        function showDialog(title, message) {
-            document.getElementById('dialogTittle').innerText = title;
-            document.getElementById('dialogMessage').innerText = '⚠️' + message;
-            document.getElementById('myDialog').showModal();
-        }
-
-        function closeDialog() {
-            document.getElementById('myDialog').close();
-        }
-
-
-        function showAcceptCancelDialog(title, message, operation) {
-            document.getElementById('dialogTittleAcceptCancel').innerText = title;
-            document.getElementById('dialogMessageAcceptCancel').innerText = message;
-            document.getElementById('DialogAcceptCancel').showModal();
-            document.getElementById('cancel').focus();
-
-            var accept = document.getElementById('accept');
-            accept.focus();
-
-            accept.addEventListener("click", () => {
-                if (operation) {
-                    if (operation == "DeleteUser") {
-                        DeleteUserData();
-                    }
-                };
-            });
-
-        }
-
-
         function DeleteUserData() {
             var id = document.getElementById('id').value;
-            var data_result = DeleteUser(Token.username, Token.token, id );
+
+            closeDialogAcceptCancelDialog();
+
+            var data_result = DeleteUser(Token.username, Token.token, id);
 
             data_result.then(function (query) {
 
@@ -297,17 +236,11 @@
 
                 showDialog("Attention", "User " + id + " deleted successfully");
                 closeUsersDialog();
-                getUsers();
+                GetData();
                 return;
 
             });
         }
-
-
-        function closeDialogAcceptCancelDialog() {
-            document.getElementById('DialogAcceptCancel').close();
-        }
-
 
         function showUserDialog(User_data, new_User = false) {
 
@@ -335,7 +268,6 @@
                     option.value = groups[i].id;
                     select.add(option);
                 }
-
             });
 
             document.getElementById('UserGroups').value = "";
@@ -432,13 +364,13 @@
                 }
 
                 showDialog("Success:", "User Saved");
-                getUsers();
+                GetData();
 
             });
 
         }
 
-        function getUsers() {
+        function GetData() {
 
             var datos = GetUsers(Token.username, Token.token);
 
@@ -480,14 +412,50 @@
             }
 
             if (event.key === "F4") {
-                getUsers();
+                GetData();
             }
-
 
         });
 
+        var tabla;
+
         document.addEventListener('DOMContentLoaded', function () {
-            getUsers();
+            var datos = [];
+
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'print'
+                ],
+                columns: [
+                    {
+                        // Columna de botón
+                        data: null,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary">+</button>';
+                        }
+                    },
+                    { data: 'id' },
+                    { data: 'Name' },
+                    { data: 'Phone' },
+                    { data: 'Email' },
+                    { data: 'UserGroups' },
+                ]
+            });
+
+            $('#dataTable').on('click', 'td:first-child', function () {
+                var datosFila = tabla.row($(this).parents('tr')).data();
+                showUserDialog(datosFila);
+                // Aquí se ejecuta el código al hacer doble clic en la columna de botón
+            });
+
+            translate_users("es");
+
+            GetData();
+
         });
 
 

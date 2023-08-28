@@ -2,6 +2,10 @@
 
 using AngelDB;
 using AngelSQLServer;
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using Newtonsoft.Json;
@@ -119,13 +123,23 @@ if (!Directory.Exists(wwww_directory))
 parameters["wwwroot"] = wwww_directory;
 Environment.SetEnvironmentVariable("ANGELSQL_PARAMETERS", JsonConvert.SerializeObject(parameters, Formatting.Indented));
 
+//If we need to save the server activity
+bool save_activity = false;
+
+if (parameters.ContainsKey("save_activity"))
+{
+    if (parameters["save_activity"].ToString().Trim().ToLower() == "true")
+    {
+        save_activity = true;
+    }
+}
 
 // Create a bulder for the web app
 //if is a Windows service, set the current directory to the same as the executable
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
 {
     Args = args,
-    ContentRootPath = WindowsServiceHelpers.IsWindowsService() ? Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) : default,    
+    ContentRootPath = WindowsServiceHelpers.IsWindowsService() ? Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) : default,
     WebRootPath = wwww_directory
 });
 
@@ -141,31 +155,77 @@ if (WindowsServiceHelpers.IsWindowsService())
     builder.Host.UseWindowsService();
 }
 
+
+// Create the master database
+server_db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
+server_db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
+server_db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
+server_db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
+server_db.Prompt($"USE DATABASE {parameters["database"]}", true);
+
+// Create the accounts table
+server_db.Prompt($"CREATE TABLE accounts FIELD LIST db_user, name, email, connection_string, db_password, database, data_directory, account, super_user, super_user_password, active, created", true);
+// Create the hub users table
+server_db.Prompt($"CREATE TABLE hub_users FIELD LIST account, name, email, phone, password, role, active, last_access, created", true);
+// Create the table pins
+server_db.Prompt($"CREATE TABLE pins FIELD LIST authorizer TEXT, authorizer_name TEXT, branch_store TEXT, pin_number TEXT, message TEXT, authorizer_message TEXT, pintype TEXT, date TEXT, expirytime TEXT, minutes INTEGER, permissions TEXT, confirmed_date TEXT, user TEXT, app_user TEXT, app_user_name TEXT, status TEXT", true);
+// Register the AngelSQL commands
+server_db.Prompt($"CREATE TABLE commands FIELD LIST ip, command, log", true);
+// White List
+server_db.Prompt($"CREATE TABLE whitelist FIELD LIST comment", true);
+// Black List
+server_db.Prompt($"CREATE TABLE blacklist FIELD LIST comment", true);
+
+Dictionary<string, string> servers = JsonConvert.DeserializeObject<Dictionary<string, string>>(Environment.GetEnvironmentVariable("ANGELSQL_SERVERS"));
+
+foreach (string key in parameters.Keys)
+{
+    result = server_db.Prompt("VAR db_" + key + " = " + parameters[key]);
+
+    if (result.StartsWith("Error:"))
+    {
+        LogFile.Log("Error: Setting Parameters vars: " + result.Replace("Error:", ""));
+    }
+
+}
+
+foreach (string key in servers.Keys)
+{
+    result = server_db.Prompt("VAR server_" + key + " = " + servers[key]);
+
+    if (result.StartsWith("Error: Setting server vars: "))
+    {
+        LogFile.Log("Error: Setting Servers vars: " + result.Replace("Error:", ""));
+    }
+}
+
+
 // Initial script
 string start_file = "";
 
-if (File.Exists(Environment.CurrentDirectory + "/config/start.csx")) 
+if (File.Exists(Environment.CurrentDirectory + "/config/start.csx"))
 {
-    if (!parameters.ContainsKey("start_script")) 
+    if (!parameters.ContainsKey("start_script"))
     {
         start_file = "config/start.csx";
-    } else
+    }
+    else
     {
         start_file = parameters["start_script"];
     }
 
-    if( File.Exists(start_file))
+    if (File.Exists(start_file))
     {
         result = server_db.Prompt($"SCRIPT FILE {start_file}", true);
 
-        if( result.StartsWith("Error:"))
+        if (result.StartsWith("Error:"))
         {
             LogFile.Log(result);
         }
 
     }
 }
-    
+
 
 // Add cors support
 if (parameters["cors"] == "true")
@@ -201,7 +261,7 @@ builder.WebHost.ConfigureKestrel(options =>
                 {
                     LogFile.Log($"Error: certificate file {parameters["certificate"]} does not exists");
                 }
-                else 
+                else
                 {
                     LogFile.Log($"Certificate file {parameters["certificate"]} used");
                     certificate = true;
@@ -216,14 +276,14 @@ builder.WebHost.ConfigureKestrel(options =>
                             listenOptions.UseHttps(parameters["certificate"], parameters["password"]);
                         });
                     }
-                    else 
+                    else
                     {
                         options.ListenLocalhost(uri.Port);
                     }
                 }
                 else
                 {
-                    if (certificate && url.ToLower().Trim().StartsWith("https") )
+                    if (certificate && url.ToLower().Trim().StartsWith("https"))
                     {
                         try
                         {
@@ -404,16 +464,28 @@ string scripts_directory = Environment.CurrentDirectory + "/scripts";
 
 if (parameters.ContainsKey("scripts_directory"))
 {
-    if (!string.IsNullOrEmpty(parameters["scripts_directory"])) 
+    if (!string.IsNullOrEmpty(parameters["scripts_directory"]))
     {
         scripts_directory = parameters["scripts_directory"];
     }
 }
 
-app.MapGet("/AngelAPI", (string data) =>
+app.MapGet("/AngelAPI", (string data, HttpContext context) =>
 {
     try
     {
+
+        if (save_activity)
+        {
+            var log = new
+            {
+                ip = context.Connection.RemoteIpAddress.ToString(),
+                command = "AngelAPI",
+                log = data
+            };
+
+            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+        }
 
         AngelDB.DB angel_api_db = new AngelDB.DB();
         angel_api_db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
@@ -439,15 +511,58 @@ app.MapGet("/AngelAPI", (string data) =>
         if (ApiCommand.EndsWith(".csx"))
         {
             //result = main_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, main_db);
-            return server_db.Prompt($"SCRIPT FILE {scripts_directory}/{ApiCommand} MESSAGE " + data, false, angel_api_db);
+            result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{ApiCommand} MESSAGE " + data, false, angel_api_db);
+
+            if (save_activity)
+            {
+                var log = new
+                {
+                    ip = context.Connection.RemoteIpAddress.ToString(),
+                    command = "AngelAPI",
+                    log = result
+                };
+
+                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+            }
+
+            return result;
+
         }
 
         if (ApiCommand.EndsWith(".py"))
         {
-            return server_db.Prompt($"PYTHON FILE {scripts_directory}/{ApiCommand} MESSAGE " + data, false, angel_api_db);
+            result = server_db.Prompt($"PYTHON FILE {scripts_directory}/{ApiCommand} MESSAGE " + data, false, angel_api_db);
+
+            if (save_activity)
+            {
+                var log = new
+                {
+                    ip = context.Connection.RemoteIpAddress.ToString(),
+                    command = "AngelAPI",
+                    log = result
+                };
+
+                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+            }
+
+            return result;
         }
 
-        return "Error: Invalid API file.";
+        result = "Error: Invalid API file.";
+
+        if (save_activity)
+        {
+            var log = new
+            {
+                ip = context.Connection.RemoteIpAddress.ToString(),
+                command = "AngelAPI",
+                log = result
+            };
+
+            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+        }
+
+        return result;
 
     }
     catch (Exception e)
@@ -471,13 +586,24 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
             string jsonstring = await reader.ReadToEndAsync();
             dynamic api = JsonConvert.DeserializeObject(jsonstring);
 
+            if (save_activity)
+            {
+                var log = new
+                {
+                    ip = context.Connection.RemoteIpAddress.ToString(),
+                    command = "POST",
+                    log = jsonstring
+                };
+
+                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+            }
+
             AngelDB.DB db;
 
             if (string.IsNullOrEmpty(api.account.ToString()))
             {
                 api.account = "default: " + session_guid;
             }
-
 
             if (!post_databases.ContainsKey(api.account.ToString()))
             {
@@ -517,11 +643,37 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 
                     if (result.StartsWith("Error:"))
                     {
+
+                        if (save_activity)
+                        {
+                            var log = new
+                            {
+                                ip = context.Connection.RemoteIpAddress.ToString(),
+                                command = "POST",
+                                log = result
+                            };
+
+                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                        }
+
                         return result;
                     }
 
                     if (result == "[]")
                     {
+
+                        if (save_activity)
+                        {
+                            var log = new
+                            {
+                                ip = context.Connection.RemoteIpAddress.ToString(),
+                                command = "POST",
+                                log = result
+                            };
+
+                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                        }
+
                         return $"Error: Account {api.account} not found.";
                     }
 
@@ -529,6 +681,18 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 
                     if (dt.Rows[0]["active"].ToString() == "false")
                     {
+                        if (save_activity)
+                        {
+                            var log = new
+                            {
+                                ip = context.Connection.RemoteIpAddress.ToString(),
+                                command = "POST",
+                                log = result
+                            };
+
+                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                        }
+
                         return $"Account is The account is not active: {api.account}";
                     }
 
@@ -552,6 +716,18 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 
                         if (result.StartsWith("Error: AngelPOST"))
                         {
+                            if (save_activity)
+                            {
+                                var log = new
+                                {
+                                    ip = context.Connection.RemoteIpAddress.ToString(),
+                                    command = "POST",
+                                    log = result
+                                };
+
+                                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                            }
+
                             return result;
                         }
 
@@ -576,6 +752,20 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 
                         if (result.StartsWith("Error:"))
                         {
+
+                            if (save_activity)
+                            {
+                                var log = new
+                                {
+                                    ip = context.Connection.RemoteIpAddress.ToString(),
+                                    command = "POST",
+                                    log = result
+                                };
+
+                                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                            }
+
+
                             return result;
                         }
 
@@ -603,7 +793,7 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 
             if (string.IsNullOrEmpty(api.language.ToString()))
             {
-                result = db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject( api.message ), true, db);
+                result = db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
             }
             else
             {
@@ -632,11 +822,36 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                 result = result
             };
 
+            if (save_activity)
+            {
+                var log = new
+                {
+                    ip = context.Connection.RemoteIpAddress.ToString(),
+                    command = "POST",
+                    log = result
+                };
+
+                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+            }
+
             return JsonConvert.SerializeObject(responce);
 
         }
         catch (global::System.Exception e)
         {
+
+            if (save_activity)
+            {
+                var log = new
+                {
+                    ip = context.Connection.RemoteIpAddress.ToString(),
+                    command = "POST",
+                    log = $"Error: {e}"
+                };
+
+                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+            }
+
             AngelSQL.Responce responce = new AngelSQL.Responce();
             responce.type = "ERROR";
             responce.result = $"Error: {e}";
@@ -658,15 +873,29 @@ app.MapPost("/AngelSQL", async delegate (HttpContext context)
             string jsonstring = await reader.ReadToEndAsync();
             AngelSQL.Query query = JsonConvert.DeserializeObject<AngelSQL.Query>(jsonstring);
 
+            if (save_activity)
+            {
+                var log = new
+                {
+                    ip = context.Connection.RemoteIpAddress.ToString(),
+                    command = "AngelSQL",
+                    log = jsonstring
+                };
+
+                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+            }
+
             switch (query.type.Trim().ToLower())
             {
                 case "identification":
 
-                    return Identification(query);
+                    result = Identification(query);
+                    break;
 
                 case "query":
 
-                    return QueryResponce(query);
+                    result = QueryResponce(query);
+                    break;
 
                 case "disconnect":
 
@@ -679,24 +908,52 @@ app.MapPost("/AngelSQL", async delegate (HttpContext context)
                     responce.token = "";
                     responce.result = "Disconnected";
                     responce.type = "SUCCESS";
-                    return JsonConvert.SerializeObject(responce);
+                    result = JsonConvert.SerializeObject(responce);
+                    break;
 
-                case "servercommand":
+                case "server_command":
 
-                    return QueryResponce(query);
+                    result = QueryResponce(query);
+                    break;
 
                 default:
+                    result = "Unknown command";
                     break;
             }
 
-            return jsonstring;
+            if (save_activity)
+            {
+                var log = new
+                {
+                    ip = context.Connection.RemoteIpAddress.ToString(),
+                    command = "AngelSQL",
+                    log = result
+                };
+
+                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+            }
+
+            return result;
         }
         catch (global::System.Exception e)
         {
+
+            if (save_activity)
+            {
+                var log = new
+                {
+                    ip = context.Connection.RemoteIpAddress.ToString(),
+                    command = "AngelSQL",
+                    log = $"Error: {e}"
+                };
+
+                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+            }
+
             AngelSQL.Responce responce = new AngelSQL.Responce();
             responce.type = "ERROR";
             responce.result = $"Error: {e}";
-            return JsonConvert.SerializeObject(responce); ;
+            return JsonConvert.SerializeObject(responce);
         }
     }
 });
@@ -850,6 +1107,68 @@ app.Use(async (context, next) =>
 });
 
 
+//Add White And Black List
+app.Use(async (context, next) =>
+{
+    var clientIp = context.Connection.RemoteIpAddress;
+
+    //Check For White List
+    string result;
+
+    if (parameters.ContainsKey("use_white_list"))
+    {
+        if (parameters["use_white_list"] == "true")
+        {
+            result = server_db.Prompt($"SELECT id FROM whitelist WHERE id = '{clientIp}'");
+
+            if (result.StartsWith("Error:"))
+            {
+                LogFile.Log(result);
+                await next.Invoke();
+                return;
+            }
+
+            if (result != "[]")
+            {
+                await next.Invoke();
+                return;
+            }
+            else
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync("Ip not allowed");
+                return;
+            }
+        }
+    }
+
+    if (parameters.ContainsKey("use_black_list"))
+    {
+        if (parameters["use_black_list"] == "true")
+        {
+            result = server_db.Prompt($"SELECT id FROM blacklist WHERE id = '{clientIp}'");
+
+            if (result.StartsWith("Error:"))
+            {
+                LogFile.Log(result);
+                await next.Invoke();
+                return;
+            }
+
+            if (result != "[]")
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync("Ip not allowed");
+                return;
+            }
+        }
+    }
+
+    await next.Invoke();
+
+});
+
+
 
 // Running the server, as a service or as a console application
 if (WindowsServiceHelpers.IsWindowsService())
@@ -869,11 +1188,16 @@ else
     app.RunAsync();
     PutHeader();
 
+    DbLanguage language = new DbLanguage();
+    language.SetCommands(AngelSQL.AngelSQLCommands.DbCommands());
+    Dictionary<string, string> d = new Dictionary<string, string>();
+
     for (; ; )
     {
         // All operations are done here
         string line;
         string prompt = "";
+        result = "";
 
         if (server_db.always_use_AngelSQL == true)
         {
@@ -894,6 +1218,157 @@ else
             continue;
         }
 
+        d = language.Interpreter(line);
+
+        if (d != null)
+        {
+            switch (d.First().Key)
+            {
+                case "save_activity_on":
+                    save_activity = true;
+                    result = "Ok. Save Activity ON";
+                    break;
+
+                case "save_activity_off":
+                    save_activity = false;
+                    result = "Ok. Save Activity OFF";
+                    break;
+
+                case "white_list_on":
+
+                    if (parameters.ContainsKey("use_white_list")) {
+                        parameters["use_white_list"] = "true";
+                    }
+                    else
+                    {
+                        parameters.Add("use_white_list", "true");
+                    }
+
+                    result = "Ok. White List ON";
+
+                    break;
+
+                case "white_list_off":
+
+                    if (parameters.ContainsKey("use_white_list"))
+                    {
+                        parameters["use_white_list"] = "false";
+                    }
+                    else
+                    {
+                        parameters.Add("use_white_list", "false");
+                    }
+
+                    result = "Ok. White List OFF";
+                    break;
+
+                case "black_list_on":
+
+                    if (parameters.ContainsKey("use_black_list"))
+                    {
+                        parameters["use_black_list"] = "true";
+                    }
+                    else
+                    {
+                        parameters.Add("use_black_list", "true");
+                    }
+
+                    result = "Ok. Black List ON";
+                    break;
+
+                case "black_list_off":
+
+                    if (parameters.ContainsKey("use_black_list"))
+                    {
+                        parameters["use_black_list"] = "false";
+                    }
+                    else
+                    {
+                        parameters.Add("use_black_list", "false");
+                    }
+
+                    result = "Ok. Black List OFF";
+                    break;
+
+                case "add_to_white_list":
+
+                    if (!IsValidIPAddress(d["add_to_white_list"])) 
+                    {
+                        result = "Error: Invalid IP Address";
+                        break;
+                    }
+
+                    var w = new
+                    {
+                        id = d["add_to_white_list"]
+                    };
+
+                    result = prompt_db.UpsertInto("whitelist", w);
+                    break;
+
+                case "remove_from_white_list":
+
+
+                    result = prompt_db.Prompt("SELECT id FROM whitelist WHERE id = '" + d["remove_from_white_list"] + "'");   
+
+                    if( result == "[]")
+                    {
+                        result = "Error: IP Address not found";
+                        break;
+                    }
+
+                    result = prompt_db.Prompt($"DELETE FROM whitelist PARTITION KEY main WHERE id = '{d["remove_from_white_list"]}'");
+                    break;
+
+                case "add_to_black_list":
+
+                    if (!IsValidIPAddress(d["add_to_black_list"]))
+                    {
+                        result = "Error: Invalid IP Address";
+                        break;
+                    }
+
+                    var b = new
+                    {
+                        id = d["add_to_black_list"]
+                    };
+
+                    result = prompt_db.UpsertInto("blacklist", b);
+                    break;
+
+                case "remove_from_black_list":
+
+                    result = prompt_db.Prompt("SELECT id FROM blacklist WHERE id = '" + d["remove_from_black_list"] + "'");
+
+                    if (result == "[]")
+                    {
+                        result = "Error: IP Address not found";
+                        break;
+                    }
+
+                    result = prompt_db.Prompt($"DELETE FROM blacklist PARTITION KEY main WHERE id = '{d["remove_from_black_list"]}'");
+                    break;
+
+                default:
+
+                    result = "";
+                    break;
+            }
+        }
+
+        if (result != "")
+        {
+            if (result.StartsWith("Error:"))
+            {
+                AngelDB.Monitor.ShowError(result);
+            }
+            else 
+            {
+                AngelDB.Monitor.Show(result);
+            }
+            continue;
+        }
+
         if (line.Trim().ToUpper() == "QUIT")
         {
             try
@@ -901,10 +1376,10 @@ else
                 app.StopAsync().GetAwaiter();
                 PythonEngine.Shutdown();
             }
-            catch 
+            catch
             {
             }
-            
+
             Environment.Exit(0);
             return;
         }
@@ -934,15 +1409,14 @@ else
 
         string result_db = "";
 
-        if (line.Trim().ToUpper().StartsWith("SERVER DB")) 
+        if (line.Trim().ToUpper().StartsWith("SERVER DB"))
         {
             result_db = server_db.Prompt("BATCH " + line.Replace("SERVER DB", "") + " SHOW IN CONSOLE");
-        } else
+        }
+        else
         {
             result_db = prompt_db.Prompt("BATCH " + line + " SHOW IN CONSOLE");
         }
-
-        
 
         if (result_db.StartsWith("Error:"))
         {
@@ -955,4 +1429,10 @@ else
 
     }
 
+    static bool IsValidIPAddress(string ipAddress)
+    {
+        return IPAddress.TryParse(ipAddress, out _);
+    }
+
 }
+

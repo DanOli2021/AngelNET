@@ -225,7 +225,7 @@ function translate_element( language, value )
         "Attention": "Atención",
         "Are you sure you want to remove the Branch Store?": "¿Está seguro que desea eliminar la Sucursal",
         "Are you sure you want to remove the User?": "¿Está seguro que desea eliminar el Usuario?",
-        "Are you sure you want to remove the Access Token?": "¿Está seguro que desea eliminar el Token de Acceso?",
+        "Are you sure you want to remove the Access Token?": "¿Está seguro que desea eliminar el Token de Acceso?"
     };
 
     if( language == "es") 

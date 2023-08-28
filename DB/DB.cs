@@ -2811,6 +2811,11 @@ namespace AngelDB
             return JsonConvert.DeserializeObject<DataTable>(Data);
         }
 
+        public string GetJson(object o)
+        {
+            return JsonConvert.SerializeObject(o);
+        }
+
         public DataRow GetDataRow(string Data)
         {
             DataTable dt = JsonConvert.DeserializeObject<DataTable>(Data);
@@ -2997,6 +3002,44 @@ namespace AngelDB
             this.OnSendMessage(message, ref result);
             return result;
         }
+
+
+        public string InsertInto(string tablename, object values, string partitionkey = "null", string exclude_columns = "null") 
+        {
+
+            //{ @"INSERT INTO", @"INSERT INTO#Systemtoken;PARTITION KEY#freeoptional;UPSERT#optional;EXCLUDE COLUMNS#freeoptional;SPEED UP#optional;VALUES#free" },
+            Dictionary<string, string> d = new()
+            {
+                { "insert_into", tablename },
+                { "values", JsonConvert.SerializeObject(values) },
+                { "partition_key", partitionkey },
+                { "exclude_columns", exclude_columns },
+                { "speed_up", "false" },
+                { "upsert", "false" }
+            };
+
+            return Tables.InsertInto(d, this);
+
+        }
+
+        public string UpsertInto(string tablename, object values, string partitionkey = "null", string exclude_columns = "null")
+        {
+
+            //{ @"INSERT INTO", @"INSERT INTO#Systemtoken;PARTITION KEY#freeoptional;UPSERT#optional;EXCLUDE COLUMNS#freeoptional;SPEED UP#optional;VALUES#free" },
+            Dictionary<string, string> d = new()
+            {
+                { "insert_into", tablename },
+                { "values", JsonConvert.SerializeObject(values) },
+                { "partition_key", partitionkey },
+                { "exclude_columns", exclude_columns },
+                { "speed_up", "false" },
+                { "upsert", "true" }
+            };
+
+            return Tables.InsertInto(d, this);
+
+        }
+
 
         public virtual void Dispose()
         {

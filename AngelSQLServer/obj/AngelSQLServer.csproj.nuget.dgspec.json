@@ -149,7 +149,7 @@
           "dependencies": {
             "Azure.Data.Tables": {
               "target": "Package",
-              "version": "[12.8.0, )"
+              "version": "[12.8.1, )"
             },
             "Azure.Storage.Blobs": {
               "target": "Package",
@@ -177,7 +177,7 @@
             },
             "Microsoft.AspNetCore.SignalR.Client": {
               "target": "Package",
-              "version": "[7.0.9, )"
+              "version": "[7.0.10, )"
             },
             "Microsoft.CSharp": {
               "target": "Package",
@@ -185,11 +185,11 @@
             },
             "Microsoft.CodeAnalysis.CSharp": {
               "target": "Package",
-              "version": "[4.6.0, )"
+              "version": "[4.7.0, )"
             },
             "Microsoft.CodeAnalysis.CSharp.Scripting": {
               "target": "Package",
-              "version": "[4.6.0, )"
+              "version": "[4.7.0, )"
             },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",
