@@ -21,6 +21,10 @@ function translate_login( language )
         }
         
         document.getElementById("button_register").value = "Registrarse";
+        document.getElementById("index_privacy_policy").innerHTML = "Política de privacidad";
+        document.getElementById("index_about_us").innerHTML = "Acerca de nosotros...";
+        document.getElementById("index_privacy_policy_url").href = "privacy_es.html";
+        document.getElementById("index_about_url").href = "about_es.html";
     }        
 
 }
@@ -207,8 +211,67 @@ function translate_tokens( language )
         document.getElementById("tokens_used_for").innerHTML = "Usado para";
         document.getElementById("tokens_observation").innerHTML = "Observaciones";
 
+        document.getElementById("tokens_dialog_tokens").innerHTML = "Token";
+        document.getElementById("tokens_dialog_user").innerHTML = "Usuario";
+        document.getElementById("tokens_dialog_expiry_time").innerHTML = "Fecha de Expiración";
+        document.getElementById("tokens_dialog_used_for").innerHTML = "Usado para";
+        document.getElementById("tokens_dialog_observations").innerHTML = "Observaciones";
+
+        document.getElementById("tokens_dialog_save").innerHTML = "Salvar";
+        document.getElementById("tokens_dialog_close").innerHTML = "Cerrar";
+        document.getElementById("tokens_dialog_delete").innerHTML = "Eliminar";
     }
 }
+
+
+function translate_authorizations( language ) 
+{
+    if( language == null) 
+    {
+        return;
+    }
+
+    if( language == "es" )
+    {
+        document.getElementById("ca_log_out").innerHTML = "Cerrar Sesión";
+        document.getElementById("ca_my_authorizations").innerHTML = "Mis Autorizaciones";
+    }
+
+}
+
+
+function translate_register( language ) 
+{
+    if( language == null) 
+    {
+        return;
+    }
+
+    if( language == "es" )
+    {
+        document.getElementById("register_title").innerHTML = app_name + " - Registro";
+        document.getElementById("register_pin").innerHTML = "PIN";
+        document.getElementById("register_account_name").innerHTML = "Nombre de la Cuenta";
+        document.getElementById("register_name").innerHTML = "Nombre";
+        document.getElementById("register_country").innerHTML = "País";
+        document.getElementById("register_phone").innerHTML = "Teléfono";
+        document.getElementById("register_system_user").innerHTML = "Usuario del Sistema";
+        document.getElementById("register_password").innerHTML = "Contraseña";
+        document.getElementById("register_password_confirmation").innerHTML = "Confirmación de Contraseña";
+        document.getElementById("register_accept_conditions").innerHTML = "Acepto los términos y condiciones";
+        document.getElementById("register_privacy_policy").innerHTML = "Política de privacidad";
+        document.getElementById("register_about_us").innerHTML = "Acerca de nosotros...";
+        document.getElementById("register_button_register").value = "Registrarse";
+
+        document.getElementById("register_privacy_policy_url").href = "privacy_es.html";
+        document.getElementById("register_about_url").href = "about_es.html";
+        document.getElementById("register_terms_and_conditions").href = "termsAndConditions_es.html";
+
+    }
+
+}
+
+
 
 
 function translate_element( language, value ) 
@@ -225,7 +288,16 @@ function translate_element( language, value )
         "Attention": "Atención",
         "Are you sure you want to remove the Branch Store?": "¿Está seguro que desea eliminar la Sucursal",
         "Are you sure you want to remove the User?": "¿Está seguro que desea eliminar el Usuario?",
-        "Are you sure you want to remove the Access Token?": "¿Está seguro que desea eliminar el Token de Acceso?"
+        "Are you sure you want to remove the Access Token?": "¿Está seguro que desea eliminar el Token de Acceso?",
+        "A pin has been generated": "Se ha generado un pin",
+        "Pin": "Pin",
+        "Permission": "Permiso",
+        "Username are required": "El usuario es requerido",
+        "Password are required": "La contraseña es requerida",
+        "Passwords do not match": "Las contraseñas no coinciden",
+        "Account are required": "La cuenta es requerida",
+        "Name are required": "El nombre es requerido",
+        "Phone are required": "El teléfono es requerido"
     };
 
     if( language == "es") 
@@ -233,8 +305,11 @@ function translate_element( language, value )
         if( spanish_dictionary[value] != null ) 
         {
             return spanish_dictionary[value];
+        } else 
+        {
+            return value;
         }
-    }
+    } 
 
     return value;
 
