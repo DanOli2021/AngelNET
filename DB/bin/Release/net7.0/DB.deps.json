@@ -8,17 +8,17 @@
     ".NETCoreApp,Version=v7.0": {
       "DB/1.0.0": {
         "dependencies": {
-          "Azure.Data.Tables": "12.8.0",
+          "Azure.Data.Tables": "12.8.1",
           "Azure.Storage.Blobs": "12.17.0",
           "Azure.Storage.Common": "12.16.0",
           "Azure.Storage.Queues": "12.15.0",
           "CsvHelper": "30.0.1",
           "DocumentFormat.OpenXmlSDK": "2.0.0",
           "MathNet.Numerics": "5.0.0",
-          "Microsoft.AspNetCore.SignalR.Client": "7.0.9",
+          "Microsoft.AspNetCore.SignalR.Client": "7.0.10",
           "Microsoft.CSharp": "4.7.0",
-          "Microsoft.CodeAnalysis.CSharp": "4.6.0",
-          "Microsoft.CodeAnalysis.CSharp.Scripting": "4.6.0",
+          "Microsoft.CodeAnalysis.CSharp": "4.7.0",
+          "Microsoft.CodeAnalysis.CSharp.Scripting": "4.7.0",
           "Microsoft.Extensions.DependencyInjection": "7.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
           "Newtonsoft.Json": "13.0.3",
@@ -33,10 +33,10 @@
           "DB.dll": {}
         }
       },
-      "Azure.Core/1.33.0": {
+      "Azure.Core/1.34.0": {
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
-          "System.Diagnostics.DiagnosticSource": "4.6.0",
+          "System.Diagnostics.DiagnosticSource": "6.0.1",
           "System.Memory.Data": "1.0.2",
           "System.Numerics.Vectors": "4.5.0",
           "System.Text.Encodings.Web": "7.0.0",
@@ -45,20 +45,20 @@
         },
         "runtime": {
           "lib/net6.0/Azure.Core.dll": {
-            "assemblyVersion": "1.33.0.0",
-            "fileVersion": "1.3300.23.31609"
+            "assemblyVersion": "1.34.0.0",
+            "fileVersion": "1.3400.23.36203"
           }
         }
       },
-      "Azure.Data.Tables/12.8.0": {
+      "Azure.Data.Tables/12.8.1": {
         "dependencies": {
-          "Azure.Core": "1.33.0",
+          "Azure.Core": "1.34.0",
           "System.Text.Json": "7.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/Azure.Data.Tables.dll": {
-            "assemblyVersion": "12.8.0.0",
-            "fileVersion": "12.800.23.10804"
+            "assemblyVersion": "12.8.1.0",
+            "fileVersion": "12.800.123.41503"
           }
         }
       },
@@ -76,7 +76,7 @@
       },
       "Azure.Storage.Common/12.16.0": {
         "dependencies": {
-          "Azure.Core": "1.33.0",
+          "Azure.Core": "1.34.0",
           "System.IO.Hashing": "6.0.0"
         },
         "runtime": {
@@ -142,89 +142,89 @@
           }
         }
       },
-      "Microsoft.AspNetCore.Connections.Abstractions/7.0.9": {
+      "Microsoft.AspNetCore.Connections.Abstractions/7.0.10": {
         "dependencies": {
-          "Microsoft.Extensions.Features": "7.0.9",
+          "Microsoft.Extensions.Features": "7.0.10",
           "System.IO.Pipelines": "7.0.0"
         },
         "runtime": {
           "lib/net7.0/Microsoft.AspNetCore.Connections.Abstractions.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.923.32110"
+            "fileVersion": "7.0.1023.36439"
           }
         }
       },
-      "Microsoft.AspNetCore.Http.Connections.Client/7.0.9": {
+      "Microsoft.AspNetCore.Http.Connections.Client/7.0.10": {
         "dependencies": {
-          "Microsoft.AspNetCore.Http.Connections.Common": "7.0.9",
+          "Microsoft.AspNetCore.Http.Connections.Common": "7.0.10",
           "Microsoft.Extensions.Logging.Abstractions": "7.0.1",
           "Microsoft.Extensions.Options": "7.0.1"
         },
         "runtime": {
           "lib/net7.0/Microsoft.AspNetCore.Http.Connections.Client.dll": {
-            "assemblyVersion": "7.0.9.0",
-            "fileVersion": "7.0.923.32110"
+            "assemblyVersion": "7.0.10.0",
+            "fileVersion": "7.0.1023.36439"
           }
         }
       },
-      "Microsoft.AspNetCore.Http.Connections.Common/7.0.9": {
+      "Microsoft.AspNetCore.Http.Connections.Common/7.0.10": {
         "dependencies": {
-          "Microsoft.AspNetCore.Connections.Abstractions": "7.0.9"
+          "Microsoft.AspNetCore.Connections.Abstractions": "7.0.10"
         },
         "runtime": {
           "lib/net7.0/Microsoft.AspNetCore.Http.Connections.Common.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.923.32110"
+            "fileVersion": "7.0.1023.36439"
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR.Client/7.0.9": {
+      "Microsoft.AspNetCore.SignalR.Client/7.0.10": {
         "dependencies": {
-          "Microsoft.AspNetCore.Http.Connections.Client": "7.0.9",
-          "Microsoft.AspNetCore.SignalR.Client.Core": "7.0.9"
+          "Microsoft.AspNetCore.Http.Connections.Client": "7.0.10",
+          "Microsoft.AspNetCore.SignalR.Client.Core": "7.0.10"
         },
         "runtime": {
           "lib/net7.0/Microsoft.AspNetCore.SignalR.Client.dll": {
-            "assemblyVersion": "7.0.9.0",
-            "fileVersion": "7.0.923.32110"
+            "assemblyVersion": "7.0.10.0",
+            "fileVersion": "7.0.1023.36439"
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR.Client.Core/7.0.9": {
+      "Microsoft.AspNetCore.SignalR.Client.Core/7.0.10": {
         "dependencies": {
-          "Microsoft.AspNetCore.SignalR.Common": "7.0.9",
-          "Microsoft.AspNetCore.SignalR.Protocols.Json": "7.0.9",
+          "Microsoft.AspNetCore.SignalR.Common": "7.0.10",
+          "Microsoft.AspNetCore.SignalR.Protocols.Json": "7.0.10",
           "Microsoft.Extensions.DependencyInjection": "7.0.0",
           "Microsoft.Extensions.Logging": "7.0.0",
           "System.Threading.Channels": "7.0.0"
         },
         "runtime": {
           "lib/net7.0/Microsoft.AspNetCore.SignalR.Client.Core.dll": {
-            "assemblyVersion": "7.0.9.0",
-            "fileVersion": "7.0.923.32110"
+            "assemblyVersion": "7.0.10.0",
+            "fileVersion": "7.0.1023.36439"
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR.Common/7.0.9": {
+      "Microsoft.AspNetCore.SignalR.Common/7.0.10": {
         "dependencies": {
-          "Microsoft.AspNetCore.Connections.Abstractions": "7.0.9",
+          "Microsoft.AspNetCore.Connections.Abstractions": "7.0.10",
           "Microsoft.Extensions.Options": "7.0.1"
         },
         "runtime": {
           "lib/net7.0/Microsoft.AspNetCore.SignalR.Common.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.923.32110"
+            "fileVersion": "7.0.1023.36439"
           }
         }
       },
-      "Microsoft.AspNetCore.SignalR.Protocols.Json/7.0.9": {
+      "Microsoft.AspNetCore.SignalR.Protocols.Json/7.0.10": {
         "dependencies": {
-          "Microsoft.AspNetCore.SignalR.Common": "7.0.9"
+          "Microsoft.AspNetCore.SignalR.Common": "7.0.10"
         },
         "runtime": {
           "lib/net7.0/Microsoft.AspNetCore.SignalR.Protocols.Json.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.923.32110"
+            "fileVersion": "7.0.1023.36439"
           }
         }
       },
@@ -237,217 +237,216 @@
         }
       },
       "Microsoft.CodeAnalysis.Analyzers/3.3.4": {},
-      "Microsoft.CodeAnalysis.Common/4.6.0": {
+      "Microsoft.CodeAnalysis.Common/4.7.0": {
         "dependencies": {
           "Microsoft.CodeAnalysis.Analyzers": "3.3.4",
           "System.Collections.Immutable": "7.0.0",
           "System.Reflection.Metadata": "7.0.0",
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0",
-          "System.Text.Encoding.CodePages": "7.0.0"
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         },
         "runtime": {
-          "lib/net6.0/Microsoft.CodeAnalysis.dll": {
-            "assemblyVersion": "4.6.0.0",
-            "fileVersion": "4.600.23.25908"
+          "lib/net7.0/Microsoft.CodeAnalysis.dll": {
+            "assemblyVersion": "4.7.0.0",
+            "fileVersion": "4.700.23.41609"
           }
         },
         "resources": {
-          "lib/net6.0/cs/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/cs/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "cs"
           },
-          "lib/net6.0/de/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/de/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "de"
           },
-          "lib/net6.0/es/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/es/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "es"
           },
-          "lib/net6.0/fr/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/fr/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "fr"
           },
-          "lib/net6.0/it/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/it/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "it"
           },
-          "lib/net6.0/ja/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/ja/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "ja"
           },
-          "lib/net6.0/ko/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/ko/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "ko"
           },
-          "lib/net6.0/pl/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/pl/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "pl"
           },
-          "lib/net6.0/pt-BR/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/pt-BR/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "pt-BR"
           },
-          "lib/net6.0/ru/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/ru/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "ru"
           },
-          "lib/net6.0/tr/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/tr/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "tr"
           },
-          "lib/net6.0/zh-Hans/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/zh-Hans/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "zh-Hans"
           },
-          "lib/net6.0/zh-Hant/Microsoft.CodeAnalysis.resources.dll": {
+          "lib/net7.0/zh-Hant/Microsoft.CodeAnalysis.resources.dll": {
             "locale": "zh-Hant"
           }
         }
       },
-      "Microsoft.CodeAnalysis.CSharp/4.6.0": {
+      "Microsoft.CodeAnalysis.CSharp/4.7.0": {
         "dependencies": {
-          "Microsoft.CodeAnalysis.Common": "4.6.0"
+          "Microsoft.CodeAnalysis.Common": "4.7.0"
         },
         "runtime": {
-          "lib/net6.0/Microsoft.CodeAnalysis.CSharp.dll": {
-            "assemblyVersion": "4.6.0.0",
-            "fileVersion": "4.600.23.25908"
+          "lib/net7.0/Microsoft.CodeAnalysis.CSharp.dll": {
+            "assemblyVersion": "4.7.0.0",
+            "fileVersion": "4.700.23.41609"
           }
         },
         "resources": {
-          "lib/net6.0/cs/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/cs/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "cs"
           },
-          "lib/net6.0/de/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/de/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "de"
           },
-          "lib/net6.0/es/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/es/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "es"
           },
-          "lib/net6.0/fr/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/fr/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "fr"
           },
-          "lib/net6.0/it/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/it/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "it"
           },
-          "lib/net6.0/ja/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/ja/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "ja"
           },
-          "lib/net6.0/ko/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/ko/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "ko"
           },
-          "lib/net6.0/pl/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/pl/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "pl"
           },
-          "lib/net6.0/pt-BR/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/pt-BR/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "pt-BR"
           },
-          "lib/net6.0/ru/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/ru/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "ru"
           },
-          "lib/net6.0/tr/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/tr/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "tr"
           },
-          "lib/net6.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "zh-Hans"
           },
-          "lib/net6.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.resources.dll": {
+          "lib/net7.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.resources.dll": {
             "locale": "zh-Hant"
           }
         }
       },
-      "Microsoft.CodeAnalysis.CSharp.Scripting/4.6.0": {
+      "Microsoft.CodeAnalysis.CSharp.Scripting/4.7.0": {
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
-          "Microsoft.CodeAnalysis.CSharp": "4.6.0",
-          "Microsoft.CodeAnalysis.Common": "4.6.0",
-          "Microsoft.CodeAnalysis.Scripting.Common": "4.6.0"
+          "Microsoft.CodeAnalysis.CSharp": "4.7.0",
+          "Microsoft.CodeAnalysis.Common": "4.7.0",
+          "Microsoft.CodeAnalysis.Scripting.Common": "4.7.0"
         },
         "runtime": {
-          "lib/net6.0/Microsoft.CodeAnalysis.CSharp.Scripting.dll": {
-            "assemblyVersion": "4.6.0.0",
-            "fileVersion": "4.600.23.25908"
+          "lib/net7.0/Microsoft.CodeAnalysis.CSharp.Scripting.dll": {
+            "assemblyVersion": "4.7.0.0",
+            "fileVersion": "4.700.23.41609"
           }
         },
         "resources": {
-          "lib/net6.0/cs/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/cs/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "cs"
           },
-          "lib/net6.0/de/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/de/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "de"
           },
-          "lib/net6.0/es/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/es/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "es"
           },
-          "lib/net6.0/fr/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/fr/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "fr"
           },
-          "lib/net6.0/it/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/it/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "it"
           },
-          "lib/net6.0/ja/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/ja/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "ja"
           },
-          "lib/net6.0/ko/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/ko/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "ko"
           },
-          "lib/net6.0/pl/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/pl/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "pl"
           },
-          "lib/net6.0/pt-BR/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/pt-BR/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "pt-BR"
           },
-          "lib/net6.0/ru/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/ru/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "ru"
           },
-          "lib/net6.0/tr/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/tr/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "tr"
           },
-          "lib/net6.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/zh-Hans/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "zh-Hans"
           },
-          "lib/net6.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
+          "lib/net7.0/zh-Hant/Microsoft.CodeAnalysis.CSharp.Scripting.resources.dll": {
             "locale": "zh-Hant"
           }
         }
       },
-      "Microsoft.CodeAnalysis.Scripting.Common/4.6.0": {
+      "Microsoft.CodeAnalysis.Scripting.Common/4.7.0": {
         "dependencies": {
-          "Microsoft.CodeAnalysis.Common": "4.6.0"
+          "Microsoft.CodeAnalysis.Common": "4.7.0"
         },
         "runtime": {
-          "lib/net6.0/Microsoft.CodeAnalysis.Scripting.dll": {
-            "assemblyVersion": "4.6.0.0",
-            "fileVersion": "4.600.23.25908"
+          "lib/net7.0/Microsoft.CodeAnalysis.Scripting.dll": {
+            "assemblyVersion": "4.7.0.0",
+            "fileVersion": "4.700.23.41609"
           }
         },
         "resources": {
-          "lib/net6.0/cs/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/cs/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "cs"
           },
-          "lib/net6.0/de/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/de/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "de"
           },
-          "lib/net6.0/es/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/es/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "es"
           },
-          "lib/net6.0/fr/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/fr/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "fr"
           },
-          "lib/net6.0/it/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/it/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "it"
           },
-          "lib/net6.0/ja/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/ja/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "ja"
           },
-          "lib/net6.0/ko/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/ko/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "ko"
           },
-          "lib/net6.0/pl/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/pl/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "pl"
           },
-          "lib/net6.0/pt-BR/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/pt-BR/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "pt-BR"
           },
-          "lib/net6.0/ru/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/ru/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "ru"
           },
-          "lib/net6.0/tr/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/tr/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "tr"
           },
-          "lib/net6.0/zh-Hans/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/zh-Hans/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "zh-Hans"
           },
-          "lib/net6.0/zh-Hant/Microsoft.CodeAnalysis.Scripting.resources.dll": {
+          "lib/net7.0/zh-Hant/Microsoft.CodeAnalysis.Scripting.resources.dll": {
             "locale": "zh-Hant"
           }
         }
@@ -472,11 +471,11 @@
           }
         }
       },
-      "Microsoft.Extensions.Features/7.0.9": {
+      "Microsoft.Extensions.Features/7.0.10": {
         "runtime": {
           "lib/net7.0/Microsoft.Extensions.Features.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.923.32110"
+            "fileVersion": "7.0.1023.36439"
           }
         }
       },
@@ -738,7 +737,11 @@
           }
         }
       },
-      "System.Diagnostics.DiagnosticSource/4.6.0": {},
+      "System.Diagnostics.DiagnosticSource/6.0.1": {
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
+      },
       "System.Drawing.Common/7.0.0": {
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "7.0.0"
@@ -890,7 +893,6 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "System.Text.Encoding.CodePages/7.0.0": {},
       "System.Text.Encodings.Web/7.0.0": {},
       "System.Text.Json/7.0.2": {
         "dependencies": {
@@ -933,19 +935,19 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Azure.Core/1.33.0": {
+    "Azure.Core/1.34.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-p06/5ueyCwKe09zqz7bPR6vbWRGrDy6Ot4aqjrjnowhFlXUBoljUdH+abDZP2vUuSZrOSstF4h860hBHWh8uHg==",
-      "path": "azure.core/1.33.0",
-      "hashPath": "azure.core.1.33.0.nupkg.sha512"
+      "sha512": "sha512-6dNpM8OlGO+5gvt97tHXBp9qWRFkimRFulupDSGRgyT3sje1kQNza1/EMYaDcolmNARPmVJo8+wgD6ReV9wG5Q==",
+      "path": "azure.core/1.34.0",
+      "hashPath": "azure.core.1.34.0.nupkg.sha512"
     },
-    "Azure.Data.Tables/12.8.0": {
+    "Azure.Data.Tables/12.8.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-jBNOUXoANEv66mIyR+rzC7toogo48pYciH4n5xsb8nHRz6lfjX9jwsOjC8sdR1Zl75Z6MZvaZjajqVwCt3JqVw==",
-      "path": "azure.data.tables/12.8.0",
-      "hashPath": "azure.data.tables.12.8.0.nupkg.sha512"
+      "sha512": "sha512-UsJVAV2omsi6Ws5zqV2/TMP2GQjFlmjiFXnYKV5u5+9MQ588VDkvvlh4TGzLRAG2DxVx7rdgjtQ9baTlz/+log==",
+      "path": "azure.data.tables/12.8.1",
+      "hashPath": "azure.data.tables.12.8.1.nupkg.sha512"
     },
     "Azure.Storage.Blobs/12.17.0": {
       "type": "package",
@@ -996,54 +998,54 @@
       "path": "mathnet.numerics/5.0.0",
       "hashPath": "mathnet.numerics.5.0.0.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Connections.Abstractions/7.0.9": {
+    "Microsoft.AspNetCore.Connections.Abstractions/7.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-T/A7MkuL0g4r/oNuASR2gIukWoG2360/tuS9RoiU1dOwTlMYthHJaK8NEpswMihcImCDryiHp5dJCPTZHIs9TQ==",
-      "path": "microsoft.aspnetcore.connections.abstractions/7.0.9",
-      "hashPath": "microsoft.aspnetcore.connections.abstractions.7.0.9.nupkg.sha512"
+      "sha512": "sha512-WLHAvZbxrE21DtFXHVu0bVYNfQvg5uzcL6P5hbbFnkGC/IPN9+ytP3SSW+mtemGgIKYrqKN1eQznar4Klxel2w==",
+      "path": "microsoft.aspnetcore.connections.abstractions/7.0.10",
+      "hashPath": "microsoft.aspnetcore.connections.abstractions.7.0.10.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Http.Connections.Client/7.0.9": {
+    "Microsoft.AspNetCore.Http.Connections.Client/7.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-41NrQVGv+M5KpujoaUwPs8DGaQrkvhJvaotuvdyvsuTPlcpzqBy+bmQs2eUXEpOfFxOWL9uqZcwLpoOkCOn3/A==",
-      "path": "microsoft.aspnetcore.http.connections.client/7.0.9",
-      "hashPath": "microsoft.aspnetcore.http.connections.client.7.0.9.nupkg.sha512"
+      "sha512": "sha512-0cgZPpX2g14qv5GmhKX//yTq6qNaTt496n6LWPb2EXFTRoQ/Bg7Oyf9vwthfA2rPkzQyTUQ+iaAhDM7ddOLVNw==",
+      "path": "microsoft.aspnetcore.http.connections.client/7.0.10",
+      "hashPath": "microsoft.aspnetcore.http.connections.client.7.0.10.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Http.Connections.Common/7.0.9": {
+    "Microsoft.AspNetCore.Http.Connections.Common/7.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-GnhaII0AWIAuUTJ3TT02yUOAPlVP4p7zxi40ysQYSLUiD6dEODJc9d3ugFgM8EMnrgYiKw6fbLyn4dixls8CCg==",
-      "path": "microsoft.aspnetcore.http.connections.common/7.0.9",
-      "hashPath": "microsoft.aspnetcore.http.connections.common.7.0.9.nupkg.sha512"
+      "sha512": "sha512-Ff4O7VwYKUrdbVYE9yKvuzi6K08OsbFMDcF96lJYwO3PEwV0qLUge79csuVWRJYYWHGoObT1kCuAOU58dPERaw==",
+      "path": "microsoft.aspnetcore.http.connections.common/7.0.10",
+      "hashPath": "microsoft.aspnetcore.http.connections.common.7.0.10.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR.Client/7.0.9": {
+    "Microsoft.AspNetCore.SignalR.Client/7.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-tXSCmD/oZimbnzOfVSz8CGrKy/OLDvWJ87Hp1Yg8IkG/8ek3532Hk8Ujf/gNjZy1jRLT2s4jcQS7iwGguhvi3g==",
-      "path": "microsoft.aspnetcore.signalr.client/7.0.9",
-      "hashPath": "microsoft.aspnetcore.signalr.client.7.0.9.nupkg.sha512"
+      "sha512": "sha512-QYM0XuIRjc2TzsC9gajxJi+DfnDka+2kksrW89GnSL1CbAR7hEg3yFA31BHTnWlb6n2t27iq1ORfvYpxwjJxxg==",
+      "path": "microsoft.aspnetcore.signalr.client/7.0.10",
+      "hashPath": "microsoft.aspnetcore.signalr.client.7.0.10.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR.Client.Core/7.0.9": {
+    "Microsoft.AspNetCore.SignalR.Client.Core/7.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+rWA87MIbhUQi2fKJUTc9cRJgvHfZJdJ32gnIUxCHZtvwAHtfLG7Lc7KnJXiur6yLtG0CqLOANSfBXr/OOUqQw==",
-      "path": "microsoft.aspnetcore.signalr.client.core/7.0.9",
-      "hashPath": "microsoft.aspnetcore.signalr.client.core.7.0.9.nupkg.sha512"
+      "sha512": "sha512-qUS4tiFvboxxMwXiJWA4j+cPRAHzeH3+SzpRy1MdRZ7JVxgKqFbc2ShWYqFNKDnYpGE39ejR0UXoDQDB48sGMQ==",
+      "path": "microsoft.aspnetcore.signalr.client.core/7.0.10",
+      "hashPath": "microsoft.aspnetcore.signalr.client.core.7.0.10.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR.Common/7.0.9": {
+    "Microsoft.AspNetCore.SignalR.Common/7.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-u+mm77kNAm2qDjyXhZJnNDY1g0W6Tql4TbLClITMIK54KmOn+lzTsdpFBb41qJ1Jr1Qj+nC0yAXffEga008T6g==",
-      "path": "microsoft.aspnetcore.signalr.common/7.0.9",
-      "hashPath": "microsoft.aspnetcore.signalr.common.7.0.9.nupkg.sha512"
+      "sha512": "sha512-899XAeogJNJFSO2E+/fdMc9JakJD4fZ3BfJ5T9Ed2ng/DWFl7hXprHIglESF9Fw30+BTF7m20iew0+bi0Ve3wQ==",
+      "path": "microsoft.aspnetcore.signalr.common/7.0.10",
+      "hashPath": "microsoft.aspnetcore.signalr.common.7.0.10.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SignalR.Protocols.Json/7.0.9": {
+    "Microsoft.AspNetCore.SignalR.Protocols.Json/7.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0kUF1Vqd+Z42ihHjSShSQfayheIZENn1WamPMd/PB9+upEYP8jJDr+8MtCeYNwzxhmzu2UqfgeTeWJ96SZpzhQ==",
-      "path": "microsoft.aspnetcore.signalr.protocols.json/7.0.9",
-      "hashPath": "microsoft.aspnetcore.signalr.protocols.json.7.0.9.nupkg.sha512"
+      "sha512": "sha512-ecKvZoJw4HtBlzHaQbfFoozU8JzR0VXZP/im6bFWE4OqXQ/jn4TRFBKBUWdcJk5vvnLsgrporkaiTzSH9s9jkA==",
+      "path": "microsoft.aspnetcore.signalr.protocols.json/7.0.10",
+      "hashPath": "microsoft.aspnetcore.signalr.protocols.json.7.0.10.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
       "type": "package",
@@ -1059,33 +1061,33 @@
       "path": "microsoft.codeanalysis.analyzers/3.3.4",
       "hashPath": "microsoft.codeanalysis.analyzers.3.3.4.nupkg.sha512"
     },
-    "Microsoft.CodeAnalysis.Common/4.6.0": {
+    "Microsoft.CodeAnalysis.Common/4.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-N3uLvekc7DjvE1BX8YW7UH7ldjA4ps/Tun2YmOoSIItJrh1gnQIMKUbK1c3uQUx2NHbLibVZI4o/VB9xb4B7tA==",
-      "path": "microsoft.codeanalysis.common/4.6.0",
-      "hashPath": "microsoft.codeanalysis.common.4.6.0.nupkg.sha512"
+      "sha512": "sha512-pD5S14xMUebSGYe75kt0q/aaS/ftvktSo/pEv7aX7hNPHfdZS+SZeXvkvcffGxWkunYOyRF9m1oN7zzSdYj9dQ==",
+      "path": "microsoft.codeanalysis.common/4.7.0",
+      "hashPath": "microsoft.codeanalysis.common.4.7.0.nupkg.sha512"
     },
-    "Microsoft.CodeAnalysis.CSharp/4.6.0": {
+    "Microsoft.CodeAnalysis.CSharp/4.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-9pyFZUN2Lyu3C0Xfs49kezfH+CzQHMibGsQeQPu0P+GWyH2XXDwmyZ6jAaKQGNUXOJfC2OK01hWMJTJY315uDQ==",
-      "path": "microsoft.codeanalysis.csharp/4.6.0",
-      "hashPath": "microsoft.codeanalysis.csharp.4.6.0.nupkg.sha512"
+      "sha512": "sha512-JHCP2L6lB0oJ3tQoHkC67SFZxW+KbJVOnAo+6L01K5r/NlBlSUhTk5nUAldWhTVwGdzqNeHqGtnEqpsCmGSwQA==",
+      "path": "microsoft.codeanalysis.csharp/4.7.0",
+      "hashPath": "microsoft.codeanalysis.csharp.4.7.0.nupkg.sha512"
     },
-    "Microsoft.CodeAnalysis.CSharp.Scripting/4.6.0": {
+    "Microsoft.CodeAnalysis.CSharp.Scripting/4.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-v8ioTrFxoZ5iFxz/sMLMm7e/mY2rnQKyQHLo9+IhbLqtIP+4GWozjb+eNf/cpZ91EQ0wpIIKTuqZjccpBvItFw==",
-      "path": "microsoft.codeanalysis.csharp.scripting/4.6.0",
-      "hashPath": "microsoft.codeanalysis.csharp.scripting.4.6.0.nupkg.sha512"
+      "sha512": "sha512-c2a+u437pZCaAcNSdI0hvvb5vAWph+sQYRpU7eFHaVU3s8Z3qOd72UJFI4m96x2bVt/7O3oSvxGSfMFf9g8DFg==",
+      "path": "microsoft.codeanalysis.csharp.scripting/4.7.0",
+      "hashPath": "microsoft.codeanalysis.csharp.scripting.4.7.0.nupkg.sha512"
     },
-    "Microsoft.CodeAnalysis.Scripting.Common/4.6.0": {
+    "Microsoft.CodeAnalysis.Scripting.Common/4.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-BprguoVYmzRKvBtIDV0mkpGur5V385zqf2aPejBVcBwX9oTJORs/aPric8S2RmV+FKZj6Sj6jbmT4nwOvBQHbg==",
-      "path": "microsoft.codeanalysis.scripting.common/4.6.0",
-      "hashPath": "microsoft.codeanalysis.scripting.common.4.6.0.nupkg.sha512"
+      "sha512": "sha512-/rooxKDFwy5XnhXdhGfk0I7zaPuLg6G+jPlS0r0gxmdgYwhqIvLBRm2DMyI2WthxwGtPTCo2LqhCc5i5+JEnaw==",
+      "path": "microsoft.codeanalysis.scripting.common/4.7.0",
+      "hashPath": "microsoft.codeanalysis.scripting.common.4.7.0.nupkg.sha512"
     },
     "Microsoft.CSharp/4.7.0": {
       "type": "package",
@@ -1108,12 +1110,12 @@
       "path": "microsoft.extensions.dependencyinjection.abstractions/7.0.0",
       "hashPath": "microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512"
     },
-    "Microsoft.Extensions.Features/7.0.9": {
+    "Microsoft.Extensions.Features/7.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-IJ2vdDt2OYCKyJ7ZJPIZKa4b0M0tsG36h0QUt1d/E8IMAnjIncI+1i9Am0nmheD/wpcVd9eDykiV4dklcwUd3Q==",
-      "path": "microsoft.extensions.features/7.0.9",
-      "hashPath": "microsoft.extensions.features.7.0.9.nupkg.sha512"
+      "sha512": "sha512-jodGLS4SoclKeYMCZzIKTM21mwfyMjCTq/Ex65kUYYAWuVatht4QayBrhcthwvh7amBeLGLCtS4rFlmGLwrAwA==",
+      "path": "microsoft.extensions.features/7.0.10",
+      "hashPath": "microsoft.extensions.features.7.0.10.nupkg.sha512"
     },
     "Microsoft.Extensions.Http/2.1.0": {
       "type": "package",
@@ -1297,12 +1299,12 @@
       "path": "system.data.sqlite.ef6/1.0.118",
       "hashPath": "system.data.sqlite.ef6.1.0.118.nupkg.sha512"
     },
-    "System.Diagnostics.DiagnosticSource/4.6.0": {
+    "System.Diagnostics.DiagnosticSource/6.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-mbBgoR0rRfl2uimsZ2avZY8g7Xnh1Mza0rJZLPcxqiMWlkGukjmRkuMJ/er+AhQuiRIh80CR/Hpeztr80seV5g==",
-      "path": "system.diagnostics.diagnosticsource/4.6.0",
-      "hashPath": "system.diagnostics.diagnosticsource.4.6.0.nupkg.sha512"
+      "sha512": "sha512-KiLYDu2k2J82Q9BJpWiuQqCkFjRBWVq4jDzKKWawVi9KWzyD0XG3cmfX0vqTQlL14Wi9EufJrbL0+KCLTbqWiQ==",
+      "path": "system.diagnostics.diagnosticsource/6.0.1",
+      "hashPath": "system.diagnostics.diagnosticsource.6.0.1.nupkg.sha512"
     },
     "System.Drawing.Common/7.0.0": {
       "type": "package",
@@ -1436,13 +1438,6 @@
       "sha512": "sha512-BiIg+KWaSDOITze6jGQynxg64naAPtqGHBwDrLaCtixsa5bKiR8dpPOHA7ge3C0JJQizJE+sfkz1wV+BAKAYZw==",
       "path": "system.text.encoding/4.3.0",
       "hashPath": "system.text.encoding.4.3.0.nupkg.sha512"
-    },
-    "System.Text.Encoding.CodePages/7.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-LSyCblMpvOe0N3E+8e0skHcrIhgV2huaNcjUUEa8hRtgEAm36aGkRoC8Jxlb6Ra6GSfF29ftduPNywin8XolzQ==",
-      "path": "system.text.encoding.codepages/7.0.0",
-      "hashPath": "system.text.encoding.codepages.7.0.0.nupkg.sha512"
     },
     "System.Text.Encodings.Web/7.0.0": {
       "type": "package",

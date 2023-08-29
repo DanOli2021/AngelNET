@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
 
     <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
 </head>
 
@@ -15,8 +16,8 @@
     <div class="container">
         <div class="row justify-content-center">
             <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px; width: 30%">
-            <h1 class="text-center">MyBusiness POS Authorizer</h1>
-            <p class="text-center">Send PIN for registration</p>            
+            <h1 class="text-center" id="auth_title">MyBusiness POS Authorizer</h1>
+            <p class="text-center" id="auth_send_pin">Send PIN for registration</p>            
             <div class="col-md-12">
                 <form action="/login" method="post">
                     <div class="form-group">
@@ -24,7 +25,7 @@
                         <input type="text" class="form-control" placeholder="Enter your email" id="email" required>
                     </div>
                     <div class="form-group">
-                        <input type="button" class="btn btn-primary btn-lg form-control" onclick="RequestPin()" value="Request PIN" style="margin-bottom: 20px;">    
+                        <input type="button" class="btn btn-primary btn-lg form-control" onclick="RequestPin()" value="Request PIN" style="margin-bottom: 20px;" id="auth_button_send_pin">    
                     </div>
                 </form>    
             </div>
@@ -119,6 +120,11 @@
 
         document.querySelector('#closeButton').addEventListener('click', function () {
             document.querySelector('#myDialog').close();
+        });
+
+        document.addEventListener("DOMContentLoaded", function () 
+        {
+            translate_sendpin("es");            
         });
 
         document.addEventListener('keydown', function (event) {

@@ -32,7 +32,7 @@ result = db.CreateTable(usersgroup);
 Console.WriteLine(result);
 
 Console.WriteLine("Creating BranchStore catalog...");
-branch_stores branch_store = new();
+Branch_stores branch_store = new();
 result = db.CreateTable(branch_store);
 Console.WriteLine(result);
 
@@ -79,20 +79,20 @@ result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObjec
 Console.WriteLine("Upsert group: " + result);
 
 Users u = new();
-u.id = "authuser";
+u.Id = "authuser";
 u.Name = "authuser";
 u.Password = "mysecret";
 u.UserGroups = "AUTHORIZERS, SUPERVISORS, PINSCONSUMER";
 u.Organization = "AUTHORIZERS";
 u.Email = "";
 u.Phone = "";
-u.permissions_list = "Delete Sale, Inventory Transfer, Delete Item";
+u.Permissions_list = "Delete Sale, Inventory Transfer, Delete Item";
 
 result = db.Prompt("UPSERT INTO users VALUES " + JsonConvert.SerializeObject(u));
 Console.WriteLine("Upsert users: " + result); 
 
 Tokens t = new();
-t.id = "5c242c01-39f4-43bf-8f63-bf4b19dbe8e3";
+t.Id = "5c242c01-39f4-43bf-8f63-bf4b19dbe8e3";
 t.User = "authuser";
 t.ExpiryTime = "2050-12-31 23:59:59.9999999";
 result = db.Prompt("UPSERT INTO tokens VALUES " + JsonConvert.SerializeObject(t));

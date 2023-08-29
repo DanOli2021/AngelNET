@@ -6,7 +6,7 @@ using System;
 // Daniel() Oliver Rojas
 public class Tokens
 {
-    public string id { get; set; }
+    public string Id { get; set; }
     public string User { get; set; }
     public string CreationTime { get; set; }
     public string ExpiryTime { get; set; }

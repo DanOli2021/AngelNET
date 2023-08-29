@@ -16,6 +16,7 @@
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
 
+    <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -39,7 +40,9 @@
                 <span style="float: left;">
                     <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                 </span>
-                Menu
+                <span id="tokens_menu">
+                    Menu
+                </span>
             </a>
         </div>
 
@@ -51,7 +54,7 @@
                         <img src="images/icons/golden_networking_net_admin_128.png" alt="logo" class="logo"
                             style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
                     </span>
-                    <h2>Admin Tokens</h2>
+                    <h2 id="tokens_admin_tokens">Admin Tokens</h2>
                 </a>
             </div>
 
@@ -60,12 +63,16 @@
             <div class="row" style="margin-bottom: 10px;">
                 <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
                     onclick="showTokenDialog('', true)" style="margin-bottom: 20px;">
-                    New Token (F2)
+                    <span id="tokens_new">
+                        New Token (F2)
+                    </span>
                 </button>
 
                 <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
-                    onclick="GetTokensData()" style="margin-bottom: 20px;margin-bottom: 20px;">
-                    Refresh (F4)
+                    onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    <span id="tokens_refresh">
+                        Refresh (F4)
+                    </span>
                 </button>
             </div>
 
@@ -75,82 +82,19 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Token</th>
-                        <th>User</th>
-                        <th>Creation Time</th>
-                        <th>Expiry Time</th>
-                        <th>Status</th>
-                        <th>Used For</th>
-                        <th>Observations</th>
+                        <th id="tokens_token">Token</th>
+                        <th id="tokens_user">User</th>
+                        <th id="tokens_date">Creation Time</th>
+                        <th id="tokens_expiry_time">Expiry Time</th>
+                        <th id="tokens_status">Status</th>
+                        <th id="tokens_used_for">Used For</th>
+                        <th id="tokens_observation">Observations</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
-
-            <script>
-
-                var tabla;
-
-                $(document).ready(function () {
-                    var datos = [];
-
-                    function parseDate(input) {
-                        var parts = input.split(' ');
-                        var dateParts = parts[0].split('-');
-                        var timeParts = parts[1].split(':');
-                        return new Date(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], timeParts[2]);
-                    }
-
-                    tabla = $('#dataTable').DataTable({
-                        responsive: true,
-                        data: datos,
-                        bFilter: true,
-                        dom: 'Bfrtip',
-                        buttons: [
-                            'print'
-                        ],
-                        columns: [
-                            {
-                                // Columna de botón
-                                data: null,
-                                render: function (data, type, row) {
-                                    return '<button class="btn btn-primary">+</button>';
-                                }
-                            },
-                            { data: 'id' },
-                            { data: 'User' },
-                            { data: 'CreationTime' },
-                            { data: 'ExpiryTime' },
-                            {
-                                // Columna de estado
-                                data: null,
-                                render: function (data, type, row) {
-                                    return parseDate(data.ServerTime) > parseDate(data.ExpiryTime) ? 'Expired' : 'Valid';
-                                }
-                            },
-                            { data: 'UsedFor' },
-                            { data: 'Observations' }
-                        ],
-                        createdRow: function (row, data, dataIndex) {
-                            if (parseDate(data.CreationTime) > parseDate(data.ExpiryTime)) {
-                                // Aplicar fondo rojo a la fila si la condición se cumple
-                                $(row).css('background-color', '#FF9999');
-                            }
-                        }
-                    });
-
-                    $('#dataTable').on('click', 'td:first-child', function () {
-                        var datosFila = tabla.row($(this).parents('tr')).data();
-                        showTokenDialog(datosFila);
-                        // Aquí se ejecuta el código al hacer doble clic en la columna de botón
-                    });
-                });
-            </script>
-
         </div>
-
-
     </div>
 
     <dialog id="myDialog" class="dialog-box">
@@ -177,31 +121,29 @@
         </div>
     </dialog>
 
-
-
     <dialog id="Token_dialog" style="width: 90%;">
 
         <div class="row">
             <div class="col-md-12">
 
                 <div class="form-group">
-                    <label for="id">Token</label>
+                    <label for="id" id="tokens_dialog_tokens">Token</label>
                     <input type="text" class="form-control" id="id" name="id">
                 </div>
 
                 <div class="form-group">
-                    <label for="authorizer">User</label>
+                    <label for="authorizer" id="tokens_dialog_user">User</label>
                     <select class="form-select" aria-label="Default select example" id="user" name="user">
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="expirytime">Expiry Time</label>
+                    <label for="expirytime" id="tokens_dialog_expiry_time">Expiry Time</label>
                     <input type="date" class="form-control" id="expirytime" name="expirytime">
                 </div>
 
                 <div class="form-group">
-                    <label for="usedfor">Used For</label>
+                    <label for="usedfor" id="tokens_dialog_used_for">Used For</label>
                     <select class="form-select" aria-label="Default select example" id="usedfor" name="usedfor">
                         <option value="App Access">
                             App Access
@@ -213,7 +155,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="observations">Observations</label>
+                    <label for="observations" id="tokens_dialog_observations">Observations</label>
                     <input type="text" class="form-control" id="observations" name="observations">
                 </div>
 
@@ -223,15 +165,19 @@
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-primary" "
                         style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveTokenData()">
-                        Save
+                        <span id="tokens_dialog_save">
+                            Save
+                        </span>
                     </button>
                 </div>
 
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-danger"
                         style="text-align: right; margin-top: 20px; width: 100%;"
-                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Token?', 'DeleteToken')">
-                        Delete
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Token?', DeleteTokenData)">
+                        <span id="tokens_dialog_delete">
+                            Delete
+                        </span>
                     </button>
                 </div>
             </div>
@@ -241,7 +187,9 @@
                     <button id="closeSkuEdit" class="btn btn-secondary"
                         style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeTokensDialog()"
                         style="text-align: right;">
-                        Close
+                        <span id="tokens_dialog_close">
+                            Close
+                        </span>
                     </button>
                 </div>
             </div>
@@ -251,37 +199,6 @@
     </dialog>
 
     <script>
-
-        function showDialog(title, message) {
-            document.getElementById('dialogTittle').innerText = title;
-            document.getElementById('dialogMessage').innerText = '⚠️' + message;
-            document.getElementById('myDialog').showModal();
-        }
-
-        function closeDialog() {
-            document.getElementById('myDialog').close();
-        }
-
-
-        function showAcceptCancelDialog(title, message, operation) {
-            document.getElementById('dialogTittleAcceptCancel').innerText = title;
-            document.getElementById('dialogMessageAcceptCancel').innerText = message;
-            document.getElementById('DialogAcceptCancel').showModal();
-            document.getElementById('cancel').focus();
-
-            var accept = document.getElementById('accept');
-            accept.focus();
-
-            accept.addEventListener("click", () => {
-                if (operation) {
-                    if (operation == "DeleteToken") {
-                        DeleteTokenData();
-                    }
-                };
-            });
-
-        }
-
 
         function DeleteTokenData() {
             var id = document.getElementById('id').value;
@@ -299,15 +216,10 @@
 
                 showDialog("Attention", "Token " + id + " deleted successfully");
                 closeTokensDialog();
-                GetTokensData();
+                GetData();
                 return;
 
             });
-        }
-
-
-        function closeDialogAcceptCancelDialog() {
-            document.getElementById('DialogAcceptCancel').close();
         }
 
 
@@ -381,7 +293,7 @@
                     id.readOnly = true;
                     id.disabled = true;
 
-                    document.getElementById('id').value = Token.id;
+                    document.getElementById('id').value = Token.Id;
                     document.getElementById('user').value = Token.User;
                     document.getElementById('expirytime').value = Token.ExpiryTime.substring(0, 10);
                     document.getElementById('usedfor').value = Token.UsedFor;
@@ -390,12 +302,7 @@
                     //description.focus();
 
                 });
-
-
             });
-
-
-
         }
 
         function closeTokensDialog() {
@@ -425,13 +332,13 @@
                 }
 
                 showDialog("Success:", "Token Saved");
-                GetTokensData();
+                GetData();
 
             });
 
         }
 
-        function GetTokensData() {
+        function GetData() {
 
             var datos = GetTokens(Token.username, Token.token);
 
@@ -451,20 +358,73 @@
         }
 
         document.addEventListener('keydown', function (event) {
-
             if (event.key === "F2") {
                 showTokenDialog('', true);
             }
-
             if (event.key === "F4") {
-                GetTokensData();
+                GetData();
             }
-
-
         });
 
+        var tabla;
+
         document.addEventListener('DOMContentLoaded', function () {
-            GetTokensData();
+
+            var datos = [];
+
+            function parseDate(input) {
+                var parts = input.split(' ');
+                var dateParts = parts[0].split('-');
+                var timeParts = parts[1].split(':');
+                return new Date(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], timeParts[2]);
+            }
+
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'print'
+                ],
+                columns: [
+                    {
+                        // Columna de botón
+                        data: null,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary">+</button>';
+                        }
+                    },
+                    { data: 'id' },
+                    { data: 'User' },
+                    { data: 'CreationTime' },
+                    { data: 'ExpiryTime' },
+                    {
+                        // Columna de estado
+                        data: null,
+                        render: function (data, type, row) {
+                            return parseDate(data.ServerTime) > parseDate(data.ExpiryTime) ? 'Expired' : 'Valid';
+                        }
+                    },
+                    { data: 'UsedFor' },
+                    { data: 'Observations' }
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    if (parseDate(data.CreationTime) > parseDate(data.ExpiryTime)) {
+                        // Aplicar fondo rojo a la fila si la condición se cumple
+                        $(row).css('background-color', '#FF9999');
+                    }
+                }
+            });
+
+            $('#dataTable').on('click', 'td:first-child', function () {
+                var datosFila = tabla.row($(this).parents('tr')).data();
+                showTokenDialog(datosFila);
+                // Aquí se ejecuta el código al hacer doble clic en la columna de botón
+            });
+
+            translate_tokens("es");
+            GetData();
         });
 
 

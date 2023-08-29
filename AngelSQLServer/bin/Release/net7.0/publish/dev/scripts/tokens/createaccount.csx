@@ -36,13 +36,11 @@ AngelApiOperation api = JsonConvert.DeserializeObject<AngelApiOperation>(message
 //Server parameters
 Dictionary<string, string> parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(Environment.GetEnvironmentVariable("ANGELSQL_PARAMETERS"));
 
-switch (api.OperationType)
+return api.OperationType switch
 {
-    case "CreateAccount":
-        return CreateNewAccount( server_db, api );
-    default:
-        return $"Error: No service found {api.OperationType}";
-}
+    "CreateAccount" => CreateNewAccount(server_db, api),
+    _ => $"Error: No service found {api.OperationType}",
+};
 
 
 // CreateAccount
@@ -75,29 +73,29 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
 
     DataTable p = server_db.GetDataTable(result);
 
-    Pin my_pin = new Pin()
+    Pin my_pin = new()
     {
-        id = p.Rows[0]["id"].ToString(),
-        pin_number = p.Rows[0]["pin_number"].ToString(),
-        user = p.Rows[0]["user"].ToString(),
-        status = p.Rows[0]["status"].ToString(),
-        expirytime = p.Rows[0]["expirytime"].ToString(),
-        date = p.Rows[0]["date"].ToString()
+        Id = p.Rows[0]["id"].ToString(),
+        Pin_number = p.Rows[0]["pin_number"].ToString(),
+        User = p.Rows[0]["user"].ToString(),
+        Status = p.Rows[0]["status"].ToString(),
+        Expirytime = p.Rows[0]["expirytime"].ToString(),
+        Date = p.Rows[0]["date"].ToString()
     };
 
-    DateTime expirytime = DateTime.ParseExact( my_pin.expirytime, "yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture );
+    DateTime expirytime = DateTime.ParseExact( my_pin.Expirytime, "yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture );
 
     if (DateTime.Now.ToUniversalTime() > expirytime)
     {
         return "Error: CreateAccount() Pin has expired";
     }
 
-    if (my_pin.status != "pending")
+    if (my_pin.Status != "pending")
     {
         return "Error: CreateAccount() status is not pending"; 
     }
 
-    if (my_pin.pin_number != d.Pin.ToString())
+    if (my_pin.Pin_number != d.Pin.ToString())
     {
         return "Error: CreateAccount() Pin does not match";
     }
@@ -121,7 +119,7 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
         return "Error: CreateAccount() AccountName is not valid, only letters and numbers are allowed, minimun 5 characters, maximun 30 characters";
     }
 
-    AngelDB.DB db = new AngelDB.DB();
+    AngelDB.DB db = new();
 
     result = db.Prompt($"DB USER db PASSWORD db DATA DIRECTORY {parameters["accounts_directory"]}/{d.AccountName}");
 
@@ -170,7 +168,7 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
         id = d.AccountName,
         db_user = d.User.ToString(),
         name = d.Name,
-        email = my_pin.user,
+        email = my_pin.User,
         connection_string = $"DB USER {d.User} PASSWORD {d.Password} DATA DIRECTORY {parameters["accounts_directory"]}/{d.AccountName}",
         db_password = d.Password.ToString(),
         database = $"{d.AccountName}_data1",
@@ -189,91 +187,110 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
         return result;
     }
 
-    Tokens tokens = new Tokens();
+    Tokens tokens = new();
     result = db.CreateTable(tokens);
     if (result.StartsWith("Error:")) return "Error: Creating table tokens " + result.Replace( "Error:", "" );
 
-    Users users = new Users();
+    Users users = new();
     result = db.CreateTable(users);
     if (result.StartsWith("Error:")) return "Error: Creating table users " + result.Replace( "Error:", "" );
 
-    UsersGroup usersgroup = new UsersGroup();
+    UsersGroup usersgroup = new();
     result = db.CreateTable(usersgroup);
     if (result.StartsWith("Error:")) return "Error: Creating table UsersGroup " + result.Replace("Error:", "");
 
-    branch_stores branch_store = new branch_stores();
+    Branch_stores branch_store = new();
     result = db.CreateTable(branch_store);
     if (result.StartsWith("Error:")) return "Error: Creating table branch_stores " + result.Replace("Error:", "");
 
-    Pin pin = new Pin();
+    Pin pin = new();
     result = db.CreateTable(my_pin, "pins");
     if (result.StartsWith("Error:")) return "Error: Creating table pins " + result.Replace("Error:", "");
 
-    List<UsersGroup> groups = new List<UsersGroup>();
+    List<UsersGroup> groups = new();
 
-    UsersGroup g = new UsersGroup();
-    g.id = "AUTHORIZERS";
-    g.Name = "AUTHORIZERS";
-    g.Permissions = "";
+    UsersGroup g = new()
+    {
+        id = "AUTHORIZERS",
+        Name = "AUTHORIZERS",
+        Permissions = ""
+    };
     groups.Add(g);
 
-    g = new UsersGroup();
-    g.id = "PINSCONSUMER";
-    g.Name = "PINSCONSUMER";
-    g.Permissions = "";
+    g = new UsersGroup
+    {
+        id = "PINSCONSUMER",
+        Name = "PINSCONSUMER",
+        Permissions = ""
+    };
     groups.Add(g);
 
-    g = new UsersGroup();
-    g.id = "SUPERVISORS";
-    g.Name = "SUPERVISORS";
-    g.Permissions = "";
+    g = new UsersGroup
+    {
+        id = "SUPERVISORS",
+        Name = "SUPERVISORS",
+        Permissions = ""
+    };
     groups.Add(g);
 
-    g = new UsersGroup();
-    g.id = "ADMINISTRATIVE";
-    g.Name = "ADMINISTRATIVE";
-    g.Permissions = "";
+    g = new UsersGroup
+    {
+        id = "ADMINISTRATIVE",
+        Name = "ADMINISTRATIVE",
+        Permissions = ""
+    };
     groups.Add(g);
 
-    g = new UsersGroup();
-    g.id = "ADMINISTRATIVE";
-    g.Name = "ADMINISTRATIVE";
-    g.Permissions = "";
+    g = new UsersGroup
+    {
+        id = "ADMINISTRATIVE",
+        Name = "ADMINISTRATIVE",
+        Permissions = ""
+    };
     groups.Add(g);
 
-    g = new UsersGroup();
-    g.id = "CASHIER";
-    g.Name = "CASHIER";
-    g.Permissions = "";
+    g = new UsersGroup
+    {
+        id = "CASHIER",
+        Name = "CASHIER",
+        Permissions = ""
+    };
     groups.Add(g);
 
-    g = new UsersGroup();
-    g.id = "CASHIER";
-    g.Name = "CASHIER";
-    g.Permissions = "";
+    g = new UsersGroup
+    {
+        id = "CASHIER",
+        Name = "CASHIER",
+        Permissions = ""
+    };
     groups.Add(g);
 
     result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(groups));
-    if (result.StartsWith("Error:")) return "Error: insert group ADMINISTRATIVE " + result.Replace("Error:", "");    
+    if (result.StartsWith("Error:")) return "Error: insert group ADMINISTRATIVE " + result.Replace("Error:", "");
 
-    Users u = new Users();
-    u.id = d.User.ToString();
-    u.Name = d.Name.ToString();
-    u.Password = d.Password.ToString();
-    u.UserGroups = "AUTHORIZERS, SUPERVISORS, PINSCONSUMER, ADMINISTRATIVE, CASHIER";
-    u.Organization = "";
-    u.Email = my_pin.user;
-    u.Phone = "";
-    u.permissions_list = "Any";
-    u.master = "true";
+    Users u = new()
+    {
+        Id = d.User.ToString(),
+        Name = d.Name.ToString(),
+        Password = d.Password.ToString(),
+        UserGroups = "AUTHORIZERS, SUPERVISORS, PINSCONSUMER, ADMINISTRATIVE, CASHIER",
+        Organization = "",
+        Email = my_pin.User,
+        Phone = "",
+        Permissions_list = "Any",
+        Master = "true"
+    };
 
     result = db.Prompt("UPSERT INTO users VALUES " + JsonConvert.SerializeObject(u));
     if (result.StartsWith("Error:")) return "Error: insert user " + result.Replace("Error:", "");
 
-    Tokens t = new Tokens();
-    t.id = System.Guid.NewGuid().ToString();
-    t.User = d.User.ToString();
-    t.ExpiryTime = DateTime.Now.AddYears(1).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
+    Tokens t = new()
+    {
+        Id = System.Guid.NewGuid().ToString(),
+        User = d.User.ToString(),
+        ExpiryTime = DateTime.Now.AddYears(20).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
+        CreationTime = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff")
+    };
     result = db.Prompt("UPSERT INTO tokens VALUES " + JsonConvert.SerializeObject(t));
 
     return "Ok.";
@@ -283,7 +300,7 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
 
 public static class StringValidator
 {
-    private static readonly Regex ValidStringPattern = new Regex("^[a-zA-Z0-9]{1,30}$");
+    private static readonly Regex ValidStringPattern = new("^[a-zA-Z0-9]{1,30}$");
 
     public static bool IsValid(string input)
     {

@@ -121,7 +121,7 @@ namespace AngelDB
                         return "Error: No message found";
 
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         return "Error: Query: Command not found.";
                     }

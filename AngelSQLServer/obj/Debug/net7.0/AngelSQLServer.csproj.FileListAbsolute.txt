@@ -1446,3 +1446,9 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\Ange
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\js\scripts.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\js\index_translate.js
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\py\ForeCast.py
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\scripts\tokens\translations.csx
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\pins\images\2786.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\pins\images\5036.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\pins\images\6269.png
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\privacy_es.html
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\auth\termsAndConditions_es.html

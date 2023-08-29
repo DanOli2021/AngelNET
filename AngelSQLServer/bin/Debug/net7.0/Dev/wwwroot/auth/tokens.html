@@ -127,23 +127,23 @@
             <div class="col-md-12">
 
                 <div class="form-group">
-                    <label for="id">Token</label>
+                    <label for="id" id="tokens_dialog_tokens">Token</label>
                     <input type="text" class="form-control" id="id" name="id">
                 </div>
 
                 <div class="form-group">
-                    <label for="authorizer">User</label>
+                    <label for="authorizer" id="tokens_dialog_user">User</label>
                     <select class="form-select" aria-label="Default select example" id="user" name="user">
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="expirytime">Expiry Time</label>
+                    <label for="expirytime" id="tokens_dialog_expiry_time">Expiry Time</label>
                     <input type="date" class="form-control" id="expirytime" name="expirytime">
                 </div>
 
                 <div class="form-group">
-                    <label for="usedfor">Used For</label>
+                    <label for="usedfor" id="tokens_dialog_used_for">Used For</label>
                     <select class="form-select" aria-label="Default select example" id="usedfor" name="usedfor">
                         <option value="App Access">
                             App Access
@@ -155,7 +155,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="observations">Observations</label>
+                    <label for="observations" id="tokens_dialog_observations">Observations</label>
                     <input type="text" class="form-control" id="observations" name="observations">
                 </div>
 
@@ -165,7 +165,9 @@
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-primary" "
                         style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveTokenData()">
-                        Save
+                        <span id="tokens_dialog_save">
+                            Save
+                        </span>
                     </button>
                 </div>
 
@@ -173,7 +175,9 @@
                     <button type="button" class="btn btn-danger"
                         style="text-align: right; margin-top: 20px; width: 100%;"
                         onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Token?', DeleteTokenData)">
-                        Delete
+                        <span id="tokens_dialog_delete">
+                            Delete
+                        </span>
                     </button>
                 </div>
             </div>
@@ -183,7 +187,9 @@
                     <button id="closeSkuEdit" class="btn btn-secondary"
                         style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeTokensDialog()"
                         style="text-align: right;">
-                        Close
+                        <span id="tokens_dialog_close">
+                            Close
+                        </span>
                     </button>
                 </div>
             </div>
@@ -287,7 +293,7 @@
                     id.readOnly = true;
                     id.disabled = true;
 
-                    document.getElementById('id').value = Token.id;
+                    document.getElementById('id').value = Token.Id;
                     document.getElementById('user').value = Token.User;
                     document.getElementById('expirytime').value = Token.ExpiryTime.substring(0, 10);
                     document.getElementById('usedfor').value = Token.UsedFor;

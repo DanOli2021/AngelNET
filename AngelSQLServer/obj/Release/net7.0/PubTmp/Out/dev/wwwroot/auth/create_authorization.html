@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
 
+    <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -29,13 +30,21 @@
                     <span style="float: left;">
                         <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px;">
                     </span>
-                    Log Out
+
+                    <span id="ca_log_out">
+                        Log Out
+                    </span>
+                    
                 </a>
                 <a class="btn btn-secondary btn-block" href="supervisor.html" style="width: 50%;">
                     <span style="float: left;">
                         <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px;">
                     </span>
-                    My authorizations
+
+                    <span id="ca_my_authorizations">
+                        My authorizations
+                    </span>
+                    
                 </a>
             </div>
 
@@ -93,7 +102,10 @@
                                         let branchstore_object = JSON.parse(response_query.result);
 
                                         var button = document.getElementById("authorizer_confirm");
-                                        button.innerText = "Branch Store: " + branchstore_object.name;
+
+                                        console.log(branchstore_object); 
+
+                                        button.innerText = "Branch Store: " + branchstore_object.Id + " - " + branchstore_object.Name;
 
                                         let authorizer = GetUser(Token.username, Token.token, groups_list.user);
 
@@ -105,8 +117,8 @@
                                             else {
                                                 let authorizer_object = JSON.parse(response_query.result);
 
-                                                if (authorizer_object.User != branchstore_object.authorizer) {
-                                                    window.location.href = "index.html";
+                                                if (authorizer_object.User.trim() != branchstore_object.Authorizer.trim()) {
+                                                    //window.location.href = "index.html";
                                                     return;
                                                 }
 
@@ -140,7 +152,7 @@
                                                     imagen.src = "./images/icons/brilliant_networking_groupware_128.png";
                                                     imagen.alt = elemento.nombre;
 
-                                                    boton.addEventListener('click', CreatePin(elemento, branchstore_object.id));
+                                                    boton.addEventListener('click', CreatePin(elemento, branchstore_object.Id));
 
                                                     span.appendChild(imagen);
                                                     boton.appendChild(span);
@@ -153,6 +165,9 @@
                                 });
                             }
                         });
+
+                        translate_authorizations("es");
+
                     });
 
                     function CreatePin(element, branchstore_id) {
@@ -212,9 +227,10 @@
 
         function showDialoPin(title, message) {
             var pin = JSON.parse(message);
-            document.getElementById('dialogTittle_pin').innerText = title;
-            document.getElementById('pin').innerText = "Pin: " + pin.pin_number;
-            document.getElementById('permission').innerText = "Permission:" + pin.permissions;
+            console.log(title);
+            document.getElementById('dialogTittle_pin').innerText = translate_element("es", title);
+            document.getElementById('pin').innerText = translate_element("es","Pin") + ": "  + pin.Pin_number;
+            document.getElementById('permission').innerText = translate_element("es","Permission") + ": " + pin.Permissions;
             document.getElementById('DialogPin').showModal();
         }
 
@@ -229,8 +245,6 @@
         document.querySelector('#closeButton_pin').addEventListener('click', function () {
             document.querySelector('#DialogPin').close();
         });
-
-
 
     </script>
 

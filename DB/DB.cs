@@ -57,9 +57,11 @@ namespace AngelDB
         public string database = "";
         private Dictionary<string, string> config = new Dictionary<string, string>();
         public Dictionary<string, object> vars = new Dictionary<string, object>();
-        public Dictionary<string, object> parameters = new Dictionary<string, object>();
+        //public Dictionary<string, object> parameters = new Dictionary<string, object>();        
         public Dictionary<string, TableInfo> table_connections = new Dictionary<string, TableInfo>();
         public Dictionary<string, DB> partitionsrules = new Dictionary<string, DB>();
+
+        public ConcurrentDictionary<string, object> Globals = new ConcurrentDictionary<string, object>();
 
         public string ChatName;
         public string apps_directory = "";
@@ -3066,7 +3068,7 @@ namespace AngelDB
 
                 config = null;
                 vars = null;
-                parameters = null;
+                //parameters = null;
                 partitionsrules = null;
                 language = null;
                 dbs = null;

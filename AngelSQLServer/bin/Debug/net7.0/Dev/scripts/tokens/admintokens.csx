@@ -17,6 +17,7 @@
 #load "usersgroup.csx"
 #load "branch_stores.csx"
 #load "pins.csx"
+#load "translations.csx"
 
 using System;
 using Newtonsoft.Json;

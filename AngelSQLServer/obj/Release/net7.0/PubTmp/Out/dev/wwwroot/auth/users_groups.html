@@ -16,6 +16,7 @@
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
 
+    <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -39,33 +40,38 @@
                 <span style="float: left;">
                     <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                 </span>
-                Menu
+                <span id="users_groups_menu">
+                    Menu
+                </span>
+
             </a>
         </div>
 
         <div class="row justify-content-center">
-
             <div class="row">
                 <a href="#">
                     <span style="float: left;">
                         <img src="images/icons/golden_educationicons_classmate_128.png" alt="logo" class="logo"
                             style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
                     </span>
-                    <h2>Users Groups</h2>
+                    <h2 id="users_groups_user_groups">Users Groups</h2>
                 </a>
             </div>
-
             <br />
-
+            
             <div class="row" style="margin-bottom: 10px;">
                 <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
                     onclick="showGroupDialog('', true)" style="margin-bottom: 20px;">
-                    New Group (F2)
+                    <span id="users_groups_new">
+                        New Group (F2)
+                    </span>
                 </button>
 
                 <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
-                    onclick="GetGroupsData()" style="margin-bottom: 20px;margin-bottom: 20px;">
-                    Refresh (F4)
+                    onclick="GetData()()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    <span id="users_groups_refresh">
+                        Refresh (F4)
+                    </span>
                 </button>
             </div>
 
@@ -75,56 +81,15 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Group</th>
-                        <th>Name</th>
-                        <th>Permissions</th>
+                        <th id="users_groups_group">Group</th>
+                        <th id="users_groups_name">Name</th>
+                        <th id="users_groups_permissions">Permissions</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
-
-            <script>
-
-                var tabla;
-
-                $(document).ready(function () {
-                    var datos = [];
-
-                    tabla = $('#dataTable').DataTable({
-                        responsive: true,
-                        data: datos,
-                        bFilter: true,
-                        dom: 'Bfrtip',
-                        buttons: [
-                            'print'
-                        ],
-                        columns: [
-                            {
-                                // Columna de botón
-                                data: null,
-                                render: function (data, type, row) {
-                                    return '<button class="btn btn-primary">+</button>';
-                                }
-                            },
-                            { data: 'id' },
-                            { data: 'Name' },
-                            { data: 'Permissions' },
-                        ]
-                    });
-
-                    $('#dataTable').on('click', 'td:first-child', function () {
-                        var datosFila = tabla.row($(this).parents('tr')).data();
-                        showGroupDialog(datosFila);
-                        // Aquí se ejecuta el código al hacer doble clic en la columna de botón
-                    });
-
-                });
-            </script>
-
         </div>
-
-
     </div>
 
     <dialog id="myDialog" class="dialog-box">
@@ -151,10 +116,7 @@
         </div>
     </dialog>
 
-
-
     <dialog id="group_dialog" style="width: 90%;">
-
         <div class="row">
             <div class="col-md-12">
 
@@ -185,7 +147,7 @@
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-danger"
                         style="text-align: right; margin-top: 20px; width: 100%;"
-                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the User Group?', 'DeleteGroup')">
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the User Group?', DeleteGroupData)">
                         Delete
                     </button>
                 </div>
@@ -207,40 +169,12 @@
 
     <script>
 
-        function showDialog(title, message) {
-            document.getElementById('dialogTittle').innerText = title;
-            document.getElementById('dialogMessage').innerText = '⚠️' + message;
-            document.getElementById('myDialog').showModal();
-        }
-
-        function closeDialog() {
-            document.getElementById('myDialog').close();
-        }
-
-
-        function showAcceptCancelDialog(title, message, operation) {
-            document.getElementById('dialogTittleAcceptCancel').innerText = title;
-            document.getElementById('dialogMessageAcceptCancel').innerText = message;
-            document.getElementById('DialogAcceptCancel').showModal();
-            document.getElementById('cancel').focus();
-
-            var accept = document.getElementById('accept');
-            accept.focus();
-
-            accept.addEventListener("click", () => {
-                if (operation) {
-                    if (operation == "DeleteGroup") {
-                        DeleteGroupData();
-                    }
-                };
-            });
-
-        }
-
-
         function DeleteGroupData() {
             var id = document.getElementById('id').value;
-            var data_result = DeleteGroup(Token.username, Token.token, id );
+
+            closeDialogAcceptCancelDialog();
+
+            var data_result = DeleteGroup(Token.username, Token.token, id);
 
             data_result.then(function (query) {
 
@@ -254,17 +188,11 @@
 
                 showDialog("Attention", "Group " + id + " deleted successfully");
                 closeUsersGroupDialog();
-                GetGroupsData();
+                GetData();
                 return;
 
             });
         }
-
-
-        function closeDialogAcceptCancelDialog() {
-            document.getElementById('DialogAcceptCancel').close();
-        }
-
 
         function showGroupDialog(User_data, new_Group = false) {
 
@@ -335,13 +263,28 @@
                 }
 
                 showDialog("Success:", "Group Saved");
-                GetGroupsData();
+                GetData();
 
             });
 
         }
 
-        function GetGroupsData() {
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F2") {
+                showGroupDialog('', true);
+            }
+
+            if (event.key === "F4") {
+                GetData();
+            }
+
+
+        });
+
+        var tabla;
+
+        function GetData() {
 
             var datos = GetGroups(Token.username, Token.token);
 
@@ -360,21 +303,39 @@
 
         }
 
-        document.addEventListener('keydown', function (event) {
-
-            if (event.key === "F2") {
-                showGroupDialog('', true);
-            }
-
-            if (event.key === "F4") {
-                GetGroupsData();
-            }
-
-
-        });
-
         document.addEventListener('DOMContentLoaded', function () {
-            GetGroupsData();
+            var datos = [];
+
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'print'
+                ],
+                columns: [
+                    {
+                        // Columna de botón
+                        data: null,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary">+</button>';
+                        }
+                    },
+                    { data: 'id' },
+                    { data: 'Name' },
+                    { data: 'Permissions' },
+                ]
+            });
+
+            $('#dataTable').on('click', 'td:first-child', function () {
+                var datosFila = tabla.row($(this).parents('tr')).data();
+                showGroupDialog(datosFila);
+                // Aquí se ejecuta el código al hacer doble clic en la columna de botón
+            });
+
+            translate_users_groups("es");     
+            GetData();
         });
 
 
