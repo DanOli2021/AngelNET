@@ -58,6 +58,10 @@ function translate_menu( language )
     {
         document.getElementById("auth_title").innerHTML = app_name;
         document.getElementById("menu_log_out").innerHTML = "Cerrar Sesión";
+        document.getElementById("index_privacy_policy").innerHTML = "Política de privacidad";
+        document.getElementById("index_about_us").innerHTML = "Acerca de nosotros...";
+        document.getElementById("index_privacy_policy_url").href = "privacy_es.html";
+        document.getElementById("index_about_url").href = "about_es.html";
     }        
 
 }

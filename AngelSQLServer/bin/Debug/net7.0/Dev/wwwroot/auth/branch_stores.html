@@ -25,6 +25,7 @@
             window.location.href = "index.html";
         }
 
+        const language = getSelectedLanguage();
         const Token = JSON.parse(sessionStorage.getItem("Token"));
 
     </script>
@@ -275,6 +276,8 @@
 
                     let responce_query = JSON.parse(query);
 
+                    console.log(responce_query.result);
+
                     if (responce_query.result.startsWith("Error:")) {
                         console.log(responce_query.result);
                         return;
@@ -287,11 +290,11 @@
                     let id = document.getElementById('id');
                     id.readOnly = true;
 
-                    document.getElementById('id').value = branch_store.id;
-                    document.getElementById('name').value = branch_store.name;
-                    document.getElementById('address').value = branch_store.address;
-                    document.getElementById('phone').value = branch_store.phone;
-                    document.getElementById('authorizer').value = branch_store.authorizer;
+                    document.getElementById('id').value = branch_store.Id;
+                    document.getElementById('name').value = branch_store.Name;
+                    document.getElementById('address').value = branch_store.Address;
+                    document.getElementById('phone').value = branch_store.Phone;
+                    document.getElementById('authorizer').value = branch_store.Authorizer;
 
                     let description = document.getElementById('name');
                     description.focus();
@@ -402,7 +405,7 @@
                 // Aquí se ejecuta el código al hacer doble clic en la columna de botón
             });
 
-            translate_branch_stores("es");
+            translate_branch_stores(language);
             GetData();
 
         });

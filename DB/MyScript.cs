@@ -184,6 +184,8 @@ namespace AngelDB
 
                 ImmutableArray<string> array = ImmutableArray.Create(fileInfo.Directory.FullName);
 
+                g.db.Globals.Clear();
+
                 options = ScriptOptions.Default.
                             WithFilePath(AppDomain.CurrentDomain.BaseDirectory + fileInfo.Name).
                             AddImports("System").

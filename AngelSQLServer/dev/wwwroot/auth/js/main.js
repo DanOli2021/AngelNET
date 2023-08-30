@@ -132,7 +132,8 @@ async function sendToAngelPOST(user, api_name, token, OperationType, object_data
     {
       OperationType: OperationType,
       Token: token,
-      DataMessage: object_data
+      DataMessage: object_data,
+      UserLanguage: getSelectedLanguage()
     }
   };
 
@@ -156,7 +157,7 @@ function generateButton(href, iconSrc, buttonText, buttonClass, onclick = {}) {
   iconImg.style.width = "96px";
 
   let text = document.createElement("h2");
-  text.innerText = translate_element("es", buttonText);
+  text.innerText = translate_element(getSelectedLanguage(), buttonText);
 
   iconSpan.appendChild(iconImg);
   button.appendChild(iconSpan);
@@ -171,7 +172,7 @@ function generateButton(href, iconSrc, buttonText, buttonClass, onclick = {}) {
 
 function generateParagraph(element, text, classstring, stylestring) {
   let p = document.createElement(element);
-  p.innerText = translate_element("es", text);
+  p.innerText = translate_element(getSelectedLanguage(), text);
   p.style.textAlign = stylestring;
   p.className = classstring;
   let div = document.getElementById("buttonszone");
@@ -245,3 +246,34 @@ function parseDate(input) {
   return new Date(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], timeParts[2]);
 }
 
+
+function saveSelectedLanguage(language) {
+  var date = new Date();
+  date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days from now
+  var expires = "expires=" + date.toUTCString();
+  document.cookie = "language=" + language + "; " + expires + "; path=/";
+}
+
+
+function SaveLanguage(language) 
+{ 
+  saveSelectedLanguage(language);
+  window.location.reload();
+}
+
+
+function getSelectedLanguage() {
+  var name = "language=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') {
+          c = c.substring(1);
+      }
+      if (c.indexOf(name) === 0) {
+          return c.substring(name.length, c.length);
+      }
+  }
+  return "";
+}

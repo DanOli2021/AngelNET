@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
+    
+    <script>
+        const language = getSelectedLanguage();
+    </script>
 
 </head>
 
@@ -252,7 +256,7 @@
 
         function showDialog(title, message) {
             document.getElementById('dialogTittle').innerText = title;
-            document.getElementById('dialogMessage').innerText = '⚠️' + translate_element(message);
+            document.getElementById('dialogMessage').innerText = '⚠️' + translate_element(language, message);
             document.getElementById('myDialog').showModal();
         }
 
@@ -291,7 +295,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            translate_register("es");
+            translate_register(language);
         });
 
         document.getElementById("pin").focus();

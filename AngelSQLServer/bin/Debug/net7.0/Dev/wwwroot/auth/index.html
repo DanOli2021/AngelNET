@@ -22,12 +22,38 @@
 
             <h1 class="text-center" id="auth_title">MyBusiness POS Authorizer</h1>
 
+
             <div class="col-md-12">
                 <form action="/login" method="post">
 
+                    <div class="row" style="margin-bottom: 30px;">
+                        <button type="button" id="ButtonNew" class="btn btn-info" style="width: 50%; background-color:beige;"
+                            onclick="SaveLanguage('es')">
+                            <span style="float: left;">
+                                <img src="images/icons/mexico-flag.ico" alt="logo" style="width:24px">
+                            </span>
+                            <span id="language_es">
+                                Es
+                            </span>
+                        </button>
+
+                        <button type="button" id="ButtonSearch" class="btn btn-info" style="width: 50%; background-color: beige; "
+                            onclick="SaveLanguage('us')">
+
+                            <span style="float: left;">
+                                <img src="images/icons/us-flag.ico" alt="logo" style="width:24px">
+                            </span>
+
+                            <span id="language_us">
+                                En
+                            </span>
+                        </button>
+                    </div>
+
                     <div class="form-group">
                         <label for="username"><b id="auth_for_username">User</b></label>
-                        <input type="text" class="form-control" placeholder="Enter your username" id="username" required>
+                        <input type="text" class="form-control" placeholder="Enter your username" id="username"
+                            required>
                     </div>
 
                     <div class="form-group">
@@ -103,16 +129,13 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             var url = new URL(window.location.href);
-                    var params = new URLSearchParams(url.search);
-                    var user = params.get('user');
+            var params = new URLSearchParams(url.search);
+            var user = params.get('user');
 
-                    if( user != null ) 
-                    {
-                        document.getElementById("username").value = user;
-                        document.getElementById("password").focus();
-                    }
-                    
-
+            if (user != null) {
+                document.getElementById("username").value = user;
+                document.getElementById("password").focus();
+            }
         });
 
 
@@ -147,30 +170,31 @@
             }
         });
 
-        document.addEventListener("DOMContentLoaded", function () 
-        {
-            translate_login("es");            
+        document.addEventListener("DOMContentLoaded", function () {
+            sessionStorage.setItem('language', getSelectedLanguage());
+            translate_login(sessionStorage.getItem("language"));
         });
 
         document.getElementById("username").focus();
 
     </script>
 
-    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
-
     <div class="bottom-bar">
         <a href="privacy.html" target="_blank" id="index_privacy_policy_url">
             <span id="index_privacy_policy">
                 Privacy Policy
-            </span>            
+            </span>
         </a>
         <a href="https://mybusinesspos.com" target="_blank">MyBusinessPOS</a>
         <a href="about.html" target="_blank" id="index_about_url">
             <span id="index_about_us">
                 About us...
-            </span>            
+            </span>
         </a>
     </div>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
 
 </body>
 

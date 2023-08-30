@@ -6,14 +6,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/bottom_bar.css">
+
     <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
 
-<script>
+    <script>
         if (sessionStorage.getItem("Token") == null) {
             window.location.href = "index.html";
         }
 
+        const language = getSelectedLanguage();
         const Token = JSON.parse(sessionStorage.getItem("Token"));
 
     </script>
@@ -41,7 +44,8 @@
             <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block"
                 style="margin-top: 20px;width:256px">
 
-            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;" id="auth_title">MyBusiness POS Authorizer</h1>
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;" id="auth_title">MyBusiness POS
+                Authorizer</h1>
 
             <div class="col-sm-12" id="buttonszone">
             </div>
@@ -89,7 +93,7 @@
                 }
             });
 
-            translate_menu("es");
+            translate_menu(language);
 
         });
 
@@ -115,7 +119,19 @@
 
     </script>
 
-
+    <div class="bottom-bar">
+        <a href="privacy.html" target="_blank" id="index_privacy_policy_url">
+            <span id="index_privacy_policy">
+                Privacy Policy
+            </span>
+        </a>
+        <a href="https://mybusinesspos.com" target="_blank">MyBusinessPOS</a>
+        <a href="about.html" target="_blank" id="index_about_url">
+            <span id="index_about_us">
+                About us...
+            </span>
+        </a>
+    </div>
 
     <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
 

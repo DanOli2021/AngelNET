@@ -41,7 +41,8 @@ public class AngelApiOperation
 {
     public string OperationType { get; set; }
     public string Token { get; set; }
-    public dynamic DataMessage { get; set; }
+    public string UserLanguage { get; set; }
+    public dynamic DataMessage { get; set; }    
 }
 
 AngelApiOperation api = JsonConvert.DeserializeObject<AngelApiOperation>(message);
@@ -49,33 +50,47 @@ AngelApiOperation api = JsonConvert.DeserializeObject<AngelApiOperation>(message
 //Server parameters
 Dictionary<string, string> parameters = JsonConvert.DeserializeObject<Dictionary<string, string>>(Environment.GetEnvironmentVariable("ANGELSQL_PARAMETERS"));
 
+Translations translation;
+
+if( !db.Globals.ContainsKey("translations") )
+{
+    translation = new();
+    translation.SpanishValues();
+    db.Globals.TryAdd("translations", translation);
+}
+else  
+{
+    translation = (Translations)db.Globals["translations"];
+} 
+
+// This is the main function that will be called by the API
 return api.OperationType switch
 {
-    "UpsertGroup" => AdminAuth.UpsertGroup(db, api),
+    "UpsertGroup" => AdminAuth.UpsertGroup(db, api, translation),
     "GetGroups" => AdminAuth.GetGroups(db, api),
-    "DeleteGroup" => AdminAuth.DeleteGroup(db, api),
-    "UpsertUser" => AdminAuth.UpsertUser(db, api),
-    "DeleteUser" => AdminAuth.DeleteUser(db, api),
-    "GetUsers" => AdminAuth.GetUsers(db, api),
-    "GetUser" => AdminAuth.GetUser(db, api),
-    "SaveToken" => AdminAuth.SaveToken(db, api),
-    "DeleteToken" => AdminAuth.DeleteToken(db, api),
+    "DeleteGroup" => AdminAuth.DeleteGroup(db, api, translation),
+    "UpsertUser" => AdminAuth.UpsertUser(db, api, translation),
+    "DeleteUser" => AdminAuth.DeleteUser(db, api, translation),
+    "GetUsers" => AdminAuth.GetUsers(db, api, translation),
+    "GetUser" => AdminAuth.GetUser(db, api, translation),
+    "SaveToken" => AdminAuth.SaveToken(db, api, translation),
+    "DeleteToken" => AdminAuth.DeleteToken(db, api, translation),
     "ValidateToken" => AdminAuth.ValidateToken(db, api),
-    "GetTokenFromUser" => AdminAuth.GetTokenFromUser(db, api),
-    "GetGroupsUsingTocken" => AdminAuth.GetGroupsUsingTocken(db, api),
-    "GetUserUsingToken" => AdminAuth.GetUserUsingToken(db, api),
+    "GetTokenFromUser" => AdminAuth.GetTokenFromUser(db, api, translation),
+    "GetGroupsUsingTocken" => AdminAuth.GetGroupsUsingTocken(db, api, translation),
+    "GetUserUsingToken" => AdminAuth.GetUserUsingToken(db, api, translation),
     "GetTokens" => AdminAuth.GetTokens(db, api),
-    "GetToken" => AdminAuth.GetToken(db, api),
-    "UpsertBranchStore" => AdminAuth.UpsertBranchStore(db, api),
+    "GetToken" => AdminAuth.GetToken(db, api, translation),
+    "UpsertBranchStore" => AdminAuth.UpsertBranchStore(db, api, translation),
     "GetBranchStores" => AdminAuth.GetBranchStores(db, api),
-    "DeleteBranchStore" => AdminAuth.DeleteBranchStore(db, api),
-    "GetBranchStore" => AdminAuth.GetBranchStore(db, api),
-    "GetBranchStoresByUser" => AdminAuth.GetBranchStoresByUser(db, api),
-    "CreatePermission" => AdminAuth.CreatePermission(db, api),
-    "GetPins" => AdminAuth.GetPins(db, api),
-    "OperatePin" => AdminAuth.OperatePin(db, api),
-    "SendPinToEmail" => AdminAuth.SendPinToEmail(api, parameters, server_db),
-    "RecoverMasterPassword" => AdminAuth.RecoverMasterPassword(db, api, parameters, server_db),
+    "DeleteBranchStore" => AdminAuth.DeleteBranchStore(db, api, translation),
+    "GetBranchStore" => AdminAuth.GetBranchStore(db, api, translation),
+    "GetBranchStoresByUser" => AdminAuth.GetBranchStoresByUser(db, api, translation),
+    "CreatePermission" => AdminAuth.CreatePermission(db, api, translation),
+    "GetPins" => AdminAuth.GetPins(db, api, translation),
+    "OperatePin" => AdminAuth.OperatePin(db, api, translation),
+    "SendPinToEmail" => AdminAuth.SendPinToEmail(api, parameters, server_db, translation ),
+    "RecoverMasterPassword" => AdminAuth.RecoverMasterPassword(db, api, parameters, server_db, translation),
     _ => $"Error: No service found {api.OperationType}",
 };
 
@@ -87,7 +102,7 @@ public class OperationTypeClass
 
 public static class AdminAuth
 {
-    public static string SaveToken(AngelDB.DB db, AngelApiOperation api)
+    public static string SaveToken(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
         string result;
 
@@ -100,10 +115,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
 
         if (d.User == null)
         {
-            return "Error: SaveToken() User is null";
+            return "Error: SaveToken() " + translation.Get("User is null", language);
         }
 
         d.User = d.User.ToString().Split('@')[0];
@@ -115,12 +136,12 @@ public static class AdminAuth
 
         if (d.ExpiryTime == null)
         {
-            return "Error: SaveToken() ExpiryTime is null";
+            return "Error: SaveToken() " + translation.Get("ExpiryTime is null", language);
         }
 
         if (d.Id == null)
         {
-            return "Error: SaveToken() id (Token) is null"; ;
+            return "Error: SaveToken() " + translation.Get("id (Token) is null", language);
         }
 
         d.ExpiryTime = ConvertToDateTimeWithMaxTime(d.ExpiryTime.ToString());
@@ -139,31 +160,31 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return $"Error: User not found {d.User}";
+            return $"Error: {translation.Get("User not found", language)} {d.User}";
         }
 
-        Tokens t = new();
+        Tokens token = new();
 
         if (d.id == "New")
         {
             d.id = System.Guid.NewGuid().ToString();
         }
 
-        t.Id = d.id;
-        t.User = d.User;
-        t.UsedFor = d.UsedFor;
-        t.CreationTime = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
-        t.Observations = d.Observations;
-        t.ExpiryTime = d.ExpiryTime;
+        token.Id = d.id;
+        token.User = d.User;
+        token.UsedFor = d.UsedFor;
+        token.CreationTime = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
+        token.Observations = d.Observations;
+        token.ExpiryTime = d.ExpiryTime;
 
-        result = db.Prompt($"UPSERT INTO tokens VALUES {JsonConvert.SerializeObject(t)}");
+        result = db.Prompt($"UPSERT INTO tokens VALUES {JsonConvert.SerializeObject(token)}");
 
         if (result.StartsWith("Error:"))
         {
             return "Error: SaveToken() insert " + result.Replace("Error:", "");
         }
 
-        return t.Id;
+        return token.Id;
 
     }
 
@@ -211,7 +232,7 @@ public static class AdminAuth
     }
 
 
-    public static string GetToken(AngelDB.DB db, AngelApiOperation api)
+    public static string GetToken(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "GetToken");
@@ -223,9 +244,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.TokenId == null)
         {
-            return "Error: GetToken() TokenId is null";
+            return $"Error: GetToken() {translation.Get("Token Id is null", language)}";
         }
 
         result = db.Prompt($"SELECT * FROM tokens PARTITION KEY main WHERE id = '{d.TokenId}'");
@@ -237,7 +265,7 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return "Error: No token found";
+            return $"Error: {translation.Get("No token found", language)}";
         }
 
         DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
@@ -257,7 +285,7 @@ public static class AdminAuth
     }
 
 
-    public static string DeleteToken(AngelDB.DB db, AngelApiOperation api)
+    public static string DeleteToken(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
         string result;
 
@@ -270,10 +298,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
 
         if (d.TokenToDelete == null)
         {
-            return "Error: DeleteToken() TokenToDelete is null";
+            return $"Error: DeleteToken() {translation.Get("TokenToDelete is null", language)}";
         }
 
         result = db.Prompt($"SELECT * FROM tokens WHERE id = '{d.TokenToDelete}'");
@@ -285,7 +319,7 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return $"Error: DeleteToken() Token not found {d["TokenToDelete"]}";
+            return $"Error: DeleteToken() {translation.Get("Token not found", language)} {d["TokenToDelete"]}";
         }
 
         result = db.Prompt($"DELETE FROM tokens PARTITION KEY main WHERE id = '{d["TokenToDelete"]}'");
@@ -300,7 +334,7 @@ public static class AdminAuth
     }
 
 
-    public static string GetGroupsUsingTocken(AngelDB.DB db, AngelApiOperation api)
+    public static string GetGroupsUsingTocken(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         //string result = ValidateAdminUser(db, api.Token);
@@ -312,9 +346,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.TokenToObtainPermission == null)
         {
-            return "Error: GetGroupsUsingTocken() TokenToObtainPermission is null";
+            return $"Error: GetGroupsUsingTocken() {translation.Get("TokenToObtainPermission is null", language)}";
         }
 
         string result = db.Prompt($"SELECT * FROM tokens WHERE id = '{d.TokenToObtainPermission}'");
@@ -342,7 +383,7 @@ public static class AdminAuth
 
         if (dt.Rows.Count == 0)
         {
-            return "Error: User not found";
+            return $"Error: {translation.Get("User not found", language)}";
         }
 
         var group = new
@@ -358,7 +399,7 @@ public static class AdminAuth
     }
 
 
-    public static string GetUserUsingToken(AngelDB.DB db, AngelApiOperation api)
+    public static string GetUserUsingToken(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS", "GetUserUsingToken");
@@ -370,10 +411,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
 
         if (d.TokenToGetTheUser == null)
         {
-            return "Error: GetUserUsingTocken() TokenToGetTheUser is null";
+            return $"Error: GetUserUsingTocken() {translation.Get("TokenToGetTheUser is null", language)}";
         }
 
 
@@ -395,7 +442,7 @@ public static class AdminAuth
 
         if (dt.Rows.Count == 0)
         {
-            return "Error: GetUserUsingTocken() Token not found";
+            return $"Error: GetUserUsingTocken() {translation.Get("Token not found", language)}";
         }
 
         result = db.Prompt($"SELECT * FROM users WHERE id = '{dt.Rows[0]["user"]}'");
@@ -409,7 +456,7 @@ public static class AdminAuth
 
         if (dt.Rows.Count == 0)
         {
-            return "Error: User not found";
+            return $"Error: {translation.Get("User not found", language)}";
         }
 
         return dt.Rows[0]["id"].ToString();
@@ -454,7 +501,7 @@ public static class AdminAuth
 
 
 
-    public static string GetTokenFromUser(AngelDB.DB db, AngelApiOperation api)
+    public static string GetTokenFromUser(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result;
@@ -468,16 +515,23 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.User == null)
         {
-            return "Error: GetTokenFromUser() User is null";
+            return $"Error: GetTokenFromUser() {translation.Get("User is null", language)}";
         }
 
         d.User = d.User.ToString().Split('@')[0];
 
         if (d.Password == null)
         {
-            return "Error: GetTokenFromUser() Password is null";
+            return $"Error: GetTokenFromUser() {translation.Get("Password is null", language)}";
         }
 
         d.User = d.User.ToString().Split('@')[0];
@@ -491,14 +545,14 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return $"Error: User not found {d.User}";
+            return $"Error: {translation.Get("User not found", language)} {d.User}";
         }
 
         Users[] u = JsonConvert.DeserializeObject<Users[]>(result);
 
         if (u[0].Password.Trim() != d.Password.ToString().Trim())
         {
-            return "Error: Invalid password";
+            return $"Error: {translation.Get("Invalid password", language)}";
         }
 
         result = db.Prompt($"SELECT * FROM tokens WHERE user = '{d.User}' AND ExpiryTime > '{DateTime.Now.ToUniversalTime():yyyy-MM-dd HH:mm:ss.fffffff}'");
@@ -510,14 +564,14 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return "Error: GetTokenFromUser() Token not found";
+            return $"Error: GetTokenFromUser() {translation.Get("Token not found", language)}";
         }
 
         Tokens[] t = JsonConvert.DeserializeObject<Tokens[]>(result);
 
         if (t[0].ExpiryTime.CompareTo(DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff")) < 0)
         {
-            return "Error: GetTokenFromUser() Token expired";
+            return $"Error: GetTokenFromUser() {translation.Get("Token expired", language)}";
         }
 
         return t[0].Id;
@@ -525,7 +579,7 @@ public static class AdminAuth
     }
 
 
-    public static string UpsertUser(AngelDB.DB db, AngelApiOperation api)
+    public static string UpsertUser(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
         string result;
 
@@ -538,51 +592,58 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.User == null)
         {
-            return "Error: UpsertUser() User is null";
+            return $"Error: UpsertUser() {translation.Get("User is null", language)}";
         }
 
         d.User = d.User.ToString().Split('@')[0];
 
         if (d.Password == null)
         {
-            return "Error: UpsertUser() Password is null";
+            return $"Error: UpsertUser() {translation.Get("Password is null", language)}";
         }
 
         if (d.UserGroups == null)
         {
-            return "Error: UpsertUser() userGroups is null";
+            return $"Error: UpsertUser() {translation.Get("UserGroups is null", language)}";
         }
 
         if (d.Name == null)
         {
-            return "Error: UpsertUser() Name is null";
+            return $"Error: UpsertUser() {translation.Get("Name is null", language)}";
         }
 
         if (d.Organization == null)
         {
-            return "Error: UpsertUser() Organization is null";
+            return $"Error: UpsertUser() {translation.Get("Organization is null", language)}";
         }
 
         if (d.Email == null)
         {
-            return "Error: UpsertUser() Email is null";
+            return $"Error: UpsertUser() {translation.Get("Email es nulo", language)}";
         }
 
         if (d.Phone == null)
         {
-            return "Error: UpsertUser() Phone is null";
+            return $"Error: UpsertUser() {translation.Get("Email es nulo", language)}";
         }
 
         if (d.permissions_list == null)
         {
-            return "Error: UpsertUser() permissions_list is null";
+            return $"Error: UpsertUser() {translation.Get("permissions_list is null", language)}";
         }
 
         if (string.IsNullOrEmpty(d.Password.ToString()))
         {
-            return "Error: UpsertUser() password is null or empty";
+            return $"Error: UpsertUser() {translation.Get("Password is null or empty", language)}";
         }
 
         d.User = d.User.ToString().ToLower().Trim();
@@ -600,7 +661,7 @@ public static class AdminAuth
 
             if (result == "[]")
             {
-                return "Error: UpsertUser() Auth No user group found: " + group;
+                return $"Error: UpsertUser() {translation.Get("Auth No user group found", language)}: " + group;
             }
         }
 
@@ -623,7 +684,7 @@ public static class AdminAuth
             return "Error: UpsertUser() insert " + result.Replace("Error:", "");
         }
 
-        result = GetTokenFromUser(db, api);
+        result = GetTokenFromUser(db, api, translation);
 
         if (result.StartsWith("Error:"))
         {
@@ -639,7 +700,7 @@ public static class AdminAuth
             };
             
             api.DataMessage = new_token;
-            result = SaveToken(db, api);
+            result = SaveToken(db, api, translation);
 
             if (result.StartsWith("Error:"))
             {
@@ -647,12 +708,12 @@ public static class AdminAuth
             }
         }
 
-        return $"Ok. User created successfully: " + d.User;
+        return $"Ok. {translation.Get("User created successfully", language)}: " + d.User;
 
     }
 
 
-    public static string GetUsers(AngelDB.DB db, AngelApiOperation api)
+    public static string GetUsers(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
         string result;
 
@@ -664,6 +725,13 @@ public static class AdminAuth
         }
 
         var d = api.DataMessage;
+
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
 
         if (d.Where == null)
         {
@@ -686,7 +754,7 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return "Error: GetUsers() Users not found";
+            return $"Error: GetUsers() {translation.Get("Users not found", language)}";
         }
 
         DataTable t = JsonConvert.DeserializeObject<DataTable>(result);
@@ -696,7 +764,7 @@ public static class AdminAuth
 
     }
 
-    public static string GetUser(AngelDB.DB db, AngelApiOperation api)
+    public static string GetUser(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
         string result;
 
@@ -709,10 +777,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
 
         if (d.User == null)
         {
-            return "Error: GetUser() User is null";
+            return $"Error: GetUser() {translation.Get("User is null", language)}";
         }
 
         d.User = d.User.ToString().Split('@')[0];
@@ -726,7 +800,7 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return "Error: GetUser() User not found";
+            return $"Error: GetUser() {translation.Get("User is null", language)}";
         }
 
         DataTable t = JsonConvert.DeserializeObject<DataTable>(result);
@@ -748,7 +822,7 @@ public static class AdminAuth
     }
 
 
-    public static string DeleteUser(AngelDB.DB db, AngelApiOperation api)
+    public static string DeleteUser(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
         string result;
 
@@ -761,16 +835,23 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.UserToDelete == null)
         {
-            return "Error: DeleteUser() UserToDelete is null";
+            return $"Error: DeleteUser() {translation.Get("UserToDelete is null", language)}";
         }
 
         result = db.Prompt($"SELECT * FROM users WHERE id = '{d.UserToDelete}'");
 
         if (result == "[]")
         {
-            return "Error: DeleteUser() User not found";
+            return $"Error: DeleteUser() {translation.Get("User not found", language)}";
         }
 
         if (result.StartsWith("Error:"))
@@ -786,12 +867,12 @@ public static class AdminAuth
             return "Error: CreateNewToken() insert " + result.Replace("Error:", "");
         }
 
-        return $"Ok. User deleted successfully: {d.UserToDelete}";
+        return $"Ok. {translation.Get("User deleted successfully", language)}: {d.UserToDelete}";
 
     }
 
 
-    public static string UpsertGroup(AngelDB.DB db, AngelApiOperation api)
+    public static string UpsertGroup(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
         string result;
 
@@ -804,21 +885,26 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
 
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
 
         if (d.UserGroup == null)
         {
-            return "Error: UpsertGroup() UserGroup is null";
+            return $"Error: UpsertGroup() {translation.Get("UserGroup is null", language)}";
         }
 
         if (d.Name == null)
         {
-            return "Error: UpsertGroup() Name is null";
+            return $"Error: UpsertGroup() {translation.Get("Name es nulo", language)}";
         }
 
         if (d.Permissions == null)
         {
-            return "Error: UpsertGroup() Permissions is null";
+            return $"Error: UpsertGroup() {translation.Get("Permissions es nulo", language)}";
         }
 
         result = db.Prompt($"SELECT * FROM UsersGroup WHERE id = '{d.UserGroup}'");
@@ -842,7 +928,7 @@ public static class AdminAuth
             return "Error: CreateNewGroup() upsert " + result.Replace("Error:", "");
         }
 
-        return $"Ok. Users Group created successfully: {d.UserGroup}";
+        return $"Ok. {translation.Get("Users Group created successfully", language)}: {d.UserGroup}";
 
     }
 
@@ -881,7 +967,7 @@ public static class AdminAuth
         return result;
     }
 
-    public static string DeleteGroup(AngelDB.DB db, AngelApiOperation api)
+    public static string DeleteGroup(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "DeleteGroup");
@@ -893,10 +979,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
 
         if (d.UserGroupToDelete == null)
         {
-            return "Error: DeleteGroup() UserGroupToDelete is null";
+            return $"Error: DeleteGroup() {translation.Get("UserGroupToDelete is null", language)}";
         }
         
         List<string> system_groups = new() { "AUTHORIZERS", "SUPERVISORS", "PINSCONSUMER", "CASHIER", "ADMINISTRATIVE" };
@@ -905,7 +997,7 @@ public static class AdminAuth
         {
             if (item == d.UserGroupToDelete.ToString().ToUpper().Trim())
             {
-                return $"Error: UpsertGroup() UserGroup {d.UserGroupToDelete.ToString().Trim().ToUpper()} is a system group";
+                return $"Error: UpsertGroup() UserGroup {d.UserGroupToDelete.ToString().Trim().ToUpper()} {translation.Get("is a system group", language)}";
             }
         }
 
@@ -918,7 +1010,7 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return "Error: DeleteGroup() The group indicated by you does not exist on this system: " + d.UserGroupToDelete;
+            return $"Error: DeleteGroup() {translation.Get("The group indicated by you does not exist on this system", language)}: " + d.UserGroupToDelete;
         }
 
         result = db.Prompt($"DELETE FROM UsersGroup PARTITION KEY main WHERE id = '{d.UserGroupToDelete.ToString().Trim().ToUpper()}'");
@@ -928,12 +1020,12 @@ public static class AdminAuth
             return "Error: DeleteGroup() " + result.Replace("Error:", "");
         }
 
-        return $"Ok. User Group deleted successfully {d.UserGroupToDelete}";
+        return $"Ok. {translation.Get("User Group deleted successfully", language)} {d.UserGroupToDelete}";
     }
 
 
 
-    public static string UpsertBranchStore(AngelDB.DB db, AngelApiOperation api)
+    public static string UpsertBranchStore(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "UpsertBranchStore");
 
@@ -944,24 +1036,31 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.id == null)
         {
-            return "Error: UpsertBranchStores() id is null";
+            return $"Error: UpsertBranchStores() {translation.Get("id is null", language)}";
         }
 
         if (d.name == null)
         {
-            return "Error: UpsertBranchStores() Name is null";
+            return $"Error: UpsertBranchStores() {translation.Get("Name is null", language)}";
         }
 
         if (d.address == null)
         {
-            return "Error: UpsertBranchStores() Address is null";
+            return $"Error: UpsertBranchStores() {translation.Get("Address is null", language)}";
         }
 
         if (d.phone == null)
         {
-            return "Error: UpsertBranchStores() Phone is null";
+            return $"Error: UpsertBranchStores() {translation.Get("Phone is null", language)}";
         }
 
         if (d.authorizer == null)
@@ -989,7 +1088,7 @@ public static class AdminAuth
 
             if (result == "[]")
             {
-                return $"Error: No user found: {d.authorizer}";
+                return $"Error: {translation.Get("No user found", language)}: {d.authorizer}";
             }
         }
 
@@ -1044,7 +1143,7 @@ public static class AdminAuth
     }
 
 
-    public static string GetBranchStore(AngelDB.DB db, AngelApiOperation api)
+    public static string GetBranchStore(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS", "GetBranchStore");
@@ -1056,9 +1155,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.BranchStoreId == null)
         {
-            return "Error: GetBranchStore() BranchStoreId is null";
+            return $"Error: GetBranchStore() {translation.Get("id is null", language)}";
         }
 
         result = db.Prompt($"SELECT * FROM branch_stores PARTITION KEY main WHERE id = '{d.BranchStoreId}'");
@@ -1070,7 +1176,7 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return "Error: No branch store found";
+            return $"Error: {translation.Get("No branch store found", language)}";
         }
 
         DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
@@ -1088,7 +1194,7 @@ public static class AdminAuth
 
     }
 
-    public static string DeleteBranchStore(AngelDB.DB db, AngelApiOperation api)
+    public static string DeleteBranchStore(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS", "DeleteBranchStore");
@@ -1100,9 +1206,16 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.BranchStoreToDelete == null)
         {
-            return "Error: DeleteBranchStore() BranchStoreToDelete is null";
+            return $"Error: DeleteBranchStore() {translation.Get("No branch store found", language)}";
         }
 
         result = db.Prompt($"DELETE FROM branch_stores PARTITION KEY main WHERE id = '{d.BranchStoreToDelete}'");
@@ -1112,11 +1225,11 @@ public static class AdminAuth
             return "Error: " + result.Replace("Error:", "");
         }
 
-        return $"Ok. Branch Store deleted successfully: {d.BranchStoreToDelete}";
+        return $"Ok. {translation.Get("Branch Store deleted successfully", language)}: {d.BranchStoreToDelete}";
     }
 
 
-    public static string GetBranchStoresByUser(AngelDB.DB db, AngelApiOperation api)
+    public static string GetBranchStoresByUser(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS", "GetBranchStoresByUser");
@@ -1128,7 +1241,7 @@ public static class AdminAuth
 
         api.DataMessage.TokenToGetTheUser = api.Token;
 
-        result = GetUserUsingToken(db, api);
+        result = GetUserUsingToken(db, api, translation);
 
         if (result.StartsWith("Error:"))
         {
@@ -1147,7 +1260,7 @@ public static class AdminAuth
     }
 
 
-    public static string CreatePermission(AngelDB.DB db, AngelApiOperation api)
+    public static string CreatePermission(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS", "CreatePermission");
@@ -1159,14 +1272,21 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.Branchstore_id == null)
         {
-            return "Error: CreatePermission() Branchstore_id is null";
+            return $"Error: CreatePermission() {translation.Get("Branchstore_id is null", language)}";
         }
 
         if (d.Permission_id == null)
         {
-            return "Error: CreatePermission() Permission_id is null";
+            return $"Error: CreatePermission() {translation.Get("Permission_id is null", language)}";
         }
 
         if (d.User == null)
@@ -1186,7 +1306,7 @@ public static class AdminAuth
 
             if (d.User == "")
             {
-                return "Error: CreatePermission() User is null";
+                return $"Error: CreatePermission() {translation.Get("User is null", language)}";
             }
 
             result = db.Prompt($"SELECT * FROM users WHERE id = '{d.User}'");
@@ -1198,7 +1318,7 @@ public static class AdminAuth
 
             if (result == "[]")
             {
-                return $"Error: User {d.User} not found";
+                return $"Error: {translation.Get("User not found", language)}: {d.User}";
             }
         }
 
@@ -1216,7 +1336,7 @@ public static class AdminAuth
         {
             if (d.Branchstore_id.ToString() != "SYSTEM")
             {
-                return $"Error: Branch Store {d.Branchstore_id.ToString()} not found";
+                return $"Error: {translation.Get("Branch Store not found", language)}: {d.Branchstore_id.ToString()}";
             }
         }
 
@@ -1224,7 +1344,6 @@ public static class AdminAuth
         {
             d.Minutes = 30;
         }
-
 
         int.TryParse(d.Minutes.ToString(), out int minutes);
 
@@ -1256,7 +1375,7 @@ public static class AdminAuth
 
     }
 
-    public static string GetPins(AngelDB.DB db, AngelApiOperation api)
+    public static string GetPins(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS", "GetPins");
@@ -1268,14 +1387,21 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.InitialDate == null)
         {
-            return "Error: GetPins() InitialDate is null";
+            return $"Error: GetPins() {translation.Get("InitialDate is null", language)}";
         }
 
         if (d.FinalDate == null)
         {
-            return "Error: GetPins() FinalDate is null";
+            return $"Error: GetPins() {translation.Get("FinalDate is null", language)}";
         }
 
         result = db.Prompt($"SELECT * FROM users WHERE id = '{result}'");
@@ -1287,7 +1413,7 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return $"Error: User {result} not found";
+            return $"Error: {translation.Get("User not found", language)}: {result} ";
         }
 
         DataTable user = JsonConvert.DeserializeObject<DataTable>(result);
@@ -1318,7 +1444,7 @@ public static class AdminAuth
     }
 
 
-    public static string OperatePin(AngelDB.DB db, AngelApiOperation api)
+    public static string OperatePin(AngelDB.DB db, AngelApiOperation api, Translations translation)
     {
 
         string result = ValidateAdminUser(db, api.Token, "AUTHORIZERS, SUPERVISORS, PINSCONSUMER", "OperatePin");
@@ -1330,29 +1456,36 @@ public static class AdminAuth
 
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.Pin == null)
         {
-            return "Error: OperatePin() Pin is null";
+            return $"Error: OperatePin() {translation.Get("Pin is null", language)}";
         }
 
         if (d.Permission == null)
         {
-            return "Error: OperatePin() Permission is null";
+            return $"Error: OperatePin() {translation.Get("Permission is null", language)}";
         }
 
         if (d.BranchStore == null)
         {
-            return "Error: OperatePin() BranchStore is null";
+            return $"Error: OperatePin() {translation.Get("BranchStore is null", language)}";
         }
 
         if (d.AppUser == null)
         {
-            return "Error: OperatePin() AppUser is null";
+            return $"Error: OperatePin() {translation.Get("AppUser is null", language)}";
         }
 
         if (d.AppUserName == null)
         {
-            return "Error: OperatePin() AppUserName is null";
+            return $"Error: OperatePin() {translation.Get("AppUserName is null", language)}";
         }
 
         if (d.PinType == null)
@@ -1370,7 +1503,7 @@ public static class AdminAuth
 
         if (result == "[]")
         {
-            return "Error: Pin not found";
+            return $"Error: {translation.Get("Pin not found", language)}";
         }
 
         DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
@@ -1380,7 +1513,7 @@ public static class AdminAuth
         {
             if (r["d.User"].ToString().Trim().ToLower() != d.User.ToString().Trim().ToLower())
             {
-                return "Error: This pin is not for the user who is trying to confirm it";
+                return $"Error: {translation.Get("This pin is not for the user who is trying to confirm it", language)}";
             }
         }
 
@@ -1388,7 +1521,7 @@ public static class AdminAuth
 
         if (DateTime.Now.ToUniversalTime() > expiry)
         {
-            return $"Error: Pin expired {dt.Rows[0]["id"]}";
+            return $"Error: {translation.Get("Pin expired", language)}: {dt.Rows[0]["id"]}";
         }
 
         Pin pin = new()
@@ -1414,25 +1547,32 @@ public static class AdminAuth
     }
 
 
-    public static string RecoverMasterPassword(AngelDB.DB db, AngelApiOperation api, Dictionary<string, string> parameters, AngelDB.DB server_db)
+    public static string RecoverMasterPassword(AngelDB.DB db, AngelApiOperation api, Dictionary<string, string> parameters, AngelDB.DB server_db, Translations translation)
     {
         var d = api.DataMessage;
 
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
+
         if (d.Email == null)
         {
-            return "Error: SendPinToEmail() Email is null";
+            return $"Error: SendPinToEmail() {translation.Get("Email is null", language)}";
         }
 
         string Email = d.Email.ToString().Trim().ToLower();
 
         if( string.IsNullOrEmpty(Email))
         {
-            return "Error: Email is required";
+            return $"Error: {translation.Get("Email is required", language)}";
         }
 
         if (EmailValidator.IsValidEmail(Email))
         {
-            return $"Error: Email is not valid {Email}";
+            return $"Error: {translation.Get("Email is not valid", language)} {Email}";
         }
 
         string result = server_db.Prompt($"SELECT * FROM accounts WHERE email = '{Email}'");
@@ -1444,7 +1584,7 @@ public static class AdminAuth
 
         if( result == "[]")
         {
-            return "Error: RecoverMasterPassword() Email not found";
+            return $"Error: RecoverMasterPassword() {translation.Get("Email not found", language)}";
         }
 
         DataTable tAccounts = db.GetDataTable(result);
@@ -1534,10 +1674,17 @@ public static class AdminAuth
     }
 
 
-    public static string SendPinToEmail(AngelApiOperation api, Dictionary<string, string> parameters, AngelDB.DB server_db)
+    public static string SendPinToEmail(AngelApiOperation api, Dictionary<string, string> parameters, AngelDB.DB server_db, Translations translation)
     {
 
         var d = api.DataMessage;
+
+        string language = "en";
+
+        if( api.UserLanguage != null )
+        {
+            language = api.UserLanguage;
+        }
 
         if (d.Email == null)
         {
@@ -1548,19 +1695,19 @@ public static class AdminAuth
 
         if (string.IsNullOrEmpty(email))
         {
-            return "Error: Email is required";
+            return $"Error: {translation.Get("Email is required", language)}";
         }
 
         if (EmailValidator.IsValidEmail(email))
         {
-            return $"Error: Email is not valid {email}";
+            return $"Error: {translation.Get("Email is not valid", language)} {email}";
         }
 
         string result = server_db.Prompt($"SELECT * FROM accounts WHERE email = '{email}'", true);
 
         if (result != "[]")
         {
-            return "Error: CreateAccount() Email already exists in another account";
+            return $"Error: CreateAccount() {translation.Get("Email already exists in another account", language)} {email}";
         }
 
         Pin pin = new()
@@ -1587,7 +1734,7 @@ public static class AdminAuth
 
         if (!Directory.Exists(wwwroot))
         {
-            return "Error: wwwroot directory not found";
+            return $"Error: {translation.Get("wwwroot directory not found", language)}";
         }
 
         string images_directory = Path.Combine(wwwroot, "auth/pins/images");
@@ -1614,7 +1761,7 @@ public static class AdminAuth
         }
 
         result = server_db.CreateTable(pin, "pins");
-        if (result.StartsWith("Error:")) return "Error: Creating table pins " + result.Replace("Error:", "");
+        if (result.StartsWith("Error:")) return $"Error: {translation.Get("Creating table pins", language)} " + result.Replace("Error:", "");
 
 
         // string htmlCode = $@"<!DOCTYPE html>

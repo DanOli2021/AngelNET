@@ -105,6 +105,9 @@ button:hover {
 
 /* Estilos para la barra de navegación */
 .bottom-bar {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    font-weight: bold;
     position: sticky;
     bottom: 0;
     left: 0;

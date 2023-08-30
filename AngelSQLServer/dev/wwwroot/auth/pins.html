@@ -25,6 +25,7 @@
             window.location.href = "index.html";
         }
 
+        const language = getSelectedLanguage();
         const Token = JSON.parse(sessionStorage.getItem("Token"));
 
     </script>
@@ -235,7 +236,7 @@
             });
 
             GetData();
-            translate_pins("es");            
+            translate_pins(language);            
 
         });
 
