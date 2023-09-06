@@ -99,16 +99,23 @@
 
         function generateButtons() {
 
-            generateButton("pins.html", "brilliant_networking_groupware_128.png", "Generated Pins", "btn btn-info btn-block btn-lg form-control");
-
             if (sessionStorage.getItem("user_groups") != null) {
+
                 let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
 
-                if (user_groups.groups.includes("SUPERVISORS")) {
-                    generateButton("supervisor.html", "futurexp_security_security_test_128.png", "My authorizations", "btn btn-success btn-block btn-lg form-control");
+                if( findInString(user_groups.groups, "PINSCONSUMER") )  
+                {
+                    generateButton("pins_user.html", "golden_networking_software_manager_128.png", "My pins", "btn btn-info btn-block btn-lg form-control");                                        
                 }
 
-                if (user_groups.groups.includes("AUTHORIZERS")) {
+                if( findInString(user_groups.groups, "SUPERVISORS") )  
+                {
+                    generateButton("pins.html", "brilliant_networking_groupware_128.png", "Generated Pins", "btn btn-primary btn-block btn-lg form-control");                                        
+                    generateButton("supervisor.html", "futurexp_security_security_test_128.png", "My authorizations", "btn btn-secondary btn-block btn-lg form-control");
+                }
+
+                if( findInString(user_groups.groups, "AUTHORIZERS") )  
+                {
                     generateButton("branch_stores.html", "brilliant_shopping_fish_shop_128.png", "Branch Stores", "btn btn-primary btn-block btn-lg form-control");
                     generateButton("users_groups.html", "golden_educationicons_classmate_128.png", "User Groups", "btn btn-secondary btn-block btn-lg form-control");
                     generateButton("users.html", "beta_accounting_executive_128.png", "System Users", "btn btn-primary btn-block btn-lg form-control");

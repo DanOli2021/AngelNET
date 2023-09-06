@@ -62,7 +62,7 @@
 		<None Update="pfx\certificate.pfx">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="Servicio.bat">
+		<None Update="service.bat">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

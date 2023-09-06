@@ -58,6 +58,10 @@ function translate_menu( language )
     {
         document.getElementById("auth_title").innerHTML = app_name;
         document.getElementById("menu_log_out").innerHTML = "Cerrar Sesión";
+        document.getElementById("index_privacy_policy").innerHTML = "Política de privacidad";
+        document.getElementById("index_about_us").innerHTML = "Acerca de nosotros...";
+        document.getElementById("index_privacy_policy_url").href = "privacy_es.html";
+        document.getElementById("index_about_url").href = "about_es.html";
     }        
 
 }
@@ -82,7 +86,26 @@ function translate_pins( language )
         document.getElementById("pins_expiry_time").innerHTML = "Fecha de Expiración";
         document.getElementById("pins_confirmated_date").innerHTML = "Fecha de Confirmación";
         document.getElementById("pins_user").innerHTML = "Usuario";
-        document.getElementById("pins_user_name").innerHTML = "Nombre de Usuario";
+    }
+}
+
+function translate_pins_user( language ) 
+{
+    if( language == null) 
+    {
+        return;
+    }
+
+    if( language == "es" )
+    {
+        document.getElementById("pins_menu").innerHTML = "Menú";
+        document.getElementById("pins_refresh").innerHTML = "Refrescar (F4)";
+        document.getElementById("pins_authorizer").innerHTML = "Authorizador";
+        document.getElementById("pins_branch_store").innerHTML = "Sucursal";
+        document.getElementById("pins_date").innerHTML = "Fecha";
+        document.getElementById("pins_expiry_time").innerHTML = "Fecha de Expiración";
+        document.getElementById("pins_confirmated_date").innerHTML = "Fecha de Confirmación";
+        document.getElementById("pins_user").innerHTML = "Usuario";
     }
 }
 
@@ -297,7 +320,8 @@ function translate_element( language, value )
         "Passwords do not match": "Las contraseñas no coinciden",
         "Account are required": "La cuenta es requerida",
         "Name are required": "El nombre es requerido",
-        "Phone are required": "El teléfono es requerido"
+        "Phone are required": "El teléfono es requerido",
+        "My pins": "Mis Pines"        
     };
 
     if( language == "es") 

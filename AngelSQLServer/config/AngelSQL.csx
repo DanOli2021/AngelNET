@@ -34,7 +34,7 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
     { "angel_api", "config/AngelAPI.csx" },
     { "python_path", "C:/Program Files/Python311/python311.dll" },
     { "service_command", "config/Tasks.csx" },
-    { "save_activity", "true" },
+    { "save_activity", "false" },
     { "use_black_list", "false" },
     { "use_white_list", "false" },
     { "service_delay", "300000" },

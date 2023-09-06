@@ -276,8 +276,6 @@
 
                     let responce_query = JSON.parse(query);
 
-                    console.log(responce_query.result);
-
                     if (responce_query.result.startsWith("Error:")) {
                         console.log(responce_query.result);
                         return;
@@ -365,6 +363,8 @@
                     return;
                 }
 
+                console.log(query);
+
                 tabla.clear().rows.add(JSON.parse(responce_query.result)).draw(); // Borramos los datos antiguos, añadimos los nuevos y redibujamos la tabla
             });
 
@@ -392,10 +392,10 @@
                         }
                     },
                     { data: 'id' },
-                    { data: 'name' },
-                    { data: 'address' },
-                    { data: 'phone' },
-                    { data: 'authorizer' }
+                    { data: 'Name' },
+                    { data: 'Address' },
+                    { data: 'Phone' },
+                    { data: 'Authorizer' }
                 ]
             });
 

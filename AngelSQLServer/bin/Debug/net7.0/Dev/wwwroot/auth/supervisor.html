@@ -218,9 +218,10 @@
 
         function showDialoPin(title, message) {
             var pin = JSON.parse(message);
+            console.log(pin);
             document.getElementById('dialogTittle_pin').innerText = title;
-            document.getElementById('pin').innerText = "Pin: " + pin.pin_number;
-            document.getElementById('permission').innerText = "Permission:" + pin.permissions;
+            document.getElementById('pin').innerText = "Pin: " + pin.Pin_number;
+            document.getElementById('permission').innerText = "Permission:" + pin.Permissions;
             document.getElementById('DialogPin').showModal();
         }
 
@@ -228,7 +229,7 @@
         function CreatePin() {
 
             let select_permisions = document.getElementById('permissions');
-            let response = CreatePermission(Token.username, Token.token, "SYSTEM", select_permisions.value, "touser", document.getElementById('message').value);
+            let response = CreatePermissionToUser(Token.username, Token.token, "SYSTEM", select_permisions.value, document.getElementById('message').value, document.getElementById('user').value);
 
             response.then(function (query) {
                 let response_query = JSON.parse(query);

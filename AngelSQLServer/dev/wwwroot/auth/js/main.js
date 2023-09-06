@@ -83,8 +83,16 @@ async function CreatePermission(user, token, Branchstore_id, Permission_id, PinT
   return sendToAngelPOST(user, "tokens/admintokens", token, "CreatePermission", { Branchstore_id: Branchstore_id, Permission_id: Permission_id, User: user, PinType: PinType, AuthorizerMessage: AuthorizerMessage });
 }
 
+async function CreatePermissionToUser(user, token, Branchstore_id, Permission_id, AuthorizerMessage, UserToAuthorize) {
+  return sendToAngelPOST(user, "tokens/admintokens", token, "CreatePermissionToUser", { Branchstore_id: "SYSTEM", Permission_id: Permission_id, User: user, PinType: "touser", UserToAuthorize: UserToAuthorize, AuthorizerMessage: AuthorizerMessage });
+}
+
 async function GetPins(user, token, InitialDate, FinalDate) {
   return sendToAngelPOST(user, "tokens/admintokens", token, "GetPins", { InitialDate: InitialDate, FinalDate: FinalDate });
+}
+
+async function GetPinsFromUser( user, token ) {
+  return sendToAngelPOST(user, "tokens/admintokens", token, "GetPinsFromUser", {});
 }
 
 async function DeleteToken(user, token, TokenToDelete) {
@@ -103,18 +111,17 @@ async function SaveToken(user, token, Token) {
   return sendToAngelPOST(user, "tokens/admintokens", token, "SaveToken", Token);
 }
 
-async function SendPinToEmail(email) {
-  return sendToAngelPOST("", "tokens/admintokens", "", "SendPinToEmail", { Email: email });
-}
-
 async function CreateAccount(register_info) {
   return sendToAngelPOST("", "tokens/createaccount", "", "CreateAccount", register_info);
 }
 
-async function RecoverMasterPassword(email) {
-  return sendToAngelPOST("", "tokens/admintokens", "", "RecoverMasterPassword", { Email: email });
+async function SendPinToEmail(email) {
+  return sendToAngelPOST("", "tokens/messages", "", "SendPinToEmail", { Email: email });
 }
 
+async function RecoverMasterPassword(email) {
+  return sendToAngelPOST("", "tokens/messages", "", "RecoverMasterPassword", { Email: email });
+}
 
 async function sendToAngelPOST(user, api_name, token, OperationType, object_data) {
 
@@ -276,4 +283,21 @@ function getSelectedLanguage() {
       }
   }
   return "";
+}
+
+
+
+//Busca una cadena dentro de otra, cuando la primera esta separada por comas
+function findInString(stringToSearch, stringToFind) {
+  var array = stringToFind.split(",");
+  var find = false;
+
+  for (var i = 0; i < array.length; i++) {
+    if (stringToSearch.includes(array[i])) {
+      find = true;
+      break;
+    }
+  }
+  
+  return find;
 }

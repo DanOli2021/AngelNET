@@ -528,6 +528,12 @@ namespace AngelDB
                     return $"Error: Insert {d["insert_into"]} Json string contains errors, {e1} jSon Values -->> {d["values"]}";
                 }
 
+                foreach (DataColumn column in json_values.Columns)
+                {
+                    column.ColumnName = column.ColumnName.ToLower();
+                }
+
+
                 if (d["exclude_columns"] != "null")
                 {
                     string[] exclude_columns = d["exclude_columns"].Split(",");

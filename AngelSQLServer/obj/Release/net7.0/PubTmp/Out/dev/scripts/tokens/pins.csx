@@ -1,5 +1,6 @@
 public class Pin
 {
+    public string id { get; set; }
     public string Id { get; set; }
     public string Authorizer { get; set; }
     public string Authorizer_name { get; set; }

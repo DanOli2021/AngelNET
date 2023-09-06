@@ -109,8 +109,7 @@
                         <th id="pins_permission">Permission</th>
                         <th id="pins_confirmated_date">Confirmated Date</th>
                         <th id="pins_user">User</th>
-                        <th id="pins_user_name">User Name</th>
-                        <th>Expired</th>
+                        <th id="pins_user_expired">Expired</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -182,37 +181,40 @@
                 buttons: ['print'],
                 columns: [
                     { data: 'id' },
-                    { data: 'pin_number' },
-                    { data: 'status' },
-                    { data: 'authorizer' },
-                    { data: 'branch_store' },
+                    { data: 'Pin_number' },
+                    { data: 'Status' },
+                    { data: 'Authorizer' },
+                    { data: 'Branch_store' },
                     {
-                        data: 'date',
+                        data: 'ServerDate',
                         render: function (data, type, row) {
                             var localDate = convertToDate(data).toLocaleString();
                             return localDate;
                         }
                     },
                     {
-                        data: 'expirytime',
+                        data: 'Expirytime',
                         render: function (data, type, row) {
                             var localExpiry = convertToDate(data).toLocaleString();
                             return localExpiry;
                         }
                     },
-                    { data: 'permissions' },
-                    { data: 'confirmed_date' },
-                    { data: 'user' },
+                    { data: 'Permissions' },
+                    { data: 'Confirmed_date' },
+                    { data: 'User' },
                     {
                         data: null,
                         render: function (data, type, row) {
-                            var currentDate = convertToDate(row.date);
-                            var expiryDate = convertToDate(row.expirytime);
-                            var diffTime = expiryDate - currentDate;
+                            var currentDate = convertToDate(row.ServerDate);
+                            var expiryDate = convertToDate(row.Expirytime);
+                            var diffTime = currentDate - expiryDate;
                             var diffMinutes = Math.ceil(diffTime / (1000 * 60));
 
-                            if (row.status == "pending") {
-                                if (diffMinutes > 30) {
+                            if (row.Status == "pending") {
+              
+                                console.log(diffMinutes);
+
+                                if (diffMinutes > 0) {
                                     return "Expired";
                                 } else {
                                     return "";
@@ -224,12 +226,12 @@
                     }
                 ],
                 createdRow: function (row, data, dataIndex) {
-                    var currentDate = convertToDate(data.date);
-                    var expiryDate = convertToDate(data.expirytime);
-                    var diffTime = expiryDate - currentDate;
+                    var currentDate = convertToDate(data.ServerDate);
+                    var expiryDate = convertToDate(data.Expirytime);
+                    var diffTime = currentDate- expiryDate;
                     var diffMinutes = Math.ceil(diffTime / (1000 * 60));
 
-                    if (diffMinutes > 30) {
+                    if (diffMinutes > 0) {
                         $(row).css('background-color', '#FFC0C0'); // Rojo claro
                     }
                 }

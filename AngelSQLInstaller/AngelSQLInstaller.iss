@@ -62,6 +62,9 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
+Name: "{autoprograms}\AngelDB"; Filename: "{app}\db.exe"
+Name: "{autodesktop}\AngelDB"; Filename: "{app}\db.exe"; Tasks: desktopicon
+
 [Run]
 Filename: "{app}\netruntime\dotnet-runtime-7.0.5-win-x64.exe"; Parameters: "/passive /norestart"; Description: "Install dotnet runtime 7.0.0"; Flags: shellexec waituntilterminated
 Filename: "{app}\netruntime\aspnetcore-runtime-7.0.5-win-x64.exe"; Parameters: "/passive /norestart"; Description: "Install aspnetcore 7.0.0"; Flags: shellexec waituntilterminated

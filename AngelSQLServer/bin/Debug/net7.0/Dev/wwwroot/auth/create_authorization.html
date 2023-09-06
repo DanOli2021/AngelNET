@@ -103,9 +103,6 @@
                                         let branchstore_object = JSON.parse(response_query.result);
 
                                         var button = document.getElementById("authorizer_confirm");
-
-                                        console.log(branchstore_object); 
-
                                         button.innerText = "Branch Store: " + branchstore_object.Id + " - " + branchstore_object.Name;
 
                                         let authorizer = GetUser(Token.username, Token.token, groups_list.user);
@@ -141,7 +138,7 @@
                                                         boton.className = 'btn btn-secondary btn-lg form-control';
                                                     }
 
-                                                    boton.style = 'margin-top: 10px; margin-bottom: 10px; font-size: 30px; font-weight: bolder;';
+                                                    boton.style = 'margin-top: 10px; margin-bottom: 10px; font-size: 30px; font-weight: bolder; padding-right: 140px;';
 
                                                     var span = document.createElement('span');
                                                     span.className = "material-symbols-outlined";
@@ -167,7 +164,7 @@
                             }
                         });
 
-                        translate_authorizations("es");
+                        translate_authorizations(language);
 
                     });
 
@@ -228,10 +225,9 @@
 
         function showDialoPin(title, message) {
             var pin = JSON.parse(message);
-            console.log(title);
-            document.getElementById('dialogTittle_pin').innerText = translate_element("es", title);
-            document.getElementById('pin').innerText = translate_element("es","Pin") + ": "  + pin.Pin_number;
-            document.getElementById('permission').innerText = translate_element("es","Permission") + ": " + pin.Permissions;
+            document.getElementById('dialogTittle_pin').innerText = translate_element(language, title);
+            document.getElementById('pin').innerText = translate_element(language,"Pin") + ": "  + pin.Pin_number;
+            document.getElementById('permission').innerText = translate_element(language,"Permission") + ": " + pin.Permissions;
             document.getElementById('DialogPin').showModal();
         }
 

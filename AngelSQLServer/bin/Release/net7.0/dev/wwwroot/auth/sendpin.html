@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script src="./js/index_translate.js"></script>
     <script src="./js/main.js"></script>
+
+    <script>
+        const language = getSelectedLanguage();
+    </script>
+
 </head>
 
 <body>
@@ -124,7 +129,7 @@
 
         document.addEventListener("DOMContentLoaded", function () 
         {
-            translate_sendpin("es");            
+            translate_sendpin(language);            
         });
 
         document.addEventListener('keydown', function (event) {

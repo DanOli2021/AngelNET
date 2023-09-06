@@ -46,7 +46,7 @@ namespace AngelDB {
                 { @"COPY TO", @"COPY TO#Systemtoken;FROM#code;STORAGE#freeoptional;TYPE SEARCH#optional" },
                 { @"IMPORT FROM", @"IMPORT FROM#free;FILE TYPE#free;TO#Systemtoken;TYPE SEARCH#optional;STORAGE#freeoptional" },
                 { @"EXPORT TO", @"EXPORT TO#free;FROM#code;TO FILE#free;TYPE#free" },
-                { @"UPDATE", @"UPDATE#free; PARTITION KEY#freeoptional; SET#free; WHERE#freeoptional; SYNC#optional" },                                
+                { @"UPDATE", @"UPDATE#free;PARTITION KEY#freeoptional; SET#free; WHERE#free;SYNC#optional" },                                
                 { @"DELETE FROM", @"DELETE FROM#Systemtoken; PARTITION KEY#free; WHERE#free" },
                 { @"SELECT", @"SELECT#free; FROM#Systemtoken; PARTITION KEY#freeoptional;WHERE#freeoptional;GROUP BY#freeoptional;ORDER BY#freeoptional;LIMIT#freeoptional;NO RULES#optional" },
                 { @"SAVE TO", @"SAVE TO#free;SOURCE#code;AS CSV#optional;STRING DELIMITER#freeoptional" },

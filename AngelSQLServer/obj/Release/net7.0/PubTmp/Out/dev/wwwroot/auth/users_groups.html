@@ -25,6 +25,7 @@
             window.location.href = "index.html";
         }
 
+        const language = getSelectedLanguage();
         const Token = JSON.parse(sessionStorage.getItem("Token"));
 
     </script>
@@ -334,7 +335,7 @@
                 // Aquí se ejecuta el código al hacer doble clic en la columna de botón
             });
 
-            translate_users_groups("es");     
+            translate_users_groups(language);     
             GetData();
         });
 
