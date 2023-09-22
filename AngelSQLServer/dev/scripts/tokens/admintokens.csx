@@ -153,7 +153,7 @@ public static class AdminAuth
 
         if (d.Id == "New")
         {
-            d.Id = System.Guid.NewGuid().ToString();
+            d.Id = Guid.NewGuid().ToString();
         }
 
         token.Id = d.Id;

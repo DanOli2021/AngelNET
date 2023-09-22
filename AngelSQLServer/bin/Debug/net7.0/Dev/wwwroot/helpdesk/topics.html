@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HelpDesk Topics</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/responsive.dataTables.css">
+    <script src="./js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+    <script src="./js/dataTables.responsive.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
+
+    <script src="./js/index_translate.js"></script>
+    <script src="./js/main.js"></script>
+
+    <script>
+
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const language = getSelectedLanguage();
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                <a class="btn btn-primary btn-block" href="menu.html" id="nav_link" style="width: 100%;">
+                    <span style="float: left;">
+                        <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                    </span>
+                    <span id="topics_menu">
+                        Menu
+                    </span>
+                </a>
+            </div>
+
+            <br />
+
+            <div class="row" style="margin-bottom: 10px;">
+                <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
+                    onclick="showTopicDialog('', true)" style="margin-bottom: 20px;">
+                    <span id="topics_users_new">
+                        New Topic (F2)
+                    </span>
+                </button>
+
+                <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
+                    onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    <span id="topics_refresh">
+                        Refresh (F4)
+                    </span>
+                </button>
+            </div>
+
+            <br />
+            <table id="dataTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th id="topics_id">Id</th>
+                        <th id="topics_topic">Topic</th>
+                        <th id="topics_description">Description</th>
+                        <th id="topics_description">Sub topics</th>
+                        <th id="topics_createdby">Created By</th>
+                        <th id="topics_createdat">Created At</th>
+                        <th id="topics_updatedby">Updated By</th>
+                        <th id="topics_updatedat">Updated At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <dialog id="myDialog" class="dialog-box">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton" class="btn btn-warning" style="width: 100%;" onclick="closeDialog()">Close</button>
+    </dialog>
+
+
+    <dialog id="topics_dialog" style="width: 90%;">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="form-group">
+                    <label for="id" id="topics_label_id">Id</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+
+                <div class="form-group">
+                    <label for="name" id="topics_label_topic">Topic</label>
+                    <input type="text" class="form-control" id="topic" name="topic">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone" id="users_label_description">Description</label>
+                    <input type="text" class="form-control" id="description" name="description">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary" "
+                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveTopicData()">
+                        <span id="users_button_save">
+                            Save
+                        </span>
+                    </button>
+                </div>
+
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-danger"
+                        style="text-align: right; margin-top: 20px; width: 100%;"
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Topic?', DeleteUserData)">
+                        <span id="users_button_delete">
+                            Delete
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <button id="closeSkuEdit" class="btn btn-secondary"
+                        style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeTopicsDialog()"
+                        style="text-align: right;">
+                        <span id="users_button_close">
+                            Close
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+
+    <script>
+
+        function DeleteData() {
+            var id = document.getElementById('id').value;
+
+            closeDialogAcceptCancelDialog();
+
+            var data_result = DeleteTopic(Token.username, Token.token, id);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Attention", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Attention", "Topic " + id + " deleted successfully");
+                closeUsersDialog();
+                GetData();
+                return;
+
+            });
+        }
+
+        function showTopicDialog(Topic_data, new_topic = false) {
+
+            if (new_topic) {
+                var dialog = document.getElementById("topics_dialog");
+                dialog.showModal();
+                document.getElementById('id').value = "";
+                document.getElementById('id').readOnly = true;
+                document.getElementById('topic').value = "";
+                document.getElementById('description').value = "";
+                document.getElementById('topic').focus();
+                return;
+            }
+
+            var data_result = GetTopic(Token.username, Token.token, Topic_data.id);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                let Topic = JSON.parse(responce_query.result);
+                var dialog = document.getElementById("topics_dialog");
+                dialog.showModal();
+
+                let id = document.getElementById('id');
+                id.readOnly = true;
+
+                document.getElementById('id').value = Topic.Id;
+                document.getElementById('topic').value = Topic.Topic;
+                document.getElementById('description').value = Topic.Description;
+                document.getElementById('topic').focus();
+
+            });
+
+        }
+
+        function closeTopicsDialog() {
+            var dialog = document.getElementById("topics_dialog");
+            dialog.close();
+        }
+
+        function SaveTopicData() {
+            let topic = {};
+
+            topic.Id = document.getElementById('id').value;
+            topic.Topic = document.getElementById('topic').value;
+            topic.Description = document.getElementById('description').value;
+
+            var data_result = SaveTopic(Token.username, Token.token, topic);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Error:", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Success:", "User Saved");
+                GetData();
+
+            });
+
+        }
+
+
+        function GetData() {
+
+            var datos = GetTopicsFromUser(Token.username, Token.token);
+
+            datos.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+                tabla.clear().rows.add(JSON.parse(responce_query.result)).draw();
+                tabla.columns.adjust().draw();
+
+            });
+
+        }
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F4") {
+                GetData();
+            }
+
+        });
+
+        var tabla;
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var datos = [];
+
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: true,
+                dom: 'Bfrtip',
+                buttons: ['print'],
+                columns: [
+                    {
+                        // Columna de botón
+                        data: null,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary">+</button>';
+                        }
+                    },
+                    { data: 'id' },
+                    { data: 'Topic' },
+                    { data: 'Description' },
+                    {
+                        // Columna de botón
+                        data: null,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-secondary">+</button>';
+                        }
+                    },
+                    { data: 'CreatedBy' },
+                    { data: 'CreatedAt' },
+                    { data: 'UpdatedBy' },
+                    { data: 'UpdatedAt' }
+                ]
+            });
+
+            $('#dataTable').on('click', 'td', function () {
+                var index = $(this).index();
+                if (index === 0) { // Si es la tercera columna (los índices comienzan en 0)
+                    var datosFila = tabla.row($(this).parents('tr')).data();
+                    showTopicDialog(datosFila);
+                    // Aquí se ejecuta el código al hacer clic en la tercera columna
+                }
+
+                if( index == 4) 
+                {
+                    var datosFila = tabla.row($(this).parents('tr')).data();
+                    window.open("topic.html?topic_id=" + datosFila.id, "_blank");
+                }
+
+            });
+
+            GetData();
+            translate_topics(language);
+
+        });
+
+    </script>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

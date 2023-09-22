@@ -2,6 +2,7 @@
 
 using AngelDB;
 using AngelSQLServer;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using Newtonsoft.Json;
@@ -182,8 +183,8 @@ foreach (string key in parameters.Keys)
     {
         LogFile.Log("Error: Setting Parameters vars: " + result.Replace("Error:", ""));
     }
-
 }
+
 
 foreach (string key in servers.Keys)
 {
@@ -569,82 +570,464 @@ app.MapGet("/AngelAPI", (string data, HttpContext context) =>
 // End of mapping the AngelSQL API
 
 
-
 Dictionary<string, AngelDB.DB> post_databases = new Dictionary<string, AngelDB.DB>();
 string session_guid = Guid.NewGuid().ToString();
+
+//app.MapPost("/AngelPOST", async delegate (HttpContext context)
+//{
+//    using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
+//    {
+//        try
+//        {
+//            string jsonstring = await reader.ReadToEndAsync();
+//            dynamic api = JsonConvert.DeserializeObject(jsonstring);
+
+//            if (save_activity)
+//            {
+//                var log = new
+//                {
+//                    ip = context.Connection.RemoteIpAddress.ToString(),
+//                    command = "POST",
+//                    log = jsonstring
+//                };
+
+//                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+//            }
+
+//            AngelDB.DB db;
+
+//            if (string.IsNullOrEmpty(api.account.ToString()))
+//            {
+//                api.account = "default: " + session_guid;
+//            }
+
+//            if (!post_databases.ContainsKey(api.account.ToString()))
+//            {
+//                db = new AngelDB.DB();
+
+//                if (api.account.ToString().StartsWith("default: "))
+//                {
+//                    if (!parameters.ContainsKey("connection_string"))
+//                    {
+//                        db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
+//                        db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
+//                        db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
+//                        db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
+//                        db.Prompt($"USE DATABASE {parameters["database"]}", true);
+//                    }
+//                    else
+//                    {
+//                        db.Prompt($"{parameters["connection_string"]}", true);
+
+//                        if (parameters["connection_string"].StartsWith("ANGEL"))
+//                        {
+//                            db.Prompt($"ALWAYS USE ANGELSQL", true);
+//                        }
+
+//                    }
+
+//                    api.db_user = parameters["master_user"];
+//                    api.db_password = parameters["master_password"];
+//                    db.Prompt($"VAR db_user = '{parameters["master_user"]}'", true);
+//                    db.Prompt($"VAR db_password = '{parameters["master_password"]}'", true);
+//                    db.Prompt($"VAR db_account = ''", true);
+
+//                }
+//                else
+//                {
+//                    string result = server_db.Prompt($"SELECT * FROM accounts WHERE id = '{api.account.ToString().Trim().ToLower()}'", true);
+
+//                    if (result.StartsWith("Error:"))
+//                    {
+
+//                        if (save_activity)
+//                        {
+//                            var log = new
+//                            {
+//                                ip = context.Connection.RemoteIpAddress.ToString(),
+//                                command = "POST",
+//                                log = result
+//                            };
+
+//                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+//                        }
+
+//                        return result;
+//                    }
+
+//                    if (result == "[]")
+//                    {
+
+//                        if (save_activity)
+//                        {
+//                            var log = new
+//                            {
+//                                ip = context.Connection.RemoteIpAddress.ToString(),
+//                                command = "POST",
+//                                log = result
+//                            };
+
+//                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+//                        }
+
+//                        return $"Error: Account {api.account} not found.";
+//                    }
+
+//                    DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
+
+//                    if (dt.Rows[0]["active"].ToString() == "false")
+//                    {
+//                        if (save_activity)
+//                        {
+//                            var log = new
+//                            {
+//                                ip = context.Connection.RemoteIpAddress.ToString(),
+//                                command = "POST",
+//                                log = result
+//                            };
+
+//                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+//                        }
+
+//                        return $"Account is The account is not active: {api.account}";
+//                    }
+
+//                    string connection_string = dt.Rows[0]["connection_string"].ToString();
+//                    string db_user = dt.Rows[0]["db_user"].ToString();
+//                    string db_password = dt.Rows[0]["db_password"].ToString();
+//                    string db_database = dt.Rows[0]["database"].ToString();
+//                    string data_directory = dt.Rows[0]["data_directory"].ToString();
+//                    string account = dt.Rows[0]["account"].ToString();
+//                    string super_user = dt.Rows[0]["super_user"].ToString();
+//                    string super_user_password = dt.Rows[0]["super_user_password"].ToString();
+
+//                    if (!string.IsNullOrEmpty(connection_string))
+//                    {
+//                        result = db.Prompt(connection_string);
+
+//                        if (connection_string.StartsWith("ANGEL"))
+//                        {
+//                            result = db.Prompt("ALWAYS USE ANGELSQL");
+//                        }
+
+//                        if (result.StartsWith("Error: AngelPOST"))
+//                        {
+//                            if (save_activity)
+//                            {
+//                                var log = new
+//                                {
+//                                    ip = context.Connection.RemoteIpAddress.ToString(),
+//                                    command = "POST",
+//                                    log = result
+//                                };
+
+//                                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+//                            }
+
+//                            return result;
+//                        }
+
+//                        db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
+//                        db.Prompt($"USE ACCOUNT {account}", true);
+//                        db.Prompt($"CREATE DATABASE {db_database}", true);
+//                        db.Prompt($"USE DATABASE {db_database}", true);
+
+//                    }
+//                    else
+//                    {
+//                        result = db.Prompt($"DB USER db PASSWORD db DATA DIRECTORY {data_directory}");
+
+//                        if (result.StartsWith("Error:"))
+//                        {
+//                            result = db.Prompt($"DB USER {db_user} PASSWORD {db_password} DATA DIRECTORY {data_directory}");
+//                        }
+//                        else
+//                        {
+//                            result = db.Prompt($"CHANGE MASTER TO USER {db_user} PASSWORD {db_password}");
+//                        }
+
+//                        if (result.StartsWith("Error:"))
+//                        {
+
+//                            if (save_activity)
+//                            {
+//                                var log = new
+//                                {
+//                                    ip = context.Connection.RemoteIpAddress.ToString(),
+//                                    command = "POST",
+//                                    log = result
+//                                };
+
+//                                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+//                            }
+
+
+//                            return result;
+//                        }
+
+//                        db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
+//                        db.Prompt($"USE ACCOUNT {account}", true);
+//                        db.Prompt($"CREATE DATABASE {db_database}", true);
+//                        db.Prompt($"USE DATABASE {db_database}", true);
+
+//                    }
+
+//                    db.Prompt($"VAR db_user = '{db_user}'", true);
+//                    db.Prompt($"VAR db_password = '{db_password}'", true);
+//                    db.Prompt($"VAR db_account = '{api.account}'", true);
+
+//                }
+
+//                post_databases.Add(api.account.ToString(), db);
+
+//            }
+//            else
+//            {
+//                db = post_databases[api.account.ToString()];
+//            }
+
+
+//            if (string.IsNullOrEmpty(api.language.ToString()))
+//            {
+//                result = db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+//            }
+//            else
+//            {
+//                switch (api.language.ToString())
+//                {
+//                    case "C#":
+//                        result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+//                        break;
+//                    case "CSHARP":
+//                        result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+//                        break;
+//                    case "null":
+//                        result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+//                        break;
+//                    case "PYTHON":
+//                        result = server_db.Prompt($"PYTHON FILE {scripts_directory}/{api.api}.py MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+//                        break;
+//                    default:
+//                        break;
+//                }
+//            }
+
+//            AngelSQL.Responce responce = new AngelSQL.Responce
+//            {
+//                type = "SUCCESS",
+//                result = result
+//            };
+
+//            if (save_activity)
+//            {
+//                var log = new
+//                {
+//                    ip = context.Connection.RemoteIpAddress.ToString(),
+//                    command = "POST",
+//                    log = result
+//                };
+
+//                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+//            }
+
+//            return JsonConvert.SerializeObject(responce);
+
+//        }
+//        catch (global::System.Exception e)
+//        {
+
+//            if (save_activity)
+//            {
+//                var log = new
+//                {
+//                    ip = context.Connection.RemoteIpAddress.ToString(),
+//                    command = "POST",
+//                    log = $"Error: {e}"
+//                };
+
+//                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+//            }
+
+//            AngelSQL.Responce responce = new AngelSQL.Responce();
+//            responce.type = "ERROR";
+//            responce.result = $"Error: {e}";
+//            return JsonConvert.SerializeObject(responce);
+//        }
+//    }
+//});
+
+// End of mapping AngelPOST communications protocol
 
 app.MapPost("/AngelPOST", async delegate (HttpContext context)
 {
     using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8))
     {
-        try
+        string jsonstring = await reader.ReadToEndAsync();
+        return ProcessAngelData(jsonstring, context.Connection.RemoteIpAddress.ToString());
+    }
+});
+
+
+app.MapPost("/upload", async (IFormFile file, string jsonstring) =>
+{
+    var file_name = wwww_directory + "/helpdesk/" + file.FileName;
+
+    if( Directory.Exists ( wwww_directory + "/helpdesk" ) == false )
+    {
+        Directory.CreateDirectory( wwww_directory + "/helpdesk" );
+    }
+
+    Console.WriteLine(file_name);
+    Console.WriteLine(jsonstring);
+
+    app.Logger.LogInformation(file_name);
+    using var stream = File.OpenWrite(file_name);
+    await file.CopyToAsync(stream);
+});
+
+
+
+string ProcessAngelData( string jsonstring, string RemoteIp ) 
+{
+    try
+    {
+        dynamic api = JsonConvert.DeserializeObject(jsonstring);
+
+        if (save_activity)
         {
-            string jsonstring = await reader.ReadToEndAsync();
-            dynamic api = JsonConvert.DeserializeObject(jsonstring);
-
-            if (save_activity)
+            var log = new
             {
-                var log = new
+                ip = RemoteIp,
+                command = "POST",
+                log = jsonstring
+            };
+
+            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+        }
+
+        AngelDB.DB db;
+
+        if (string.IsNullOrEmpty(api.account.ToString()))
+        {
+            api.account = "default: " + session_guid;
+        }
+
+        if (!post_databases.ContainsKey(api.account.ToString()))
+        {
+            db = new AngelDB.DB();
+
+            if (api.account.ToString().StartsWith("default: "))
+            {
+                if (!parameters.ContainsKey("connection_string"))
                 {
-                    ip = context.Connection.RemoteIpAddress.ToString(),
-                    command = "POST",
-                    log = jsonstring
-                };
-
-                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
-            }
-
-            AngelDB.DB db;
-
-            if (string.IsNullOrEmpty(api.account.ToString()))
-            {
-                api.account = "default: " + session_guid;
-            }
-
-            if (!post_databases.ContainsKey(api.account.ToString()))
-            {
-                db = new AngelDB.DB();
-
-                if (api.account.ToString().StartsWith("default: "))
-                {
-                    if (!parameters.ContainsKey("connection_string"))
-                    {
-                        db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
-                        db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
-                        db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
-                        db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
-                        db.Prompt($"USE DATABASE {parameters["database"]}", true);
-                    }
-                    else
-                    {
-                        db.Prompt($"{parameters["connection_string"]}", true);
-
-                        if (parameters["connection_string"].StartsWith("ANGEL"))
-                        {
-                            db.Prompt($"ALWAYS USE ANGELSQL", true);
-                        }
-
-                    }
-
-                    api.db_user = parameters["master_user"];
-                    api.db_password = parameters["master_password"];
-                    db.Prompt($"VAR db_user = '{parameters["master_user"]}'", true);
-                    db.Prompt($"VAR db_password = '{parameters["master_password"]}'", true);
-                    db.Prompt($"VAR db_account = ''", true);
-
+                    db.Prompt($"DB USER {parameters["master_user"]} PASSWORD {parameters["master_password"]} DATA DIRECTORY {parameters["data_directory"]}", true);
+                    db.Prompt($"CREATE ACCOUNT {parameters["account"]} SUPERUSER {parameters["account_user"]} PASSWORD {parameters["account_password"]}", true);
+                    db.Prompt($"USE ACCOUNT {parameters["account"]}", true);
+                    db.Prompt($"CREATE DATABASE {parameters["database"]}", true);
+                    db.Prompt($"USE DATABASE {parameters["database"]}", true);
                 }
                 else
                 {
-                    string result = server_db.Prompt($"SELECT * FROM accounts WHERE id = '{api.account.ToString().Trim().ToLower()}'", true);
+                    db.Prompt($"{parameters["connection_string"]}", true);
 
-                    if (result.StartsWith("Error:"))
+                    if (parameters["connection_string"].StartsWith("ANGEL"))
                     {
+                        db.Prompt($"ALWAYS USE ANGELSQL", true);
+                    }
 
+                }
+
+                api.db_user = parameters["master_user"];
+                api.db_password = parameters["master_password"];
+                db.Prompt($"VAR db_user = '{parameters["master_user"]}'", true);
+                db.Prompt($"VAR db_password = '{parameters["master_password"]}'", true);
+                db.Prompt($"VAR db_account = ''", true);
+
+            }
+            else
+            {
+                string result = server_db.Prompt($"SELECT * FROM accounts WHERE id = '{api.account.ToString().Trim().ToLower()}'", true);
+
+                if (result.StartsWith("Error:"))
+                {
+
+                    if (save_activity)
+                    {
+                        var log = new
+                        {
+                            ip = RemoteIp,
+                            command = "POST",
+                            log = result
+                        };
+
+                        server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                    }
+
+                    return result;
+                }
+
+                if (result == "[]")
+                {
+
+                    if (save_activity)
+                    {
+                        var log = new
+                        {
+                            ip = RemoteIp,
+                            command = "POST",
+                            log = result
+                        };
+
+                        server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                    }
+
+                    return $"Error: Account {api.account} not found.";
+                }
+
+                DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
+
+                if (dt.Rows[0]["active"].ToString() == "false")
+                {
+                    if (save_activity)
+                    {
+                        var log = new
+                        {
+                            ip = RemoteIp,
+                            command = "POST",
+                            log = result
+                        };
+
+                        server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                    }
+
+                    return $"Account is The account is not active: {api.account}";
+                }
+
+                string connection_string = dt.Rows[0]["connection_string"].ToString();
+                string db_user = dt.Rows[0]["db_user"].ToString();
+                string db_password = dt.Rows[0]["db_password"].ToString();
+                string db_database = dt.Rows[0]["database"].ToString();
+                string data_directory = dt.Rows[0]["data_directory"].ToString();
+                string account = dt.Rows[0]["account"].ToString();
+                string super_user = dt.Rows[0]["super_user"].ToString();
+                string super_user_password = dt.Rows[0]["super_user_password"].ToString();
+
+                if (!string.IsNullOrEmpty(connection_string))
+                {
+                    result = db.Prompt(connection_string);
+
+                    if (connection_string.StartsWith("ANGEL"))
+                    {
+                        result = db.Prompt("ALWAYS USE ANGELSQL");
+                    }
+
+                    if (result.StartsWith("Error: AngelPOST"))
+                    {
                         if (save_activity)
                         {
                             var log = new
                             {
-                                ip = context.Connection.RemoteIpAddress.ToString(),
+                                ip = RemoteIp,
                                 command = "POST",
                                 log = result
                             };
@@ -655,208 +1038,134 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
                         return result;
                     }
 
-                    if (result == "[]")
+                    db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
+                    db.Prompt($"USE ACCOUNT {account}", true);
+                    db.Prompt($"CREATE DATABASE {db_database}", true);
+                    db.Prompt($"USE DATABASE {db_database}", true);
+
+                }
+                else
+                {
+                    result = db.Prompt($"DB USER db PASSWORD db DATA DIRECTORY {data_directory}");
+
+                    if (result.StartsWith("Error:"))
                     {
-
-                        if (save_activity)
-                        {
-                            var log = new
-                            {
-                                ip = context.Connection.RemoteIpAddress.ToString(),
-                                command = "POST",
-                                log = result
-                            };
-
-                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
-                        }
-
-                        return $"Error: Account {api.account} not found.";
-                    }
-
-                    DataTable dt = JsonConvert.DeserializeObject<DataTable>(result);
-
-                    if (dt.Rows[0]["active"].ToString() == "false")
-                    {
-                        if (save_activity)
-                        {
-                            var log = new
-                            {
-                                ip = context.Connection.RemoteIpAddress.ToString(),
-                                command = "POST",
-                                log = result
-                            };
-
-                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
-                        }
-
-                        return $"Account is The account is not active: {api.account}";
-                    }
-
-                    string connection_string = dt.Rows[0]["connection_string"].ToString();
-                    string db_user = dt.Rows[0]["db_user"].ToString();
-                    string db_password = dt.Rows[0]["db_password"].ToString();
-                    string db_database = dt.Rows[0]["database"].ToString();
-                    string data_directory = dt.Rows[0]["data_directory"].ToString();
-                    string account = dt.Rows[0]["account"].ToString();
-                    string super_user = dt.Rows[0]["super_user"].ToString();
-                    string super_user_password = dt.Rows[0]["super_user_password"].ToString();
-
-                    if (!string.IsNullOrEmpty(connection_string))
-                    {
-                        result = db.Prompt(connection_string);
-
-                        if (connection_string.StartsWith("ANGEL"))
-                        {
-                            result = db.Prompt("ALWAYS USE ANGELSQL");
-                        }
-
-                        if (result.StartsWith("Error: AngelPOST"))
-                        {
-                            if (save_activity)
-                            {
-                                var log = new
-                                {
-                                    ip = context.Connection.RemoteIpAddress.ToString(),
-                                    command = "POST",
-                                    log = result
-                                };
-
-                                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
-                            }
-
-                            return result;
-                        }
-
-                        db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
-                        db.Prompt($"USE ACCOUNT {account}", true);
-                        db.Prompt($"CREATE DATABASE {db_database}", true);
-                        db.Prompt($"USE DATABASE {db_database}", true);
-
+                        result = db.Prompt($"DB USER {db_user} PASSWORD {db_password} DATA DIRECTORY {data_directory}");
                     }
                     else
                     {
-                        result = db.Prompt($"DB USER db PASSWORD db DATA DIRECTORY {data_directory}");
-
-                        if (result.StartsWith("Error:"))
-                        {
-                            result = db.Prompt($"DB USER {db_user} PASSWORD {db_password} DATA DIRECTORY {data_directory}");
-                        }
-                        else
-                        {
-                            result = db.Prompt($"CHANGE MASTER TO USER {db_user} PASSWORD {db_password}");
-                        }
-
-                        if (result.StartsWith("Error:"))
-                        {
-
-                            if (save_activity)
-                            {
-                                var log = new
-                                {
-                                    ip = context.Connection.RemoteIpAddress.ToString(),
-                                    command = "POST",
-                                    log = result
-                                };
-
-                                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
-                            }
-
-
-                            return result;
-                        }
-
-                        db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
-                        db.Prompt($"USE ACCOUNT {account}", true);
-                        db.Prompt($"CREATE DATABASE {db_database}", true);
-                        db.Prompt($"USE DATABASE {db_database}", true);
-
+                        result = db.Prompt($"CHANGE MASTER TO USER {db_user} PASSWORD {db_password}");
                     }
 
-                    db.Prompt($"VAR db_user = '{db_user}'", true);
-                    db.Prompt($"VAR db_password = '{db_password}'", true);
-                    db.Prompt($"VAR db_account = '{api.account}'", true);
+                    if (result.StartsWith("Error:"))
+                    {
+
+                        if (save_activity)
+                        {
+                            var log = new
+                            {
+                                ip = RemoteIp,
+                                command = "POST",
+                                log = result
+                            };
+
+                            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+                        }
+
+
+                        return result;
+                    }
+
+                    db.Prompt($"CREATE ACCOUNT {account} SUPERUSER {super_user} PASSWORD {super_user_password}", true);
+                    db.Prompt($"USE ACCOUNT {account}", true);
+                    db.Prompt($"CREATE DATABASE {db_database}", true);
+                    db.Prompt($"USE DATABASE {db_database}", true);
 
                 }
 
-                post_databases.Add(api.account.ToString(), db);
+                db.Prompt($"VAR db_user = '{db_user}'", true);
+                db.Prompt($"VAR db_password = '{db_password}'", true);
+                db.Prompt($"VAR db_account = '{api.account}'", true);
 
             }
-            else
-            {
-                db = post_databases[api.account.ToString()];
-            }
+
+            post_databases.Add(api.account.ToString(), db);
+
+        }
+        else
+        {
+            db = post_databases[api.account.ToString()];
+        }
 
 
-            if (string.IsNullOrEmpty(api.language.ToString()))
+        if (string.IsNullOrEmpty(api.language.ToString()))
+        {
+            result = db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+        }
+        else
+        {
+            switch (api.language.ToString())
             {
-                result = db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+                case "C#":
+                    result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+                    break;
+                case "CSHARP":
+                    result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+                    break;
+                case "null":
+                    result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+                    break;
+                case "PYTHON":
+                    result = server_db.Prompt($"PYTHON FILE {scripts_directory}/{api.api}.py MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                switch (api.language.ToString())
-                {
-                    case "C#":
-                        result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
-                        break;
-                    case "CSHARP":
-                        result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
-                        break;
-                    case "null":
-                        result = server_db.Prompt($"SCRIPT FILE {scripts_directory}/{api.api}.csx MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
-                        break;
-                    case "PYTHON":
-                        result = server_db.Prompt($"PYTHON FILE {scripts_directory}/{api.api}.py MESSAGE " + JsonConvert.SerializeObject(api.message), true, db);
-                        break;
-                    default:
-                        break;
-                }
-            }
+        }
 
-            AngelSQL.Responce responce = new AngelSQL.Responce
+        AngelSQL.Responce responce = new AngelSQL.Responce
+        {
+            type = "SUCCESS",
+            result = result
+        };
+
+        if (save_activity)
+        {
+            var log = new
             {
-                type = "SUCCESS",
-                result = result
+                ip = RemoteIp,
+                command = "POST",
+                log = result
             };
 
-            if (save_activity)
-            {
-                var log = new
-                {
-                    ip = context.Connection.RemoteIpAddress.ToString(),
-                    command = "POST",
-                    log = result
-                };
-
-                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
-            }
-
-            return JsonConvert.SerializeObject(responce);
-
+            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
         }
-        catch (global::System.Exception e)
-        {
 
-            if (save_activity)
-            {
-                var log = new
-                {
-                    ip = context.Connection.RemoteIpAddress.ToString(),
-                    command = "POST",
-                    log = $"Error: {e}"
-                };
+        return JsonConvert.SerializeObject(responce);
 
-                server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
-            }
-
-            AngelSQL.Responce responce = new AngelSQL.Responce();
-            responce.type = "ERROR";
-            responce.result = $"Error: {e}";
-            return JsonConvert.SerializeObject(responce);
-        }
     }
-});
+    catch (global::System.Exception e)
+    {
 
-// End of mapping AngelPOST communications protocol
+        if (save_activity)
+        {
+            var log = new
+            {
+                ip = RemoteIp,
+                command = "POST",
+                log = $"Error: {e}"
+            };
+
+            server_db.Prompt($"INSERT INTO commands PARTITION KEY {DateTime.Now:yyyy-MM-dd} VALUES " + JsonConvert.SerializeObject(log));
+        }
+
+        AngelSQL.Responce responce = new AngelSQL.Responce();
+        responce.type = "ERROR";
+        responce.result = $"Error: {e}";
+        return JsonConvert.SerializeObject(responce);
+    }
+
+}
 
 
 //Mapping AngelSQL communications protocol
