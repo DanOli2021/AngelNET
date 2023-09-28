@@ -90,7 +90,7 @@ async function GetPins(user, token, InitialDate, FinalDate) {
   return sendToAngelPOST(user, "tokens/admintokens", token, "GetPins", { InitialDate: InitialDate, FinalDate: FinalDate });
 }
 
-async function GetPinsFromUser( user, token ) {
+async function GetPinsFromUser(user, token) {
   return sendToAngelPOST(user, "tokens/admintokens", token, "GetPinsFromUser", {});
 }
 
@@ -147,12 +147,33 @@ async function SaveSubTopic(user, token, subtopic) {
 }
 
 async function GetContentFromSubTopic(user, token, subtopic) {
-  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContentFromSubTopic", {Subtopic_id: subtopic});
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContentFromSubTopic", { Subtopic_id: subtopic });
 }
 
 async function GetContent(user, token, Content_id) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContent", { Id: Content_id });
 }
+
+async function SaveContent(user, token, content) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "UpsertContent", content);
+}
+
+async function DeleteContent(user, token, content_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteContent", { Content_id: content_id });
+}
+
+async function GetContentDetail(user, token, content_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContentDetail", { Content_id: content_id });
+}
+
+async function GetTitles(user, token, content_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetTitles", { Content_id: content_id });
+}
+
+async function SaveContentDetail(user, token, contentdetail) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "UpsertContentDetail", contentdetail);
+}
+
 
 async function sendToAngelPOST(user, api_name, token, OperationType, object_data) {
 
@@ -294,8 +315,7 @@ function saveSelectedLanguage(language) {
 }
 
 
-function SaveLanguage(language) 
-{ 
+function SaveLanguage(language) {
   saveSelectedLanguage(language);
   window.location.reload();
 }
@@ -306,13 +326,13 @@ function getSelectedLanguage() {
   var decodedCookie = decodeURIComponent(document.cookie);
   var ca = decodedCookie.split(';');
   for (var i = 0; i < ca.length; i++) {
-      var c = ca[i];
-      while (c.charAt(0) === ' ') {
-          c = c.substring(1);
-      }
-      if (c.indexOf(name) === 0) {
-          return c.substring(name.length, c.length);
-      }
+    var c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
   }
   return "";
 }
@@ -330,6 +350,69 @@ function findInString(stringToSearch, stringToFind) {
       break;
     }
   }
-  
+
   return find;
 }
+
+
+
+function addEntry(Id, Content, Content_type, element) {
+  // Crear el elemento h1
+  
+  var html_block;
+
+  if( Content_type == "text" ) 
+  {
+    html_block = document.createElement('p');
+  }  
+  else if ( Content_type == "Title1" ) 
+  {
+    html_block = document.createElement('h1');
+  } 
+  else if ( Content_type == "Title2" ) 
+  {
+    html_block = document.createElement('h2');
+  } 
+  else if ( Content_type == "Title3" ) 
+  {
+    html_block = document.createElement('h3');
+  } 
+  else  
+  {
+    html_block = document.createElement('p');
+  }
+
+  html_block.textContent = Content;
+
+  // Crear el botón de eliminar
+  var deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.addEventListener('click', function () {
+    html_block.remove();
+    deleteButton.remove();
+    editButton.remove();
+  });
+
+  deleteButton.classList = "btn btn-danger";
+
+  // Crear el botón de editar
+  var editButton = document.createElement('button');
+  editButton.textContent = 'Edit';
+  editButton.addEventListener('click', function () {
+    var newText = prompt('Editar texto:', html_block.textContent);
+    if (newText) {
+      html_block.textContent = newText;
+    }
+  });
+
+  editButton.classList = "btn btn-secondary";
+
+  var mydiv = document.getElementById(element);
+
+  // Añadir los elementos al cuerpo de la página
+  mydiv.appendChild(editButton);
+  mydiv.appendChild(deleteButton);
+  mydiv.appendChild(html_block);
+
+}
+

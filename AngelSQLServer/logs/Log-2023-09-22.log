@@ -1,0 +1,21 @@
+13:57:42--> Task: Error: certificate file  does not exists
+14:05:31--> Task: Error: certificate file  does not exists
+14:05:46--> Task: Error: certificate file  does not exists
+14:07:53--> Task: Error: certificate file  does not exists
+14:08:55--> Task: Error: certificate file  does not exists
+14:08:55--> Task: Error: System.UriFormatException: Invalid URI: The Authority/Host could not be parsed.
+   at System.Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
+   at System.Uri..ctor(String uriString)
+   at Program.<>c__DisplayClass0_0.<<Main>$>b__1(KestrelServerOptions options) in C:\Desarrollo\AngelNET\AngelSQLServer\Program.cs:line 253
+14:09:54--> Task: Error: certificate file  does not exists
+14:09:54--> Task: Error: System.UriFormatException: Invalid URI: The Authority/Host could not be parsed.
+   at System.Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
+   at System.Uri..ctor(String uriString)
+   at Program.<>c__DisplayClass0_0.<<Main>$>b__1(KestrelServerOptions options) in C:\Desarrollo\AngelNET\AngelSQLServer\Program.cs:line 253
+14:10:41--> Task: Error: certificate file  does not exists
+14:10:41--> Task: Error: System.UriFormatException: Invalid URI: The Authority/Host could not be parsed.
+   at System.Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
+   at System.Uri..ctor(String uriString)
+   at Program.<>c__DisplayClass0_0.<<Main>$>b__1(KestrelServerOptions options) in C:\Desarrollo\AngelNET\AngelSQLServer\Program.cs:line 253
+14:11:24--> Task: Error: certificate file  does not exists
+14:11:24--> Task: Error: certificate file  does not exists

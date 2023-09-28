@@ -8,8 +8,6 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-string main_url = GetVariable( "ANGELSQL_URLS", "http://localhost:11000" );
-
 Dictionary<string, string> parameters = new Dictionary<string, string>
 {
     { "certificate", GetVariable( "ANGELSQL_CERTIFICATE", "" ) },
@@ -40,6 +38,8 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
     { "service_delay", "300000" },
 };
 
+string main_url = "http://localhost:11000";
+
 Dictionary<string, string> servers = new Dictionary<string, string>
 {
     { "tokens_url", $"{main_url}/AngelPOST" },
@@ -58,5 +58,6 @@ return JsonConvert.SerializeObject(parameters);
 string GetVariable(string name, string default_value)
 {
     if (Environment.GetEnvironmentVariable(name) == null) return default_value;    
+    Console.WriteLine($"Variable {name} found");
     return Environment.GetEnvironmentVariable(name);
 }
