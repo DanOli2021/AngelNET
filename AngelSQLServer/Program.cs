@@ -868,21 +868,36 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 });
 
 
-app.MapPost("/upload", async (IFormFile file, string jsonstring) =>
+app.MapPost("/AngelUpload", async (IFormFile file, string jSonString, HttpContext httpContext) =>
 {
-    var file_name = wwww_directory + "/helpdesk/" + file.FileName;
+    var clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
+    string result = ProcessAngelData(jSonString, clientIp);
 
-    if( Directory.Exists ( wwww_directory + "/helpdesk" ) == false )
+    if( result.StartsWith("Error:") )
     {
-        Directory.CreateDirectory( wwww_directory + "/helpdesk" );
+        return result;
     }
 
-    Console.WriteLine(file_name);
-    Console.WriteLine(jsonstring);
+    FileUploadInfo file_info = JsonConvert.DeserializeObject<FileUploadInfo>(result);
 
-    app.Logger.LogInformation(file_name);
+    if( !file_info.ProceedToUpload )
+    {
+        return file_info.ErrorMessage;
+    }
+
+    var file_name = wwww_directory + "/" + file_info.FileDirectory + "/" + file.FileName;
+
+    if( Directory.Exists (wwww_directory + "/" + file_info.FileDirectory) == false )
+    {
+        Directory.CreateDirectory(wwww_directory + "/" + file_info.FileDirectory);
+    }
+
+    file_info.Url = file_info.FileDirectory + "/" + file.FileName;
+
     using var stream = File.OpenWrite(file_name);
     await file.CopyToAsync(stream);
+    return server_db.GetJson(file_info);
+
 });
 
 
@@ -1089,7 +1104,7 @@ string ProcessAngelData( string jsonstring, string RemoteIp )
 
             }
 
-            post_databases.Add(api.account.ToString(), db);
+            post_databases.TryAdd(api.account.ToString(), db);
 
         }
         else

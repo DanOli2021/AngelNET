@@ -11,14 +11,15 @@ using System.Text;
 using System.Data;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
+using System.Collections.Concurrent;
 
 namespace AngelDB
 {
     public class MyScript : IDisposable
     {
 
-        public Dictionary<string, Script> scripts = new Dictionary<string, Script>();
-        public Dictionary<string, CompiledScripts> Compiled_scripts = new Dictionary<string, CompiledScripts>();
+        public ConcurrentDictionary<string, Script> scripts = new ConcurrentDictionary<string, Script>();
+        public ConcurrentDictionary<string, CompiledScripts> Compiled_scripts = new ConcurrentDictionary<string, CompiledScripts>();
         private bool disposedValue;
 
         public string Eval(string code, string data, AngelDB.DB db)
@@ -69,7 +70,7 @@ namespace AngelDB
 
                 string result = script.RunAsync(g).Result.ReturnValue.ToString();
 
-                scripts.Add(key, script);
+                scripts.TryAdd(key, script);
                 return result;
 
             }
@@ -142,7 +143,7 @@ namespace AngelDB
                 {
                     if (Compiled_scripts.ContainsKey(file)) 
                     {
-                        Compiled_scripts.Remove(file);
+                        Compiled_scripts.Remove(file, out _);
                     }                     
                 }
 
@@ -199,10 +200,10 @@ namespace AngelDB
 
                 if (Compiled_scripts.ContainsKey(file))
                 {
-                    Compiled_scripts.Remove(file);
+                    Compiled_scripts.TryRemove(file, out _);
                 }
 
-                Compiled_scripts.Add(file, new CompiledScripts { script = runner, script_date = db.script_file_datetime });
+                Compiled_scripts.TryAdd(file, new CompiledScripts { script = runner, script_date = db.script_file_datetime });
                 //var o = Compiled_scripts[file].script.RunAsync(g).Result.ReturnValue;
                 var o = runner.Invoke(g);
                 
@@ -442,7 +443,7 @@ namespace AngelDB
                 // TODO: liberar los recursos no administrados (objetos no administrados) y reemplazar el finalizador
                 // TODO: establecer los campos grandes como NULL
                 disposedValue = true;
-                scripts = new Dictionary<string, Script>();
+                scripts = new ConcurrentDictionary<string, Script>();
                 Compiled_scripts = null;
             }
         }

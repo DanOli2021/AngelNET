@@ -1,23 +1,3 @@
-async function sendPOST(data) {
-
-  url = window.location.protocol + '//' + window.location.host + "/AngelPOST";
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error HTTP: ${response.status}`);
-  }
-
-  const result = await response.text();
-  return result;
-}
-
 async function login(user, password) {
   return sendToAngelPOST(user, "tokens/admintokens", "", "GetTokenFromUser", { User: user, Password: password });
 }
@@ -166,12 +146,24 @@ async function GetContentDetail(user, token, content_id) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContentDetail", { Content_id: content_id });
 }
 
+async function GetContentDetailItem(user, token, id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContentDetailItem", { Id: id });
+}
+
 async function GetTitles(user, token, content_id) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetTitles", { Content_id: content_id });
 }
 
 async function SaveContentDetail(user, token, contentdetail) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "UpsertContentDetail", contentdetail);
+}
+
+async function DeleteContentDetail(user, token, id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteContentDetail", { Id: id });
+}
+
+async function SendFileToDownload(user, token, file) {
+  return SendFile(user, "helpdesk/helpdesk", token, "UploadFile", file);
 }
 
 
@@ -199,6 +191,70 @@ async function sendToAngelPOST(user, api_name, token, OperationType, object_data
 
   return await sendPOST(api);
 
+}
+
+
+async function SendFile(user, api_name, token, OperationType, file) {
+
+  account = "";
+
+  if (user.includes("@")) {
+    account = user.split("@")[1];
+  }
+
+  var api = {
+    api: api_name,
+    account: account,
+    language: "C#",
+    message:
+    {
+      OperationType: OperationType,
+      Token: token,
+      User: user,
+      DataMessage: object_data,
+      UserLanguage: getSelectedLanguage()
+    }
+  };
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('jSonString', JSON.stringify(api));
+
+  url = window.location.protocol + '//' + window.location.host + "/AngelUpload";
+
+  const response = await fetch('/upload', {
+    method: 'POST',
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+
+  const result = await response.text();
+  return result;
+
+}
+
+
+async function sendPOST(data) {
+
+  url = window.location.protocol + '//' + window.location.host + "/AngelPOST";
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+
+  const result = await response.text();
+  return result;
 }
 
 
@@ -353,66 +409,3 @@ function findInString(stringToSearch, stringToFind) {
 
   return find;
 }
-
-
-
-function addEntry(Id, Content, Content_type, element) {
-  // Crear el elemento h1
-  
-  var html_block;
-
-  if( Content_type == "text" ) 
-  {
-    html_block = document.createElement('p');
-  }  
-  else if ( Content_type == "Title1" ) 
-  {
-    html_block = document.createElement('h1');
-  } 
-  else if ( Content_type == "Title2" ) 
-  {
-    html_block = document.createElement('h2');
-  } 
-  else if ( Content_type == "Title3" ) 
-  {
-    html_block = document.createElement('h3');
-  } 
-  else  
-  {
-    html_block = document.createElement('p');
-  }
-
-  html_block.textContent = Content;
-
-  // Crear el botón de eliminar
-  var deleteButton = document.createElement('button');
-  deleteButton.textContent = 'Delete';
-  deleteButton.addEventListener('click', function () {
-    html_block.remove();
-    deleteButton.remove();
-    editButton.remove();
-  });
-
-  deleteButton.classList = "btn btn-danger";
-
-  // Crear el botón de editar
-  var editButton = document.createElement('button');
-  editButton.textContent = 'Edit';
-  editButton.addEventListener('click', function () {
-    var newText = prompt('Editar texto:', html_block.textContent);
-    if (newText) {
-      html_block.textContent = newText;
-    }
-  });
-
-  editButton.classList = "btn btn-secondary";
-
-  var mydiv = document.getElementById(element);
-
-  // Añadir los elementos al cuerpo de la página
-  mydiv.appendChild(editButton);
-  mydiv.appendChild(deleteButton);
-  mydiv.appendChild(html_block);
-
-}
-

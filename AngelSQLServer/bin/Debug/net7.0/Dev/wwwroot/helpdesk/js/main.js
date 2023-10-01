@@ -1,23 +1,3 @@
-async function sendPOST(data) {
-
-  url = window.location.protocol + '//' + window.location.host + "/AngelPOST";
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Error HTTP: ${response.status}`);
-  }
-
-  const result = await response.text();
-  return result;
-}
-
 async function login(user, password) {
   return sendToAngelPOST(user, "tokens/admintokens", "", "GetTokenFromUser", { User: user, Password: password });
 }
@@ -90,7 +70,7 @@ async function GetPins(user, token, InitialDate, FinalDate) {
   return sendToAngelPOST(user, "tokens/admintokens", token, "GetPins", { InitialDate: InitialDate, FinalDate: FinalDate });
 }
 
-async function GetPinsFromUser( user, token ) {
+async function GetPinsFromUser(user, token) {
   return sendToAngelPOST(user, "tokens/admintokens", token, "GetPinsFromUser", {});
 }
 
@@ -138,13 +118,54 @@ async function GetSubTopicsFromTopic(user, token, topic_id) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetSubTopicsFromTopic", { Topic_id: topic_id });
 }
 
-async function GetSubTopic(user, token, topic_id) {
-  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetSubTopic", { Id: topic_id });
+async function GetSubTopic(user, token, subtopic_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetSubTopic", { Id: subtopic_id });
 }
 
 async function SaveSubTopic(user, token, subtopic) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "UpsertSubTopic", subtopic);
 }
+
+async function GetContentFromSubTopic(user, token, subtopic) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContentFromSubTopic", { Subtopic_id: subtopic });
+}
+
+async function GetContent(user, token, Content_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContent", { Id: Content_id });
+}
+
+async function SaveContent(user, token, content) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "UpsertContent", content);
+}
+
+async function DeleteContent(user, token, content_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteContent", { Content_id: content_id });
+}
+
+async function GetContentDetail(user, token, content_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContentDetail", { Content_id: content_id });
+}
+
+async function GetContentDetailItem(user, token, id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetContentDetailItem", { Id: id });
+}
+
+async function GetTitles(user, token, content_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetTitles", { Content_id: content_id });
+}
+
+async function SaveContentDetail(user, token, contentdetail) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "UpsertContentDetail", contentdetail);
+}
+
+async function DeleteContentDetail(user, token, id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteContentDetail", { Id: id });
+}
+
+async function SendFileToDownload(user, token, file) {
+  return SendFile(user, "helpdesk/helpdesk", token, "UploadFile", file);
+}
+
 
 async function sendToAngelPOST(user, api_name, token, OperationType, object_data) {
 
@@ -170,6 +191,70 @@ async function sendToAngelPOST(user, api_name, token, OperationType, object_data
 
   return await sendPOST(api);
 
+}
+
+
+async function SendFile(user, api_name, token, OperationType, file) {
+
+  account = "";
+
+  if (user.includes("@")) {
+    account = user.split("@")[1];
+  }
+
+  var api = {
+    api: api_name,
+    account: account,
+    language: "C#",
+    message:
+    {
+      OperationType: OperationType,
+      Token: token,
+      User: user,
+      DataMessage: object_data,
+      UserLanguage: getSelectedLanguage()
+    }
+  };
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('jSonString', JSON.stringify(api));
+
+  url = window.location.protocol + '//' + window.location.host + "/AngelUpload";
+
+  const response = await fetch('/upload', {
+    method: 'POST',
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+
+  const result = await response.text();
+  return result;
+
+}
+
+
+async function sendPOST(data) {
+
+  url = window.location.protocol + '//' + window.location.host + "/AngelPOST";
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status}`);
+  }
+
+  const result = await response.text();
+  return result;
 }
 
 
@@ -286,8 +371,7 @@ function saveSelectedLanguage(language) {
 }
 
 
-function SaveLanguage(language) 
-{ 
+function SaveLanguage(language) {
   saveSelectedLanguage(language);
   window.location.reload();
 }
@@ -298,13 +382,13 @@ function getSelectedLanguage() {
   var decodedCookie = decodeURIComponent(document.cookie);
   var ca = decodedCookie.split(';');
   for (var i = 0; i < ca.length; i++) {
-      var c = ca[i];
-      while (c.charAt(0) === ' ') {
-          c = c.substring(1);
-      }
-      if (c.indexOf(name) === 0) {
-          return c.substring(name.length, c.length);
-      }
+    var c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
   }
   return "";
 }
@@ -322,6 +406,6 @@ function findInString(stringToSearch, stringToFind) {
       break;
     }
   }
-  
+
   return find;
 }

@@ -1617,3 +1617,8 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\topi
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\topic.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\content.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\dev.code-workspace
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\dev.code-workspace
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\contentdetail.html
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\prism\prism.css
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\prism\prism.js
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\Kiosk\images\kiosk.zip

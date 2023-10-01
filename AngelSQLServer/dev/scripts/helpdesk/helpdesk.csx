@@ -60,6 +60,8 @@ return api.OperationType switch
     "GetContentDetail" => GetContentDetail( api, translation ),
     "GetTitles" => GetTitles( api, translation ),
     "UpsertContentDetail" => UpsertContentDetail( api, translation ),
+    "GetContentDetailItem" => GetContentDetailItem( api, translation ),
+    "DeleteContentDetail" => DeleteContentDetail( api, translation ),
     _ => $"Error: No service found {api.OperationType}",
 };
 
@@ -772,6 +774,56 @@ string DeleteContent( AngelApiOperation api, Translations translation )
     
 }
 
+
+string DeleteContentDetail( AngelApiOperation api, Translations translation ) 
+{
+    string result = IsUserValid(api, translation);
+
+    if (result.StartsWith("Error:"))
+    {
+        return result;
+    }
+
+    dynamic d = api.DataMessage;
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    if (d.Id == null)
+    {
+        return "Error: " + translation.Get(language, "Id is required");
+    }
+
+    result = db.Prompt("SELECT * FROM helpdeskcontentdetails WHERE id = '" + d.Id + "'");
+
+    if( result.StartsWith("Error:") ) 
+    {
+        return result;
+    }
+
+    if( result == "[]" )
+    {
+        return "Error: " + translation.Get("Content detail id does not exist ", language ) + d.Id;
+    }
+
+    result = db.Prompt("DELETE FROM helpdeskcontentdetails PARTITION KEY main WHERE id = '" + d.Id + "'");
+
+    if( result.StartsWith("Error:") ) 
+    {
+        return result;
+    }
+
+    result = db.Prompt("DELETE FROM helpdeskcontentdetails_search PARTITION KEY main WHERE id = '" + d.Id + "'");
+
+    return result;
+    
+}
+
+
+
 private string GetContentDetail(AngelApiOperation api, Translations translation)
 {
 
@@ -795,11 +847,12 @@ private string GetContentDetail(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Content_id is required", language );
     }
 
-    Console.WriteLine("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' ORDER BY Content_order");
-
     return db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' ORDER BY Content_order");
 
 }
+
+
+
 
 
 private string GetTitles(AngelApiOperation api, Translations translation)
@@ -876,6 +929,58 @@ private string GetTitles(AngelApiOperation api, Translations translation)
     };
 
     return db.GetJson(dTitles);
+
+}
+
+
+private string GetContentDetailItem(AngelApiOperation api, Translations translation)
+{
+
+    string result = IsUserValid(api, translation);
+
+    if (result.StartsWith("Error:"))
+    {
+        return result;
+    }
+
+    dynamic d = api.DataMessage;
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    if( d.Id == null )
+    {
+        return "Error: " + translation.Get("Id is required", language );
+    }
+
+    HelpdeskContentDetails contentDetail = new()
+    {
+        Id = d.Id
+    };
+
+    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE id = '" + d.Id + "'");
+
+    if( result.StartsWith("Error:") ) 
+    {
+        return result;
+    }
+
+    if( result == "[]" )
+    {
+        return "Error: " + translation.Get("No content found for Id:", language ) + " " + d.Id;
+    }
+
+    DataRow rContentDetail = db.GetDataRow(result);
+
+    contentDetail.Content = rContentDetail["Content"].ToString();
+    contentDetail.Content_id = rContentDetail["Content_id"].ToString();
+    contentDetail.Content_order = Convert.ToInt32(rContentDetail["Content_order"].ToString());
+    contentDetail.Content_type = rContentDetail["Content_type"].ToString();
+    
+    return db.GetJson(contentDetail);
 
 }
 

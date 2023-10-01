@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HelpDesk ContentDetail</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" ContentDetail="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/responsive.dataTables.css">
+    <script src="./js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+    <script src="./js/dataTables.responsive.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
+
+    <link rel="stylesheet" href="./prism/prism.css">
+    <script src="./prism/prism.js"></script>
+
+    <script src="./js/index_translate.js"></script>
+    <script src="./js/main.js"></script>
+
+    <script>
+
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const language = getSelectedLanguage();
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row justify-ContentDetail-center">
+
+            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+                <div class="col-sm-6">
+                    <a class="btn btn-primary btn-block" href="topics.html" id="nav_link" style="width: 100%;">
+                        <span style="float: left;">
+                            <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                        </span>
+                        <span id="topics_menu">
+                            Topics
+                        </span>
+                    </a>
+                </div>
+
+                <div class="col-sm-6">
+                    <a class="btn btn-secondary btn-block" href="topics.html" id="nav_link" style="width: 100%;">
+                        <span style="float: left;">
+                            <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                        </span>
+                        <span id="subtopics_menu">
+                            Sub Topics
+                        </span>
+                    </a>
+                </div>
+
+            </div>
+
+            <br />
+
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-sm-12">
+                    <h1 id="topics_title">
+                        Topics
+                    </h1>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-sm-12">
+                    <h2 id="subtopics_title">
+                        Sub Topics
+                    </h2>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-sm-12">
+                    <h3 id="content_title">
+                        Content
+                    </h3>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row" style="margin-bottom: 10px;">
+                <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
+                    onclick="showContentDetailDialog('', true)" style="margin-bottom: 20px;">
+                    <span id="topics_users_new">
+                        New Content (F2)
+                    </span>
+                </button>
+
+                <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
+                    onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    <span id="topics_refresh">
+                        Refresh (F4)
+                    </span>
+                </button>
+            </div>
+
+            <br />
+
+            <div id="ShowContent" class="row justify-ContentDetail-center">
+
+            </div>
+
+        </div>
+    </div>
+
+    <dialog id="myDialog" class="dialog-box">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton" class="btn btn-warning" style="width: 100%;" onclick="closeDialog()">Close</button>
+    </dialog>
+
+    <dialog id="DialogAcceptCancel" class="dialog-box">
+
+        <h1 id="dialogTittleAcceptCancel">Title</h1>
+        <p id="dialogMessageAcceptCancel">Message</p>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <button id="accept" onclick="closeDialogAcceptCancelDialog()" class="btn btn-danger"
+                    style="width: 100%;">Accept</button>
+            </div>
+
+            <div class="col-sm-6">
+                <button id="cancel" onclick="closeDialogAcceptCancelDialog()" class="btn btn-primary"
+                    style="width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+
+    <dialog id="ContentDetail_dialog" style="width: 90%;">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="form-group">
+                    <label for="id" id="ContentDetail_label_id">Id</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+
+                <div class="form-group">
+                    <label for="ContentText" id="ContentDetail_label">Content</label>
+                    <textarea id="ContentText" name="ContentText" class="form-control" rows="10">
+                    </textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="Content_type" id="ContentDetail_label_content_type">Content type</label>
+                    <select class="form-control" id="Content_type" name="Content_type">
+                        <option value=""></option>
+                        <option value="Text">Text</option>
+                        <option value="Title1">Title 1</option>
+                        <option value="Title2">Title 2</option>
+                        <option value="Title3">Title 3</option>
+                        <option value="VisualBasic">Visual Basic Code</option>
+                        <option value="C#">C# Code</option>
+                        <option value="Python">Python Code</option>
+                        <option value="JavaScript">Java Script Code</option>
+                        <option value="HTML">HTML Code</option>
+                        <option value="CSS">CSS Code</option>
+                        <option value="SQLServerQuery">SQL Server Query</option>
+                        <option value="AngelSQLQuery">AngelSQL Query</option>
+                        <option value="Image">Image</option>
+                        <option value="Video">Video</option>
+                        <option value="Url">Link</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="content_order" id="ContentDetail_label_content_order">Order</label>
+                    <input type="text" class="form-control" id="content_order" name="content_order">
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary" "
+                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveData()">
+                        <span id="ContentDetail_button_save">
+                            Save
+                        </span>
+                    </button>
+                </div>
+
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-danger"
+                        style="text-align: right; margin-top: 20px; width: 100%;"
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the ContentDetail?', DeleteData)">
+                        <span id="ContentDetail_button_delete">
+                            Delete
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <button id="closeSkuEdit" class="btn btn-secondary"
+                        style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeContentDetailDialog()"
+                        style="text-align: right;">
+                        <span id="users_button_close">
+                            Close
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+
+    <script>
+
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        var Content_id = params.get('content_id');
+
+        function DeleteData() {
+            var id = document.getElementById('id').value;
+
+            closeDialogAcceptCancelDialog();
+
+            var data_result = DeleteContentDetail(Token.username, Token.token, id);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Attention", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Attention", "ContentDetail " + id + " deleted successfully");
+                closeContentDetailDialog();
+                GetData();
+                return;
+
+            });
+        }
+
+        function showContentDetailDialog(Id, new_topic = false) {
+
+            document.getElementById('id').value = "";
+            document.getElementById('id').readOnly = true;
+
+            if (new_topic) {
+                var dialog = document.getElementById("ContentDetail_dialog");
+                dialog.showModal();
+                document.getElementById('ContentText').value = "";
+                document.getElementById('Content_type').value = "";
+                document.getElementById('content_order').value = "";
+                document.getElementById('ContentText').focus();
+                return;
+            }
+
+            var data_result = GetContentDetailItem(Token.username, Token.token, Id);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                let ContentDetail = JSON.parse(responce_query.result);
+                var dialog = document.getElementById("ContentDetail_dialog");
+                dialog.showModal();
+
+                let id = document.getElementById('id');
+                id.readOnly = true;
+
+                document.getElementById('id').value = ContentDetail.Id;
+                document.getElementById('ContentText').value = ContentDetail.Content;
+                document.getElementById('Content_type').value = ContentDetail.Content_type;
+                document.getElementById('content_order').value = ContentDetail.Content_order;
+                document.getElementById('ContentText').focus();
+            });
+
+        }
+
+        function closeContentDetailDialog() {
+            var dialog = document.getElementById("ContentDetail_dialog");
+            dialog.close();
+        }
+
+        function SaveData() {
+            let ContentDetail = {};
+
+            if (Content_id == null || Content_id == undefined || Content_id == "") {
+                showDialog("Error:", "Sub content id not found");
+                return;
+            }
+
+            ContentDetail.Id = document.getElementById('id').value;
+            ContentDetail.Content_id = Content_id;
+            ContentDetail.Content = document.getElementById('ContentText').value;
+            ContentDetail.Content_type = document.getElementById('Content_type').value;
+            ContentDetail.Content_order = document.getElementById('content_order').value;
+
+            var data_result = SaveContentDetail(Token.username, Token.token, ContentDetail);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Error:", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Success:", "ContentDetail Saved");
+                GetData();
+
+            });
+
+        }
+
+        function GetData() {
+
+
+            var ShowContent = document.getElementById('ShowContent');
+            ShowContent.innerHTML = "";
+
+            var datos = GetContentDetail(Token.username, Token.token, Content_id);
+
+            datos.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                var ContentDetail = JSON.parse(responce_query.result);
+
+                ContentDetail.forEach(element => {
+                    addContentDetail(element.id, element.Content, element.Content_type, "ShowContent", showContentDetailDialog);
+                });
+
+            });
+
+        }
+
+        function addContentDetail(Id, Content, Content_type, element, editFunction) {
+            // Crear el elemento h1
+
+            var html_block;
+
+            if (Content_type == "Text") {
+                html_block = document.createElement('p');
+                html_block.textContent = Content;
+            }
+            else if (Content_type == "Title1") {
+                html_block = document.createElement('h1');
+                html_block.textContent = Content;
+            }
+            else if (Content_type == "Title2") {
+                html_block = document.createElement('h2');
+                html_block.textContent = Content;
+            }
+            else if (Content_type == "Title3") {
+                html_block = document.createElement('h3');
+                html_block.textContent = Content;
+            }
+            else if (Content_type == "VisualBasic") {
+                html_block = document.createElement('pre');
+                html_block.className = 'line-numbers language-vbnet';
+                var code_block = document.createElement('code');
+                code_block.className = 'line-numbers language-vbnet';
+                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+                html_block.appendChild(code_block);
+            }
+            else if (Content_type == "C#") {
+                html_block = document.createElement('pre');
+                html_block.className = 'line-numbers language-csharp';
+                var code_block = document.createElement('code');
+                code_block.className = 'line-numbers language-csharp';
+                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+                html_block.appendChild(code_block);
+            }
+            else if (Content_type == "SQLServerQuery") {
+                html_block = document.createElement('pre');
+                html_block.className = 'line-numbers language-sql';
+                var code_block = document.createElement('code');
+                code_block.className = 'line-numbers language-sql';
+                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+                html_block.appendChild(code_block);
+            }
+            else if (Content_type == "AngelSQLQuery") {
+                html_block = document.createElement('pre');
+                html_block.className = 'line-numbers language-sql';
+                var code_block = document.createElement('code');
+                code_block.className = 'line-numbers language-sql';
+                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+                html_block.appendChild(code_block);
+            }
+            else if (Content_type == "JavaScript") {
+                html_block = document.createElement('pre');
+                html_block.className = 'line-numbers language-javascript';
+                var code_block = document.createElement('code');
+                code_block.className = 'line-numbers language-javascript';
+                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+                html_block.appendChild(code_block);
+            }
+            else if (Content_type == "HTML") {
+                html_block = document.createElement('pre');
+                html_block.className = 'line-numbers language-html';
+                var code_block = document.createElement('code');
+                code_block.className = 'line-numbers language-html';
+                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+                html_block.appendChild(code_block);
+            }
+            else if (Content_type == "CSS") {
+                html_block = document.createElement('pre');
+                html_block.className = 'line-numbers language-css';
+                var code_block = document.createElement('code');
+                code_block.className = 'line-numbers language-css';
+                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+                html_block.appendChild(code_block);
+            }
+            else if (Content_type == "Python") {
+                html_block = document.createElement('pre');
+                html_block.className = 'line-numbers language-python';
+                var code_block = document.createElement('code');
+                code_block.className = 'line-numbers language-python';
+                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+                html_block.appendChild(code_block);
+            }            
+            else if (Content_type == "Url") {
+                html_block = document.createElement('div');
+                var urlBlock = document.createElement('a');
+                urlBlock.textContent = Content;
+                urlBlock.href = Content;
+                urlBlock.target = "_blank";
+                urlBlock.className = "btn btn-primary form-control";
+                html_block.appendChild(urlBlock);
+            }            
+            else if (Content_type == "Video") {
+                var videoId = Content.split('v=')[1];  // Suponiendo que Content contiene la URL completa del video de YouTube
+                var ampersandPosition = videoId.indexOf('&');
+                if (ampersandPosition != -1) {
+                    videoId = videoId.substring(0, ampersandPosition);
+                }
+
+                html_block = document.createElement('div');                
+                html_block.className = "row justify-center";
+                var videoBlock = document.createElement('iframe');
+                videoBlock.className = "embed-responsive embed-responsive-16by9";
+                videoBlock.style = "margin-bottom:20px; margin-top:20px;";
+                videoBlock.width = "560";  // Ancho del video, puedes ajustarlo según tus necesidades
+                videoBlock.height = "315";  // Altura del video, puedes ajustarlo según tus necesidades
+                videoBlock.src = "https://www.youtube.com/embed/" + videoId;
+                videoBlock.title = "YouTube video player";
+                videoBlock.frameborder = "0";
+                videoBlock.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                videoBlock.allowFullscreen = true;
+                html_block.appendChild(videoBlock);
+            }
+            else if (Content_type == "Image") {
+                var lines = Content.split('\n');
+                if (lines.length >= 2) {
+                    var html_block = document.createElement('div');
+                    html_block.className = "row justify-ContentDetail-center";
+                    var imageBlock = document.createElement('img');
+                    imageBlock.className = "img-fluid mx-auto d-block";
+                    imageBlock.src = lines[0];  // Primera línea para la fuente de la imagen
+                    imageBlock.style = lines[1];  // Segunda línea para el estilo
+                    html_block.appendChild(imageBlock);
+                }
+                else {
+                    html_block.src = Content;  // Primera línea para la fuente de la imagen
+                }
+            }
+            else {
+                html_block = document.createElement('p');
+                html_block.textContent = Content;
+            }
+
+            // Crear el botón de editar
+            var editButton = document.createElement('button');
+            editButton.textContent = 'Edit: ' + Id;
+            editButton.addEventListener('click', function () {
+                editFunction(Id, false);
+
+                //var newText = prompt('Editar texto:', html_block.textContent);
+                //if (newText) {
+                //  html_block.textContent = newText;
+                //}
+
+            });
+
+            editButton.classList = "btn btn-secondary";
+
+            var mydiv = document.getElementById(element);
+
+            // Añadir los elementos al cuerpo de la página
+            mydiv.appendChild(editButton);
+            mydiv.appendChild(html_block);
+
+            Prism.highlightAll();
+
+        }
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F4") {
+                GetData();
+            }
+
+        });
+
+        var tabla;
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var datos = GetTitles(Token.username, Token.token, Content_id);
+
+            datos.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                var titles = JSON.parse(responce_query.result);
+                document.getElementById('topics_title').innerHTML = titles.Topic + " - " + titles.Topic_Description;
+                document.getElementById('subtopics_title').innerHTML = titles.Subtopic + " - " + titles.Subtopic_Description;
+                document.getElementById('content_title').innerHTML = titles.Content + " - " + titles.Content_Description;
+
+            });
+
+            GetData();
+            translate_topics(language);
+
+        });
+
+    </script>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

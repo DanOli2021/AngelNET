@@ -1447,7 +1447,7 @@ namespace AngelDB
                     ti.table_directory = tableDirectory;
                     ti.table_type = table_type;
 
-                    mainClass.table_connections.Add(key, ti);
+                    mainClass.table_connections.TryAdd(key, ti);
 
                 }
                 else
