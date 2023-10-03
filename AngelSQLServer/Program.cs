@@ -868,35 +868,73 @@ app.MapPost("/AngelPOST", async delegate (HttpContext context)
 });
 
 
-app.MapPost("/AngelUpload", async (IFormFile file, string jSonString, HttpContext httpContext) =>
+
+
+
+
+app.MapPost("/AngelUpload", async (HttpContext httpContext) =>
 {
-    var clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
-    string result = ProcessAngelData(jSonString, clientIp);
-
-    if( result.StartsWith("Error:") )
+    try
     {
-        return result;
+
+        var form = await httpContext.Request.ReadFormAsync();
+
+        var file = form.Files.FirstOrDefault();
+
+        // Obtener el primer valor del campo json del formulario
+        string jSonString = form["jSonString"].FirstOrDefault();
+
+        if (string.IsNullOrEmpty(jSonString))
+        {
+            return "Error: No JSON string";
+        }
+
+        var clientIp = httpContext.Connection.RemoteIpAddress?.ToString();
+
+        AngelApiOperation api = JsonConvert.DeserializeObject<AngelApiOperation>(jSonString);
+        api.message.File = file.FileName;
+        api.message.FileSize = file.Length;
+        api.message.FileType = file.ContentType;
+
+        string result = ProcessAngelData(JsonConvert.SerializeObject(api), clientIp);
+
+        if (result.StartsWith("Error:"))
+        {
+            return result;
+        }
+
+        AngelResponce angelResponce = JsonConvert.DeserializeObject<AngelResponce>(result);
+
+        if( angelResponce.result.StartsWith("Error:"))
+        {
+            return angelResponce.result;
+        }
+
+        FileUploadInfo file_info = JsonConvert.DeserializeObject<FileUploadInfo>(angelResponce.result);
+
+        if (!file_info.ProceedToUpload)
+        {
+            return file_info.ErrorMessage;
+        }
+
+        var file_name = wwww_directory + "/" + file_info.FileDirectory + "/" + file.FileName;
+
+        if (Directory.Exists(wwww_directory + "/" + file_info.FileDirectory) == false)
+        {
+            Directory.CreateDirectory(wwww_directory + "/" + file_info.FileDirectory);
+        }
+
+        file_info.Url = file_info.FileDirectory + "/" + file.FileName;
+
+        using var stream = File.OpenWrite(file_name);
+        await file.CopyToAsync(stream);
+        return server_db.GetJson(file_info);
+
     }
-
-    FileUploadInfo file_info = JsonConvert.DeserializeObject<FileUploadInfo>(result);
-
-    if( !file_info.ProceedToUpload )
+    catch (Exception e)
     {
-        return file_info.ErrorMessage;
+        return $"Error: {e}";
     }
-
-    var file_name = wwww_directory + "/" + file_info.FileDirectory + "/" + file.FileName;
-
-    if( Directory.Exists (wwww_directory + "/" + file_info.FileDirectory) == false )
-    {
-        Directory.CreateDirectory(wwww_directory + "/" + file_info.FileDirectory);
-    }
-
-    file_info.Url = file_info.FileDirectory + "/" + file.FileName;
-
-    using var stream = File.OpenWrite(file_name);
-    await file.CopyToAsync(stream);
-    return server_db.GetJson(file_info);
 
 });
 
@@ -906,7 +944,8 @@ string ProcessAngelData( string jsonstring, string RemoteIp )
 {
     try
     {
-        dynamic api = JsonConvert.DeserializeObject(jsonstring);
+
+        AngelApiOperation api = JsonConvert.DeserializeObject<AngelApiOperation>(jsonstring);
 
         if (save_activity)
         {

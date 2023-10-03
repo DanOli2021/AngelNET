@@ -154,9 +154,24 @@
                     <input type="text" class="form-control" id="id" name="id">
                 </div>
 
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label for="file_upload" id="ContentDetail_label_file">Upload File</label>
+                        <input type="file" class="form-control" id="file_upload" name="file_upload">
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="button" class="btn btn-primary" "
+                            style=" text-align: right; margin-top: 20px; width: 100%;" onclick="UploadFile()">
+                            <span id="ContentDetail_button_upload_now">
+                                Upload Now
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="ContentText" id="ContentDetail_label">Content</label>
-                    <textarea id="ContentText" name="ContentText" class="form-control" rows="10">
+                    <textarea id="ContentText" name="ContentText" class="form-control" rows="7">
                     </textarea>
                 </div>
 
@@ -230,6 +245,45 @@
         var url = new URL(window.location.href);
         var params = new URLSearchParams(url.search);
         var Content_id = params.get('content_id');
+
+        
+        function UploadFile() 
+        {
+
+            if( document.getElementById('file_upload').files.length == 0 )
+            {
+                showDialog("Attention", "No file selected");
+                return;
+            }
+
+            const file = document.getElementById('file_upload').files[0];
+
+            var data_result = SendFileToDownload(Token.username, Token.token, file, { Content_id: Content_id });
+
+            data_result.then(function (query) {
+
+                if (query.startsWith("Error:")) {
+                    showDialog("Attention", query);
+                    console.log(query);
+                    return;
+                }
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Attention", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Attention", "File Uploaded: " + responce_query.result);
+
+                let file_data = JSON.parse(responce_query.result);
+                document.getElementById('ContentText').value = file_data.Url;
+
+            });
+
+        }
 
         function DeleteData() {
             var id = document.getElementById('id').value;
@@ -448,7 +502,7 @@
                 code_block.className = 'line-numbers language-python';
                 code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
                 html_block.appendChild(code_block);
-            }            
+            }
             else if (Content_type == "Url") {
                 html_block = document.createElement('div');
                 var urlBlock = document.createElement('a');
@@ -457,7 +511,7 @@
                 urlBlock.target = "_blank";
                 urlBlock.className = "btn btn-primary form-control";
                 html_block.appendChild(urlBlock);
-            }            
+            }
             else if (Content_type == "Video") {
                 var videoId = Content.split('v=')[1];  // Suponiendo que Content contiene la URL completa del video de YouTube
                 var ampersandPosition = videoId.indexOf('&');
@@ -465,7 +519,7 @@
                     videoId = videoId.substring(0, ampersandPosition);
                 }
 
-                html_block = document.createElement('div');                
+                html_block = document.createElement('div');
                 html_block.className = "row justify-center";
                 var videoBlock = document.createElement('iframe');
                 videoBlock.className = "embed-responsive embed-responsive-16by9";

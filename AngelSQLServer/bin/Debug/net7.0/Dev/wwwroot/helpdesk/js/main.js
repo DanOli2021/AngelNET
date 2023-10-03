@@ -162,8 +162,8 @@ async function DeleteContentDetail(user, token, id) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteContentDetail", { Id: id });
 }
 
-async function SendFileToDownload(user, token, file) {
-  return SendFile(user, "helpdesk/helpdesk", token, "UploadFile", file);
+async function SendFileToDownload(user, token, file, dataMessage) {
+  return SendFile(user, "helpdesk/helpdesk", token, "UploadFile", file, dataMessage);
 }
 
 
@@ -194,7 +194,7 @@ async function sendToAngelPOST(user, api_name, token, OperationType, object_data
 }
 
 
-async function SendFile(user, api_name, token, OperationType, file) {
+async function SendFile(user, api_name, token, OperationType, file, dataMessage) {
 
   account = "";
 
@@ -211,7 +211,7 @@ async function SendFile(user, api_name, token, OperationType, file) {
       OperationType: OperationType,
       Token: token,
       User: user,
-      DataMessage: object_data,
+      DataMessage: dataMessage,
       UserLanguage: getSelectedLanguage()
     }
   };
@@ -222,7 +222,7 @@ async function SendFile(user, api_name, token, OperationType, file) {
 
   url = window.location.protocol + '//' + window.location.host + "/AngelUpload";
 
-  const response = await fetch('/upload', {
+  const response = await fetch(url, {
     method: 'POST',
     body: formData
   });
