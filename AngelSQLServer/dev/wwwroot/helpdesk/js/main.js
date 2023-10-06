@@ -166,6 +166,10 @@ async function SendFileToDownload(user, token, file, dataMessage) {
   return SendFile(user, "helpdesk/helpdesk", token, "UploadFile", file, dataMessage);
 }
 
+async function SearchInfo(user, token, textToSerch) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "SearchInfo", { Search: textToSerch });
+}
+
 
 async function sendToAngelPOST(user, api_name, token, OperationType, object_data) {
 
