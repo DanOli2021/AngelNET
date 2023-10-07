@@ -45,18 +45,18 @@
                         <span style="float: left;">
                             <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                         </span>
-                        <span id="topics_menu">
+                        <span id="content_topics_menu">
                             Topics
                         </span>
                     </a>
                 </div>
 
                 <div class="col-sm-6">
-                    <a class="btn btn-secondary btn-block" href="topics.html" id="nav_link" style="width: 100%;">
+                    <a class="btn btn-secondary btn-block" href="topic.html" id="content_link_subtopic" style="width: 100%;">
                         <span style="float: left;">
                             <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                         </span>
-                        <span id="subtopics_menu">
+                        <span id="content_subtopics_menu">
                             Sub Topics
                         </span>
                     </a>
@@ -99,7 +99,7 @@
                     </span>
                 </button>
             </div>
-
+            
             <br />
             <table id="dataTable" class="display" style="width:100%">
                 <thead>
@@ -233,6 +233,9 @@
         var params = new URLSearchParams(url.search);
         var topic_id = params.get('topic_id');
         var subtopic_id = params.get('subtopic_id');
+
+        var content_link_topic = document.getElementById('content_link_topic');
+        content_link_subtopic.href = "topic.html?topic_id=" + topic_id;
 
         function DeleteData() {
             var id = document.getElementById('id').value;
@@ -426,7 +429,7 @@
 
                 if (index == 4) {
                     var datosFila = tabla.row($(this).parents('tr')).data();
-                    window.open("contentdetail.html?content_id=" + datosFila.id, "_blank");
+                    window.open("contentdetail.html?content_id=" + datosFila.id, "_self");
                 }
 
             });

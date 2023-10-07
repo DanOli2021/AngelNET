@@ -79,6 +79,8 @@ return api.OperationType switch
     "GetContentDetailItem" => GetContentDetailItem(api, translation),
     "DeleteContentDetail" => DeleteContentDetail(api, translation),
     "UploadFile" => UploadFile(api, translation),
+    "SearchInfo" => SearchInfo(api, translation),
+    "GetContentTitles" => GetContentTitles(api, translation),
     _ => $"Error: No service found {api.OperationType}",
 };
 
@@ -170,7 +172,15 @@ string UpsertTopic(AngelApiOperation api, Translations translation)
         return result;
     }
 
-    result = db.UpsertInto("HelpDeskTopics_search", topic);
+    result = db.Prompt( "SELECT id FROM HelpdeskSubTopics WHERE topic_id = '{d.Id}'", true );
+
+    DataTable dtSubTopics = db.GetDataTable(result);
+
+    foreach (DataRow r in dtSubTopics.Rows)
+    {
+        result = db.Prompt($"UPDATE HelpdeskContentDetails PARTITON KEY {r["id"]} SET Topic_description = '{ d.Description }' WHERE topic_id = '{d.Id}'", true);
+    }
+
     return result;
 
 }
@@ -234,19 +244,14 @@ string UpsertSubTopic(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Description is required", language);
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE id = '" + d.Topic_id + "'");
+    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE id = '" + d.Topic_id + "'", true);
 
     if (result == "[]")
     {
         return "Error: " + translation.Get("Topic_id does not exist", language) + " " + d.Topic_id;
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + d.Id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + d.Id + "'", true);
 
     HelpdeskSubTopics subtopic = new()
     {
@@ -277,7 +282,6 @@ string UpsertSubTopic(AngelApiOperation api, Translations translation)
         return result;
     }
 
-    result = db.UpsertInto("HelpdeskSubTopics_search", subtopic);
     return result;
 
 }
@@ -345,24 +349,14 @@ string UpsertContent(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Subtopic_id is required", language);
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + d.Subtopic_id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + d.Subtopic_id + "'", true);
 
     if (result == "[]")
     {
         return "Error: " + translation.Get("Subtopic_id does not exist", language) + " " + d.Subtopic_id;
     }
 
-    result = db.Prompt("SELECT * FROM helpdeskcontent WHERE id = '" + d.Id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM helpdeskcontent WHERE id = '" + d.Id + "'", true);
 
     HelpdeskContent content = new()
     {
@@ -448,14 +442,10 @@ string UpsertContentDetail(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Content_type is required", language);
     }
 
+
     if (string.IsNullOrEmpty(d.Content_order.ToString()) || d.Content_order == 0)
     {
-        result = db.Prompt("SELECT MAX(Content_order) AS Content_order FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "'");
-
-        if (result.StartsWith("Error:"))
-        {
-            return result;
-        }
+        result = db.Prompt("SELECT MAX(Content_order) AS Content_order FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "'", true);
 
         if (result == "[]")
         {
@@ -482,12 +472,43 @@ string UpsertContentDetail(AngelApiOperation api, Translations translation)
         d.Id = Guid.NewGuid().ToString();
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE id = '" + d.Id + "'");
+    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE id = '" + d.Content_id + "'", true);
 
-    if (result.StartsWith("Error:"))
+    if (result == "[]")
     {
-        return result;
+        return "Error: " + translation.Get("Content_id does not exist", language) + " " + d.Content_id;
     }
+
+    DataTable dtContent = db.GetDataTable(result);
+    string content_title = dtContent.Rows[0]["Content_title"].ToString(); 
+
+    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + dtContent.Rows[0]["Subtopic_id"] + "'", true);
+
+    if (result == "[]")
+    {
+        return "Error: " + translation.Get("Subtopic_id does not exist", language) + " " + dtContent.Rows[0]["Subtopic_id"];
+    }
+
+    DataTable dtSubTopic = db.GetDataTable(result);
+    string subtopic = dtSubTopic.Rows[0]["id"].ToString();
+    string subtopic_description = dtSubTopic.Rows[0]["Description"].ToString();
+
+    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE id = '" + dtSubTopic.Rows[0]["Topic_id"] + "'", true);
+
+    if (result == "[]")
+    {
+        return "Error: " + translation.Get("Topic_id does not exist", language) + " " + dtSubTopic.Rows[0]["Topic_id"];
+    }
+
+
+    if( d.IsPublic == null )
+    {
+        d.IsPublic = "true";
+    }
+
+    DataTable dtTopic = db.GetDataTable(result);
+    string topic = dtTopic.Rows[0]["id"].ToString();
+    string topic_description = dtTopic.Rows[0]["Description"].ToString();
 
     HelpdeskContentDetails contentDetail = new()
     {
@@ -495,7 +516,13 @@ string UpsertContentDetail(AngelApiOperation api, Translations translation)
         Content = d.Content,
         Content_id = d.Content_id,
         Content_type = d.Content_type,
-        Content_order = d.Content_order
+        Content_order = d.Content_order,
+        Topic_id = topic,  
+        Topic_description = topic_description,
+        Subtopic_id = subtopic,
+        Subtopic_description = subtopic_description,
+        Content_title = content_title,
+        IsPublic = d.IsPublic
     };
 
     if (result == "[]")
@@ -512,14 +539,15 @@ string UpsertContentDetail(AngelApiOperation api, Translations translation)
         contentDetail.UpdatedAt = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
     }
 
-    result = db.UpsertInto("HelpdeskContentDetails", contentDetail);
+    result = db.UpsertInto("HelpdeskContentDetails", contentDetail, subtopic);
 
     if (result.StartsWith("Error:"))
     {
         return result;
     }
 
-    result = db.UpsertInto("HelpdeskContentDetails_search", contentDetail);
+    result = db.UpsertInto("HelpdeskContentDetails_search", contentDetail, subtopic);
+
     return result;
 
 }
@@ -542,8 +570,7 @@ string GetTopicsFromUser(AngelApiOperation api, Translations translation)
         language = api.UserLanguage;
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE createdby = '" + api.User + "' ORDER BY topic ASC");
-
+    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE createdby = '" + api.User + "' ORDER BY topic ASC", true);
     return result;
 
 }
@@ -565,7 +592,7 @@ string GetSubTopicsFromTopic(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Topic_id is required", api.UserLanguage);
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE topic_id = '" + d.Topic_id + "' ORDER BY subtopic ASC");
+    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE topic_id = '" + d.Topic_id + "' ORDER BY subtopic ASC", true);
 
     return result;
 
@@ -589,7 +616,7 @@ string GetContentFromSubTopic(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Subtopic_id is required", api.UserLanguage);
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE Subtopic_id = '" + d.Subtopic_id + "' ORDER BY description ASC");
+    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE Subtopic_id = '" + d.Subtopic_id + "' ORDER BY description ASC", true);
 
     return result;
 
@@ -619,12 +646,7 @@ string GetSubTopic(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Id is required", language);
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + d.Id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + d.Id + "'", true);
 
     if (result == "[]")
     {
@@ -672,12 +694,7 @@ string GetContent(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Id is required", language);
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE id = '" + d.Id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE id = '" + d.Id + "'", true);
 
     if (result == "[]")
     {
@@ -728,7 +745,7 @@ string GetTopic(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get(language, "Id is required");
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE id = '" + d.Id + "'");
+    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE id = '" + d.Id + "'", true);
 
     DataRow rTopic = db.GetDataRow(result);
 
@@ -769,28 +786,15 @@ string DeleteContent(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get(language, "Content_id is required");
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "'", true);
 
     if (result != "[]")
     {
         return "Error: " + translation.Get("You first need to delete the content details in order to delete this item", language);
     }
 
-    result = db.Prompt("DELETE FROM HelpdeskContent PARTITION KEY main WHERE id = '" + d.Content_id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
-
-    result = db.Prompt("DELETE FROM HelpdeskContent_search PARTITION KEY main WHERE id = '" + d.Content_id + "'");
-
-    return result;
+    db.Prompt("DELETE FROM HelpdeskContent PARTITION KEY main WHERE id = '" + d.Content_id + "'", true);
+    return "Ok.";
 
 }
 
@@ -817,28 +821,16 @@ string DeleteContentDetail(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get(language, "Id is required");
     }
 
-    result = db.Prompt("SELECT * FROM helpdeskcontentdetails WHERE id = '" + d.Id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM helpdeskcontentdetails WHERE id = '" + d.Id + "'", true);
 
     if (result == "[]")
     {
         return "Error: " + translation.Get("Content detail id does not exist ", language) + d.Id;
     }
 
-    result = db.Prompt("DELETE FROM helpdeskcontentdetails PARTITION KEY main WHERE id = '" + d.Id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
-
-    result = db.Prompt("DELETE FROM helpdeskcontentdetails_search PARTITION KEY main WHERE id = '" + d.Id + "'");
-
-    return result;
+    db.Prompt("DELETE FROM helpdeskcontentdetails PARTITION KEY main WHERE id = '" + d.Id + "'", true);
+    db.Prompt("DELETE FROM helpdeskcontentdetails_search PARTITION KEY main WHERE id = '" + d.Id + "'", true);
+    return "Ok.";
 
 }
 
@@ -867,10 +859,31 @@ private string GetContentDetail(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Content_id is required", language);
     }
 
-    return db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' ORDER BY Content_order");
+    return db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' ORDER BY Content_order", true);
 
 }
 
+
+
+private string GetPublicContent(AngelApiOperation api, Translations translation)
+{
+
+    dynamic d = api.DataMessage;
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    if (d.Content_id == null)
+    {
+        return "Error: " + translation.Get("Content_id is required", language);
+    }
+
+    return db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' AND IsPublic = 'true' ORDER BY Content_order", true);
+
+}
 
 
 
@@ -898,12 +911,7 @@ private string GetTitles(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Content_id is required", language);
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE id = '" + d.Content_id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE id = '" + d.Content_id + "'", true);
 
     if (result == "[]")
     {
@@ -911,12 +919,7 @@ private string GetTitles(AngelApiOperation api, Translations translation)
     }
 
     DataRow rContent = db.GetDataRow(result);
-    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + rContent["Subtopic_id"] + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + rContent["Subtopic_id"] + "'", true);
 
     if (result == "[]")
     {
@@ -924,12 +927,7 @@ private string GetTitles(AngelApiOperation api, Translations translation)
     }
 
     DataRow rSubTopic = db.GetDataRow(result);
-    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE id = '" + rSubTopic["Topic_id"] + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE id = '" + rSubTopic["Topic_id"] + "'", true);
 
     if (result == "[]")
     {
@@ -940,6 +938,7 @@ private string GetTitles(AngelApiOperation api, Translations translation)
 
     var dTitles = new
     {
+        Topic_id = rTopic["id"].ToString(),
         Topic = rTopic["Topic"].ToString(),
         Subtopic = rSubTopic["Subtopic"].ToString(),
         Content = rContent["Content_title"].ToString(),
@@ -951,6 +950,64 @@ private string GetTitles(AngelApiOperation api, Translations translation)
     return db.GetJson(dTitles);
 
 }
+
+
+private string GetContentTitles(AngelApiOperation api, Translations translation)
+{
+
+    dynamic d = api.DataMessage;
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    if (d.Content_id == null)
+    {
+        return "Error: " + translation.Get("Content_id is required", language);
+    }
+
+    string result = db.Prompt("SELECT * FROM HelpdeskContent WHERE id = '" + d.Content_id + "'", true);
+
+    if (result == "[]")
+    {
+        return "Error: " + translation.Get("No content found for Content_id:", language) + " " + d.Content_id;
+    }
+
+    DataRow rContent = db.GetDataRow(result);
+    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE id = '" + rContent["Subtopic_id"] + "'", true);
+
+    if (result == "[]")
+    {
+        return "Error: " + translation.Get("No Subtopic found for Subtopic_id:", language) + " " + rContent["Subtopic_id"];
+    }
+
+    DataRow rSubTopic = db.GetDataRow(result);
+    result = db.Prompt("SELECT * FROM HelpdeskTopics WHERE id = '" + rSubTopic["Topic_id"] + "'", true);
+
+    if (result == "[]")
+    {
+        return "Error: " + translation.Get("No Topic found for Topic_id:", language) + " " + rSubTopic["Topic_id"];
+    }
+
+    DataRow rTopic = db.GetDataRow(result);
+
+    var dTitles = new
+    {
+        Topic_id = rTopic["id"].ToString(),
+        Topic = rTopic["Topic"].ToString(),
+        Subtopic = rSubTopic["Subtopic"].ToString(),
+        Content = rContent["Content_title"].ToString(),
+        Topic_Description = rTopic["Description"].ToString(),
+        Subtopic_Description = rSubTopic["Description"].ToString(),
+        Content_Description = rContent["Description"].ToString()
+    };
+
+    return db.GetJson(dTitles);
+
+}
+
 
 
 private string GetContentDetailItem(AngelApiOperation api, Translations translation)
@@ -981,12 +1038,7 @@ private string GetContentDetailItem(AngelApiOperation api, Translations translat
         Id = d.Id
     };
 
-    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE id = '" + d.Id + "'");
-
-    if (result.StartsWith("Error:"))
-    {
-        return result;
-    }
+    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE id = '" + d.Id + "'", true);
 
     if (result == "[]")
     {
@@ -1005,7 +1057,42 @@ private string GetContentDetailItem(AngelApiOperation api, Translations translat
 }
 
 
-string IsUserValid(AngelApiOperation api, Translations translation)
+private string SearchInfo(AngelApiOperation api, Translations translation) 
+{
+
+    string result = IsUserValid(api, translation);
+
+    if (result.StartsWith("Error:"))
+    {
+        return result;
+    }
+
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    dynamic d = api.DataMessage;
+
+    if (d.Search == null)
+    {
+        return "Error: " + translation.Get("Search is required", language);
+    }
+
+    if (string.IsNullOrEmpty(d.Search.ToString()))
+    {
+        return "Error: " + translation.Get("Search is required", language);
+    }
+
+    return db.Prompt("SELECT Id, Content_id, substr( Content, 1, 100 ) As 'Content' FROM HelpdeskContentDetails_search WHERE HelpdeskContentDetails_search MATCH '" + d.Search + "' LIMIT 20", true);
+
+}
+
+
+
+string IsUserValid(AngelApiOperation api, Translations translation, string group = "HELPEDITOR")
 {
     string result = GetGroupsUsingTocken(api.Token, api.User, api.UserLanguage);
 
@@ -1021,7 +1108,7 @@ string IsUserValid(AngelApiOperation api, Translations translation)
         return translation.Get(api.UserLanguage, "No groups found");
     }
 
-    if (!user_data.groups.ToString().Contains("HELPEDITOR"))
+    if (!user_data.groups.ToString().Contains(group))
     {
         return translation.Get(api.UserLanguage, "User does not have permission to edit topics");
     }
@@ -1054,7 +1141,7 @@ string UploadFile(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Content_id is required", language);
     }
 
-    string directory = db.Prompt("VAR server_wwwroot") + "/helpdesk/" + d.Content_id + "/";
+    string directory = db.Prompt("VAR server_wwwroot", true) + "/helpdesk/" + d.Content_id + "/";
 
     if (!Directory.Exists(directory))
     {
@@ -1095,13 +1182,6 @@ string CreateTables(AngelDB.DB db)
         return result;
     }
 
-    result = db.CreateTable(topic, "HelpDeskTopics_search", true);
-
-    if (result.StartsWith("Error"))
-    {
-        return result;
-    }
-
     HelpdeskSubTopics subtopic = new();
     result = db.CreateTable(subtopic);
 
@@ -1110,22 +1190,8 @@ string CreateTables(AngelDB.DB db)
         return result;
     }
 
-    result = db.CreateTable(subtopic, "HelpDeskSubTopics_search", true);
-
-    if (result.StartsWith("Error"))
-    {
-        return result;
-    }
-
     HelpdeskContent content = new();
     result = db.CreateTable(content);
-
-    if (result.StartsWith("Error"))
-    {
-        return result;
-    }
-
-    result = db.CreateTable(content, "HelpdeskContent_search", true);
 
     if (result.StartsWith("Error"))
     {
@@ -1184,13 +1250,7 @@ private string SendToAngelPOST(string api_name, string user, string token, strin
         }
     };
 
-    string result = db.Prompt($"POST {server_db.Prompt("VAR server_tokens_url")} MESSAGE {JsonConvert.SerializeObject(d, Formatting.Indented)}");
-
-    if (result.StartsWith("Error:"))
-    {
-        return $"Error: ApiName {api_name} Account {db_account} OperationType {OPerationType} --> Result -->" + result;
-    }
-
+    string result = db.Prompt($"POST {server_db.Prompt("VAR server_tokens_url")} MESSAGE {JsonConvert.SerializeObject(d, Formatting.Indented)}", true);
     AngelDB.AngelResponce responce = JsonConvert.DeserializeObject<AngelDB.AngelResponce>(result);
     return responce.result;
 

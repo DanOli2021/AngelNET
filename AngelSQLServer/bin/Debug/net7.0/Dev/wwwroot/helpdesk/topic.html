@@ -39,12 +39,12 @@
         <div class="row justify-content-center">
 
             <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
-                <a class="btn btn-primary btn-block" href="menu.html" id="nav_link" style="width: 100%;">
+                <a class="btn btn-primary btn-block" href="topics.html" id="nav_link" style="width: 100%;">
                     <span style="float: left;">
                         <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                     </span>
-                    <span id="topics_menu">
-                        Menu
+                    <span id="topic_menu">
+                        Topics
                     </span>
                 </a>
             </div>
@@ -345,7 +345,7 @@
 
                 if (index == 4) {
                     var datosFila = tabla.row($(this).parents('tr')).data();
-                    window.open("content.html?topic_id=" + topic_id + "&subtopic_id=" + datosFila.id, "_blank");
+                    window.open("content.html?topic_id=" + topic_id + "&subtopic_id=" + datosFila.id, "_self");
                 }
 
             });

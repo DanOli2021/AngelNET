@@ -60,9 +60,6 @@ function translate_topics( language )
 
     if( language == "es" )
     {
-        document.getElementById("topics_menu").innerHTML = "Menú";
-        document.getElementById("topics_users_new").innerHTML = "Nuevo tópico (F2)";
-        document.getElementById("topics_refresh").innerHTML = "Refrescar (F4)";
     }        
 
 }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title id="PageTitle">HelpDesk ContentDetail</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" ContentDetail="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./prism/prism.css">
+    <script src="./prism/prism.js"></script>
+    <script src="./js/HelpDeskGetContent.js"></script>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row justify-ContentDetail-center">
+
+            <h1 id="topic" class="row justify-ContentDetail-center">
+            </h1>
+
+            <h2 id="subtopic" class="row justify-ContentDetail-center">
+            </h2>
+
+            <h2 id="content_title" class="row justify-ContentDetail-center">
+            </h2>
+
+            <div id="ShowContent" class="row justify-ContentDetail-center">
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        var Content_id = params.get('content_id');
+        var Account = params.get('account');
+
+        document.addEventListener("DOMContentLoaded", function () {
+            GetContentData(Account, Content_id);
+        });
+
+    </script>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

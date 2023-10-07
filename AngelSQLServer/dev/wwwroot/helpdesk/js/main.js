@@ -158,8 +158,8 @@ async function SaveContentDetail(user, token, contentdetail) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "UpsertContentDetail", contentdetail);
 }
 
-async function DeleteContentDetail(user, token, id) {
-  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteContentDetail", { Id: id });
+async function DeleteContentDetail(user, token, id, Content_id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteContentDetail", { Id: id, Content_id: Content_id } );
 }
 
 async function SendFileToDownload(user, token, file, dataMessage) {

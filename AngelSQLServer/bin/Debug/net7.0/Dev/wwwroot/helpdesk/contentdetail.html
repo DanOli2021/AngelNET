@@ -44,18 +44,18 @@
             <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
 
                 <div class="col-sm-6">
-                    <a class="btn btn-primary btn-block" href="topics.html" id="nav_link" style="width: 100%;">
+                    <a class="btn btn-primary btn-block" href="topics.html" id="topics_link" style="width: 100%;">
                         <span style="float: left;">
                             <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                         </span>
-                        <span id="topics_menu">
+                        <span id="contentdetail_topics">
                             Topics
                         </span>
                     </a>
                 </div>
 
                 <div class="col-sm-6">
-                    <a class="btn btn-secondary btn-block" href="topics.html" id="nav_link" style="width: 100%;">
+                    <a class="btn btn-secondary btn-block" href="topic.html" id="subtopic_link" style="width: 100%;">
                         <span style="float: left;">
                             <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                         </span>
@@ -71,22 +71,6 @@
 
             <div class="row" style="margin-bottom: 10px;">
                 <div class="col-sm-12">
-                    <h1 id="topics_title">
-                        Topics
-                    </h1>
-                </div>
-            </div>
-
-            <div class="row" style="margin-bottom: 10px;">
-                <div class="col-sm-12">
-                    <h2 id="subtopics_title">
-                        Sub Topics
-                    </h2>
-                </div>
-            </div>
-
-            <div class="row" style="margin-bottom: 10px;">
-                <div class="col-sm-12">
                     <h3 id="content_title">
                         Content
                     </h3>
@@ -96,19 +80,34 @@
             <br />
 
             <div class="row" style="margin-bottom: 10px;">
-                <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
-                    onclick="showContentDetailDialog('', true)" style="margin-bottom: 20px;">
-                    <span id="topics_users_new">
-                        New Content (F2)
-                    </span>
-                </button>
 
-                <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
-                    onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
-                    <span id="topics_refresh">
-                        Refresh (F4)
-                    </span>
-                </button>
+                <div class="col-sm-4">
+                    <button type="button" id="ButtonNew" class="btn btn-primary"
+                        onclick="showContentDetailDialog('', true)" style="margin-bottom: 20px;;width: 100%;">
+                        <span id="topics_users_new">
+                            New Content (F2)
+                        </span>
+                    </button>
+                </div>
+
+                <div class="col-sm-4">
+                    <button type="button" id="ButtonSearch" class="btn btn-secondary" onclick="GetData()"
+                        style="margin-bottom: 20px;margin-bottom: 20px;;width: 100%;">
+                        <span id="topics_refresh">
+                            Refresh (F4)
+                        </span>
+                    </button>
+                </div>
+
+                <div class="col-sm-4">
+                    <button type="button" id="button_show_content" class="btn btn-primary"
+                        style="margin-bottom: 20px;width: 100%;">
+                        <span id="open_content">
+                            Open Content
+                        </span>
+                    </button>
+                </div>
+
             </div>
 
             <br />
@@ -246,12 +245,8 @@
         var params = new URLSearchParams(url.search);
         var Content_id = params.get('content_id');
 
-        
-        function UploadFile() 
-        {
-
-            if( document.getElementById('file_upload').files.length == 0 )
-            {
+        function UploadFile() {
+            if (document.getElementById('file_upload').files.length == 0) {
                 showDialog("Attention", "No file selected");
                 return;
             }
@@ -269,20 +264,10 @@
                 }
 
                 let responce_query = JSON.parse(query);
-
-                if (responce_query.result.startsWith("Error:")) {
-                    showDialog("Attention", responce_query.result);
-                    console.log(responce_query.result);
-                    return;
-                }
-
-                showDialog("Attention", "File Uploaded: " + responce_query.result);
-
-                let file_data = JSON.parse(responce_query.result);
-                document.getElementById('ContentText').value = file_data.Url;
+                showDialog("Attention", "File Uploaded: " + responce_query.FileName);
+                document.getElementById('ContentText').value = responce_query.Url;
 
             });
-
         }
 
         function DeleteData() {
@@ -370,6 +355,7 @@
             ContentDetail.Content = document.getElementById('ContentText').value;
             ContentDetail.Content_type = document.getElementById('Content_type').value;
             ContentDetail.Content_order = document.getElementById('content_order').value;
+
 
             var data_result = SaveContentDetail(Token.username, Token.token, ContentDetail);
 
@@ -603,9 +589,34 @@
                 }
 
                 var titles = JSON.parse(responce_query.result);
-                document.getElementById('topics_title').innerHTML = titles.Topic + " - " + titles.Topic_Description;
-                document.getElementById('subtopics_title').innerHTML = titles.Subtopic + " - " + titles.Subtopic_Description;
                 document.getElementById('content_title').innerHTML = titles.Content + " - " + titles.Content_Description;
+
+                var topics_link = document.getElementById('topics_link');
+                topics_link.href = "topics.html";
+
+                var contentdetail_topics = document.getElementById('contentdetail_topics');
+                contentdetail_topics.innerHTML = titles.Topic + " - " + titles.Topic_Description;
+
+                var subtopics_menu = document.getElementById('subtopics_menu');
+                subtopics_menu.innerHTML = titles.Subtopic + " - " + titles.Subtopic_Description;
+
+                var subtopic_link = document.getElementById('subtopic_link');
+                subtopic_link.href = "topic.html?topic_id=" + titles.Topic_id;
+
+                account = "";
+
+                if (Token.username.includes("@")) {
+                    account = Token.username.split("@")[1];
+                }
+
+                var open_content = document.getElementById('open_content');
+                open_content.innerHTML = "Open Content: " + account + "/" + titles.Content;
+
+                open_content.addEventListener('click', function () {
+                    window.open("get.html?account=" + account + "&content_id=" + Content_id, '_blank');
+                });
+
+
 
             });
 
