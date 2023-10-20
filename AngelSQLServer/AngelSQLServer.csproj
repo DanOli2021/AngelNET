@@ -68,10 +68,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Connected Services\" />
-		<Folder Include="Controllers\" />
 		<Folder Include="dev\wwwroot\auth\pins\" />
-		<Folder Include="wwwroot\" />
 	</ItemGroup>
 
 </Project>

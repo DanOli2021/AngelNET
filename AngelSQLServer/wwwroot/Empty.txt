@@ -1,0 +1,6 @@
+﻿namespace AngelSQLServer.wwwroot
+{
+    public class Empty
+    {
+    }
+}
