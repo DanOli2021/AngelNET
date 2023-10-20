@@ -252,7 +252,7 @@
 
         function GetData() {
 
-            var datos = GetTopicsFromUser(Token.username, Token.token);
+            var datos = GetTopics(Token.username, Token.token);
 
             datos.then(function (query) {
 
@@ -271,6 +271,10 @@
         }
 
         document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F2") {
+                showTopicDialog('', true);
+            }
 
             if (event.key === "F4") {
                 GetData();
@@ -323,8 +327,7 @@
                     // Aquí se ejecuta el código al hacer clic en la tercera columna
                 }
 
-                if( index == 4) 
-                {
+                if (index == 4) {
                     var datosFila = tabla.row($(this).parents('tr')).data();
                     window.open("topic.html?topic_id=" + datosFila.id, "_self");
                 }

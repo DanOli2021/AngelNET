@@ -88,7 +88,7 @@
                 <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
                     onclick="showContentDialog('', true)" style="margin-bottom: 20px;">
                     <span id="topics_users_new">
-                        New Topic (F2)
+                        New Content (F2)
                     </span>
                 </button>
 
@@ -372,6 +372,10 @@
         }
 
         document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F2") {
+                showContentDialog('', true);
+            }
 
             if (event.key === "F4") {
                 GetData();

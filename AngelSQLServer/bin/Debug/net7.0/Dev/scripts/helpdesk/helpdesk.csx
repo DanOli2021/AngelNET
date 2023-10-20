@@ -81,6 +81,7 @@ return api.OperationType switch
     "UploadFile" => UploadFile(api, translation),
     "SearchInfo" => SearchInfo(api, translation),
     "GetContentTitles" => GetContentTitles(api, translation),
+    "GetPublicContent" => GetPublicContent(api, translation),
     _ => $"Error: No service found {api.OperationType}",
 };
 
@@ -821,6 +822,11 @@ string DeleteContentDetail(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get(language, "Id is required");
     }
 
+    if( d.Content_id == null )
+    {
+        return "Error: " + translation.Get(language, "Content_id is required");
+    }   
+
     result = db.Prompt("SELECT * FROM helpdeskcontentdetails WHERE id = '" + d.Id + "'", true);
 
     if (result == "[]")
@@ -828,8 +834,17 @@ string DeleteContentDetail(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Content detail id does not exist ", language) + d.Id;
     }
 
-    db.Prompt("DELETE FROM helpdeskcontentdetails PARTITION KEY main WHERE id = '" + d.Id + "'", true);
-    db.Prompt("DELETE FROM helpdeskcontentdetails_search PARTITION KEY main WHERE id = '" + d.Id + "'", true);
+    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE id = '" + d.Content_id + "'", true);
+
+    if (result == "[]")
+    {
+        return "Error: " + translation.Get("Content_id does not exist ", language) + d.Content_id;
+    }
+
+    DataRow rContent = db.GetDataRow(result);
+
+    db.Prompt($"DELETE FROM helpdeskcontentdetails PARTITION KEY {rContent["Subtopic_id"]} WHERE id = '" + d.Id + "'", true);
+    db.Prompt($"DELETE FROM helpdeskcontentdetails_search PARTITION KEY {rContent["Subtopic_id"]} WHERE id = '" + d.Id + "'", true);
     return "Ok.";
 
 }

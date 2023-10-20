@@ -1,4 +1,7 @@
+using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+
 
 namespace AngelDB
 {
@@ -86,6 +89,35 @@ namespace AngelDB
             return false;
         }
 
+        public static string MapNetworkDrive(string driveLetter, string sharedPath, string username, string password)
+        {
+            string arguments = $"{driveLetter} {sharedPath} /user:{username} {password}";
+            Process process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "net.exe",
+                    Arguments = "use " + arguments,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                return "Error: mapping network drive: " + error;
+            }
+
+            return output;
+        }
     }
 
 }

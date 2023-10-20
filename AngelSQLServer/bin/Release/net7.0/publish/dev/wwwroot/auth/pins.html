@@ -144,6 +144,9 @@
                 }
 
                 tabla.clear().rows.add(JSON.parse(responce_query.result)).draw();
+                tabla.columns.adjust().draw();
+
+
             });
 
         }

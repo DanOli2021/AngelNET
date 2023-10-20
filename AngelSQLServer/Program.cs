@@ -917,14 +917,14 @@ app.MapPost("/AngelUpload", async (HttpContext httpContext) =>
             return file_info.ErrorMessage;
         }
 
-        var file_name = wwww_directory + "/" + file_info.FileDirectory + "/" + file.FileName;
+        var file_name = wwww_directory + "/" + file_info.FileDirectory + "/" + file_info.FileName;
 
         if (Directory.Exists(wwww_directory + "/" + file_info.FileDirectory) == false)
         {
             Directory.CreateDirectory(wwww_directory + "/" + file_info.FileDirectory);
         }
 
-        file_info.Url = file_info.FileDirectory + "/" + file.FileName;
+        file_info.Url = file_info.FileDirectory + "/" + file_info.FileName;
 
         using var stream = File.OpenWrite(file_name);
         await file.CopyToAsync(stream);

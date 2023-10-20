@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HelpDesk Menu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/bottom_bar.css">
+
+    <script src="./js/index_translate.js"></script>
+    <script src="./js/main.js"></script>
+
+    <script>
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const language = getSelectedLanguage();
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
+
+    </script>
+    
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row" style="margin-top: 10px;">
+            <div class="container-fluid">
+                <a class="btn btn-primary btn-block" href="index.html" style="width: 100%;" id="menu_navigation_logout">
+                    <span style="float: left;">
+                        <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px;">
+                    </span>
+                    <span id="menu_log_out">
+                        Log Out
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <img src="./images/helpdesk.png" alt="logo" class="img-fluid mx-auto d-block"
+                style="margin-top: 20px;width:256px">
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;" id="auth_title">MyBusiness POS
+                HelpDesk</h1>
+
+            <div class="col-sm-12">
+                <div class="form-outline">
+                    <input type="search" id="help_search" class="form-control" style="margin-top: 20px; margin-bottom: 10px;"/>
+                </div>
+                <button type="button" id="button_search" class="btn btn-info btn-block btn-lg form-control" style="margin-bottom: 20px; background-color: bisque;">
+
+                    <span style="float: left;">
+                        <img src="images/icons/futurexp_text_research_48.png" alt="logo" style="width:24px;">
+                    </span>
+
+                    <span id="help_button_search">
+                        Search
+                    </span>
+                </button>
+            </div>
+
+            <div class="col-sm-12" id="Search_results">
+            </div>
+
+            <div class="col-sm-12" id="buttonszone">
+            </div>
+
+        </div>
+
+    </div>
+
+    <dialog id="myDialog">
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
+    </dialog>
+
+    <script>
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let response = GetGroupsUsingTocken(Token.username, Token.token);
+
+            response.then(function (query) {
+                let response_query = JSON.parse(query);
+
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                } else {
+                    generateButtons(response_query.result);
+                }
+            });
+
+            var button_search = document.getElementById("button_search");
+
+            button_search.addEventListener("click", Search);
+
+            translate_menu(language);
+            document.getElementById("help_search").focus();
+
+        });
+
+
+        function Search() 
+        {
+
+            let search = document.getElementById("help_search").value;
+            let response = SearchInfo(Token.username, Token.token, search);
+
+            response.then(function (query) {
+                let response_query = JSON.parse(query);
+
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                } else {
+
+                    var search_results = document.getElementById("Search_results");
+                     search_results.innerHTML = "";                   
+
+                    console.log(response_query.result);
+
+                    var ContentDetails = JSON.parse( response_query.result );
+                        ContentDetails.forEach(element => {
+                            var a = document.createElement("a");
+                            a.setAttribute("href", "contentdetail.html?content_id=" + element.Content_id);
+                            a.setAttribute("class", "btn btn-info btn-block btn-lg form-control");
+                            a.setAttribute("style", "margin-bottom: 10px; background-color: #A8E69D;");
+                            a.innerHTML = element.Content + "...";
+                            search_results.appendChild(a);
+                        });
+                }
+            });
+        }
+
+        function generateButtons(groups) {
+
+            let user_groups = JSON.parse(groups);
+
+            if (findInString(user_groups.groups, "HELPEDITOR")) {
+                generateButton("topics.html", "golden_database_table_properties_128.png", "Manage my collaborations", "btn btn-info btn-block btn-lg form-control");
+            }
+
+        }
+
+    </script>
+
+    <div class="bottom-bar">
+        <a href="privacy.html" target="_blank" id="index_privacy_policy_url">
+            <span id="index_privacy_policy">
+                Privacy Policy
+            </span>
+        </a>
+        <a href="https://mybusinesspos.com" target="_blank">MyBusinessPOS</a>
+        <a href="about.html" target="_blank" id="index_about_url">
+            <span id="index_about_us">
+                About us...
+            </span>
+        </a>
+    </div>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

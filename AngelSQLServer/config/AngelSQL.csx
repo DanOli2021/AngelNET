@@ -5,8 +5,20 @@
 
 #r "Newtonsoft.Json.dll"
 
+using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+
+if(Environment.GetEnvironmentVariable("ANGELSQL_MAPUNIT") != null)
+{
+    string result = AngelDB.OSTools.MapNetworkDrive(GetVariable("ANGELSQL_MAPNETWORK", ""), GetVariable("ANGELSQL_SHAREDPATH", ""), GetVariable("ANGELSQL_NETWORKUSER", ""), GetVariable("ANGELSQL_NETWORKCODE", ""));
+
+    if( result.StartsWith("Error:") )
+    {
+        Console.WriteLine("Map Network Drive: " + result);
+    }
+}
+
 
 Dictionary<string, string> parameters = new Dictionary<string, string>
 {
@@ -26,7 +38,7 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
     { "scripts_directory", GetVariable( "ANGELSQL_SCRIPTS_DIRECTORY", "dev/scripts" ) },
     { "accounts_directory", GetVariable( "ANGELSQL_ACCOUNTS_DIRECTORY", "" ) },
     { "smtp", GetVariable( "ANGELSQL_SMPT", "" ) },
-    { "smtp_port", GetVariable( "ANGELSQL_PORT", "" ) },
+    { "smtp_port", GetVariable( "ANGELSQL_SMPT_PORT", "" ) },
     { "email_address", GetVariable( "ANGELSQL_EMAIL_ADDRESS", "" ) },
     { "email_password", GetVariable( "ANGELSQL_EMAIL_PASSWORD", "" ) },
     { "angel_api", GetVariable( "ANGELSQL_API", "config/AngelAPI.csx" ) },
@@ -38,7 +50,7 @@ Dictionary<string, string> parameters = new Dictionary<string, string>
     { "service_delay", "300000" },
 };
 
-string main_url = "http://localhost:11000";
+string main_url = GetVariable("ANGELSQL_MAINSERVER", "http://localhost:11000");
 
 Dictionary<string, string> servers = new Dictionary<string, string>
 {

@@ -366,6 +366,8 @@
                 console.log(query);
 
                 tabla.clear().rows.add(JSON.parse(responce_query.result)).draw(); // Borramos los datos antiguos, añadimos los nuevos y redibujamos la tabla
+                tabla.columns.adjust().draw();
+
             });
 
         }
