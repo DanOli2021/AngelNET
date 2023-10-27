@@ -106,6 +106,10 @@ async function GetTopicsFromUser(user, token) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetTopicsFromUser", {});
 }
 
+async function GetTopics(user, token) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "GetTopics", {});
+}
+
 async function SaveTopic(user, token, topic) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "UpsertTopic", topic);
 }
@@ -168,6 +172,14 @@ async function SendFileToDownload(user, token, file, dataMessage) {
 
 async function SearchInfo(user, token, textToSerch) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "SearchInfo", { Search: textToSerch });
+}
+
+async function DeleteSubTopic(user, token, id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteSubTopic", { Id: id });
+}
+
+async function DeleteTopic(user, token, id) {
+  return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteTopic", { Id: id });
 }
 
 

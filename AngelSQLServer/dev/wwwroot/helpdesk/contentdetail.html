@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="./prism/prism.css">
     <script src="./prism/prism.js"></script>
 
-    <script src="./js/index_translate.js"></script>
+    <script src="./js/helpdesk_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -85,7 +85,7 @@
                 <div class="col-sm-4">
                     <button type="button" id="ButtonNew" class="btn btn-primary"
                         onclick="showContentDetailDialog('', true)" style="margin-bottom: 20px;;width: 100%;">
-                        <span id="topics_users_new">
+                        <span id="contentdetail_new">
                             New Content (F2)
                         </span>
                     </button>
@@ -94,7 +94,7 @@
                 <div class="col-sm-4">
                     <button type="button" id="ButtonSearch" class="btn btn-secondary" onclick="GetData()"
                         style="margin-bottom: 20px;margin-bottom: 20px;;width: 100%;">
-                        <span id="topics_refresh">
+                        <span id="contentdetail_refresh">
                             Refresh (F4)
                         </span>
                     </button>
@@ -103,8 +103,8 @@
                 <div class="col-sm-4">
                     <button type="button" id="button_show_content" class="btn btn-primary"
                         style="margin-bottom: 20px;width: 100%;" onclick="OpenContent()">
-                        <span id="open_content">
-                            Open Content
+                        <span id="contentdetail_open">
+                            Open Content Url
                         </span>
                     </button>
                 </div>
@@ -152,19 +152,19 @@
             <div class="col-md-12">
 
                 <div class="form-group">
-                    <label for="id" id="ContentDetail_label_id">Id</label>
+                    <label for="id" id="contentdetail_label_id">Id</label>
                     <input type="text" class="form-control" id="id" name="id">
                 </div>
 
                 <div class="row">
                     <div class="col-sm-6">
-                        <label for="file_upload" id="ContentDetail_label_file">Upload File</label>
+                        <label for="file_upload" id="contentdetail_label_file">Upload File</label>
                         <input type="file" class="form-control" id="file_upload" name="file_upload">
                     </div>
                     <div class="col-sm-6">
                         <button type="button" class="btn btn-primary" "
                             style=" text-align: right; margin-top: 20px; width: 100%;" onclick="UploadFile()">
-                            <span id="ContentDetail_button_upload_now">
+                            <span id="contentdetail_button_upload_now">
                                 Upload Now
                             </span>
                         </button>
@@ -175,7 +175,7 @@
 
                     <div class="col-sm-9">
                         <div class="form-group">
-                            <label for="ContentText" id="ContentDetail_label">Content</label>
+                            <label for="ContentText" id="contentdetail_content_label">Content</label>
                             <textarea id="ContentText" name="ContentText" class="form-control" rows="7">
                             </textarea>
                         </div>
@@ -183,7 +183,7 @@
 
                     <div class="col-sm-3">
                         <div class="form-group">
-                            <label for="PasteImage" id="ContentDetail_PasteImage_label">Image</label>
+                            <label for="PasteImage" id="contentdetail_pasteimage_label">Clipboard Image</label>
                             <img id="PasteImage" name="PasteImage" class="form-control" height="150px"
                                 style="width: 100%;">
                         </div>
@@ -191,7 +191,7 @@
                         <div class="form-group">
                             <button id="button_paste" name="button_paste" class="btn btn-primary form-control"
                                 onclick="Paste_Image()">
-                                <span id="ContentDetail_button_paste">
+                                <span id="contentdetail_button_paste">
                                     Paste Image
                                 </span>
                             </button>
@@ -200,29 +200,29 @@
                 </div>
 
                 <div class=" form-group">
-                    <label for="Content_type" id="ContentDetail_label_content_type">Content type</label>
+                    <label for="Content_type" id="dontentdetail_label_content_type">Content type</label>
                     <select class="form-control" id="Content_type" name="Content_type">
                         <option value=""></option>
-                        <option value="Text">Text</option>
-                        <option value="Title1">Title 1</option>
-                        <option value="Title2">Title 2</option>
-                        <option value="Title3">Title 3</option>
-                        <option value="VisualBasic">Visual Basic Code</option>
-                        <option value="C#">C# Code</option>
-                        <option value="Python">Python Code</option>
-                        <option value="JavaScript">Java Script Code</option>
-                        <option value="HTML">HTML Code</option>
-                        <option value="CSS">CSS Code</option>
-                        <option value="SQLServerQuery">SQL Server Query</option>
-                        <option value="AngelSQLQuery">AngelSQL Query</option>
-                        <option value="Image">Image</option>
-                        <option value="Video">Video</option>
-                        <option value="Url">Link</option>
+                        <option value="Text" id="contentdetail_option_text">Text</option>
+                        <option value="Title1" id="contentdetail_option_tittle1">Title 1</option>
+                        <option value="Title2" id="contentdetail_option_tittle2">Title 2</option>
+                        <option value="Title3" id="contentdetail_option_tittle3">Title 3</option>
+                        <option value="VisualBasic" id="contentdetail_option_visualbasic">Visual Basic Code</option>
+                        <option value="C#" id="contentdetail_option_csharp">C# Code</option>
+                        <option value="Python" id="contentdetail_option_python">Python Code</option>
+                        <option value="JavaScript" id="contentdetail_option_javascript">Java Script Code</option>
+                        <option value="HTML" id="contentdetail_option_html">HTML Code</option>
+                        <option value="CSS" id="contentdetail_option_css">CSS Code</option>
+                        <option value="SQLServerQuery" id="contentdetail_option_sqlserver">SQL Server Query</option>
+                        <option value="AngelSQLQuery" id="contentdetail_option_angelsqlquery">AngelSQL Query</option>
+                        <option value="Image" id="contentdetail_option_image">Image</option>
+                        <option value="Video" id="contentdetail_option_video">Video</option>
+                        <option value="Url" id="contentdetail_option_url">Link</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="content_order" id="ContentDetail_label_content_order">Order</label>
+                    <label for="content_order" id="contentdetail_label_content_order">Order</label>
                     <input type="text" class="form-control" id="content_order" name="content_order">
                 </div>
 
@@ -232,7 +232,7 @@
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-primary" "
                         style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveData()">
-                        <span id="ContentDetail_button_save">
+                        <span id="contentdetail_button_save">
                             Save
                         </span>
                     </button>
@@ -242,7 +242,7 @@
                     <button type="button" class="btn btn-danger"
                         style="text-align: right; margin-top: 20px; width: 100%;"
                         onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the ContentDetail?', DeleteData)">
-                        <span id="ContentDetail_button_delete">
+                        <span id="contentdetail_button_delete">
                             Delete
                         </span>
                     </button>
@@ -254,7 +254,7 @@
                     <button id="closeSkuEdit" class="btn btn-secondary"
                         style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeContentDetailDialog()"
                         style="text-align: right;">
-                        <span id="users_button_close">
+                        <span id="contentdetail_button_close">
                             Close
                         </span>
                     </button>
@@ -725,7 +725,7 @@
             });
 
             GetData();
-            translate_topics(language);
+            translate_contentdetail(language);
 
         });
 

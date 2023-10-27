@@ -16,7 +16,7 @@
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
 
-    <script src="./js/index_translate.js"></script>
+    <script src="./js/helpdesk_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -52,7 +52,8 @@
                 </div>
 
                 <div class="col-sm-6">
-                    <a class="btn btn-secondary btn-block" href="topic.html" id="content_link_subtopic" style="width: 100%;">
+                    <a class="btn btn-secondary btn-block" href="topic.html" id="content_link_subtopic"
+                        style="width: 100%;">
                         <span style="float: left;">
                             <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
                         </span>
@@ -87,19 +88,19 @@
             <div class="row" style="margin-bottom: 10px;">
                 <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
                     onclick="showContentDialog('', true)" style="margin-bottom: 20px;">
-                    <span id="topics_users_new">
+                    <span id="content_new">
                         New Content (F2)
                     </span>
                 </button>
 
                 <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
                     onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
-                    <span id="topics_refresh">
+                    <span id="content_refresh">
                         Refresh (F4)
                     </span>
                 </button>
             </div>
-            
+
             <br />
             <table id="dataTable" class="display" style="width:100%">
                 <thead>
@@ -112,10 +113,10 @@
                         <th id="content_status">Status</th>
                         <th id="content_version">Version</th>
                         <th id="content_is_public">Is Public</th>
-                        <th id="subtopics_createdby">Created By</th>
-                        <th id="subtopics_createdat">Created At</th>
-                        <th id="subtopics_updatedby">Updated By</th>
-                        <th id="subtopics_updatedat">Updated At</th>
+                        <th id="content_createdby">Created By</th>
+                        <th id="content_createdat">Created At</th>
+                        <th id="content_updatedby">Updated By</th>
+                        <th id="content_updatedat">Updated At</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -158,6 +159,12 @@
                     <input type="text" class="form-control" id="id" name="id">
                 </div>
 
+                <div class=" form-group" id="content_subtopic_group">
+                    <label for="content_list" id="content_label_list">Subtopic Asociated</label>
+                    <select class="form-control" id="content_list" name="content_list">
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label for="content_title" id="content_label_title">Content Title</label>
                     <input type="text" class="form-control" id="content_title" name="content_title">
@@ -182,7 +189,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="is_public" id="content_label_status">Is Public</label>                    
+                    <label for="is_public" id="content_label_is_public">Is Public</label>
                     <select class="form-control" id="is_public" name="is_public">
                         <option value="1">True</option>
                         <option value="0">False</option>
@@ -193,7 +200,7 @@
 
             <div class="row">
                 <div class="col-sm-6">
-                    <button type="button" class="btn btn-primary" "
+                    <button type="button" class="btn btn-primary"
                         style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveContentData()">
                         <span id="content_button_save">
                             Save
@@ -217,7 +224,7 @@
                     <button id="closeSkuEdit" class="btn btn-secondary"
                         style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeContentDialog()"
                         style="text-align: right;">
-                        <span id="users_button_close">
+                        <span id="content_button_close">
                             Close
                         </span>
                     </button>
@@ -266,6 +273,50 @@
 
             document.getElementById('id').value = "";
             document.getElementById('id').readOnly = true;
+
+            let select = document.getElementById('content_list');
+
+            while (select.options.length > 0) {
+                select.remove(0);
+            }
+
+            var subtopics_data = GetSubTopicsFromTopic(Token.username, Token.token, topic_id);
+
+            subtopics_data.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                let subtopics = JSON.parse(responce_query.result);
+
+                subtopics.forEach(element => {
+                    var option = document.createElement("option");
+                    option.text = element.Subtopic;
+                    option.value = element.id;
+
+                    if (new_topic) {
+                        if (element.id == subtopic_id) {
+                            option.selected = true;
+                            select.value = element.id;
+                        }
+                    } 
+                    else 
+                    {
+                        if (element.id == Content_data.Subtopic_id) {
+                            option.selected = true;
+                            select.value = element.id;
+                        }
+                    }
+
+                    select.add(option);
+                });
+
+            });
 
             if (new_topic) {
                 var dialog = document.getElementById("content");
@@ -324,12 +375,12 @@
             }
 
             content.Id = document.getElementById('id').value;
-            content.Subtopic_id = subtopic_id;
+            content.Subtopic_id = document.getElementById('content_list').value;
             content.Content_title = document.getElementById('content_title').value;
             content.Description = document.getElementById('description').value;
             content.Status = document.getElementById('status').value;
             content.Version = document.getElementById('version').value;
-            content.IsPublic = document.getElementById('is_public').value;            
+            content.IsPublic = document.getElementById('is_public').value;
 
             var data_result = SaveContent(Token.username, Token.token, content);
 
@@ -457,7 +508,7 @@
             });
 
 
-            console.log("subtopic_id: " + subtopic_id); 
+            console.log("subtopic_id: " + subtopic_id);
 
             var datos = GetSubTopic(Token.username, Token.token, subtopic_id);
 
@@ -478,7 +529,7 @@
 
 
             GetData();
-            translate_topics(language);
+            translate_content(language);
 
         });
 

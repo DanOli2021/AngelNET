@@ -1,6 +1,1 @@
-﻿namespace AngelSQLServer.wwwroot
-{
-    public class Empty
-    {
-    }
-}
+﻿This file is empty

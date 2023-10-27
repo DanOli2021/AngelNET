@@ -1,1 +1,1 @@
-{"ContentRoots":["C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\"],"Root":{"Children":null,"Asset":null,"Patterns":[{"ContentRootIndex":0,"Pattern":"**","Depth":0}]}}
+{"ContentRoots":["C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\"],"Root":{"Children":{"Empty.txt":{"Children":null,"Asset":{"ContentRootIndex":0,"SubPath":"Empty.txt"},"Patterns":null}},"Asset":null,"Patterns":[{"ContentRootIndex":0,"Pattern":"**","Depth":0}]}}
