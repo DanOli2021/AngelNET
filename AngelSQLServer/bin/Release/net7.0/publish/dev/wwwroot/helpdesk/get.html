@@ -15,6 +15,9 @@
 <body>
 
     <div class="container">
+
+        <hr />    
+
         <div class="row justify-ContentDetail-center">
 
             <h1 id="topic" class="row justify-ContentDetail-center">
@@ -30,9 +33,10 @@
 
             <div id="ShowContent" class="row justify-ContentDetail-center">
             </div>
-
-
         </div>
+
+        <hr />
+
     </div>
 
     <script>
@@ -41,8 +45,6 @@
         var params = new URLSearchParams(url.search);
         var Content_id = params.get('content_id');
         var Account = params.get('account');
-
-        console.log(Account); 
 
         document.addEventListener("DOMContentLoaded", function () {
             GetContentData(Account, Content_id);

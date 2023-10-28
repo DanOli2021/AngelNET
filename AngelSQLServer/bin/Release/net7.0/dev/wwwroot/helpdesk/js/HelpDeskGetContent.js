@@ -50,15 +50,55 @@ function GetContentData(Account, Content_id) {
 
 }
 
+function formatText(text) {
+    let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    return formattedText;
+}
 
-function addContentDetail(Id, Content, Content_type, element) {
+function addHorizontalRule(text) {
+    let lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim() === '---') {
+            lines[i] = '<hr>';
+        }
+    }
+    return lines.join('\n');
+}
+
+
+function identifyLinks(text) {
+    // Expresión regular básica para identificar URLs
+    const urlRegex = /https?:\/\/[^\s]+/g;
+    let links = text.match(urlRegex);
+    return links;
+}
+
+function createAnchors(text, links) {
+    let anchoredText = text;
+
+    if( links == null || links == undefined || links.length == 0)
+        return anchoredText;
+
+    links.forEach(link => {
+        const anchor = `<a href="${link}" target="_blank">${link}</a>`;
+        anchoredText = anchoredText.replace(link, anchor);
+    });
+    return anchoredText;
+}
+
+
+async function addContentDetail(Id, Content, Content_type, element) {
     // Crear el elemento h1
 
     var html_block;
 
     if (Content_type == "Text") {
         html_block = document.createElement('p');
-        html_block.textContent = Content;
+        let formattedContent = formatText(Content);
+        formattedContent = addHorizontalRule(formattedContent);
+        const links = identifyLinks(formattedContent);
+        formattedContent = createAnchors(formattedContent, links);
+        html_block.innerHTML = formattedContent;
     }
     else if (Content_type == "Title1") {
         html_block = document.createElement('h1');
@@ -185,7 +225,7 @@ function addContentDetail(Id, Content, Content_type, element) {
             html_block.src = Content;  // Primera línea para la fuente de la imagen
             html_block.appendChild(imageBlock);
         }
-}
+    }
     else {
         html_block = document.createElement('p');
         html_block.textContent = Content;

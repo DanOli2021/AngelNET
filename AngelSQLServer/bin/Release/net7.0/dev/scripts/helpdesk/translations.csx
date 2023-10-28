@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Translations
 {
-    private readonly Dictionary<string, string> spanish = new();
+    private readonly Dictionary<string, string> spanish = new Dictionary<string, string>();
 
     public string SpanishValues()
     {
@@ -64,6 +64,31 @@ public class Translations
         spanish.Add("Email already exists in another account", "Email ya existe en otra cuenta");
         spanish.Add("wwwroot directory not found", "No se encontró el directorio wwwroot");
         spanish.Add("Creating table pins", "Creando tabla pins");
+        spanish.Add("Id is required", "Id es requerido");
+        spanish.Add("Topic is required", "Tema es requerido");
+        spanish.Add("Description is required", "Descripción es requerida");
+        spanish.Add("Topic_id is required", "Topic_id es requerido");
+        spanish.Add("Subtopic is required", "Subtema es requerido");
+        spanish.Add("Topic_id does not exist", "Topic_id no existe");
+        spanish.Add("Subtopic_id is required", "Subtopic_id es requerido");
+        spanish.Add("Content_title is required", "Content_title es requerido");
+        spanish.Add("Status is required", "Status es requerido");
+        spanish.Add("Version is required", "Version es requerido");
+        spanish.Add("IsPublic is required", "IsPublic es requerido");
+        spanish.Add("Content_id is required", "Content_id es requerido");
+        spanish.Add("Content_type is required", "Content_type es requerido");
+        spanish.Add("Content_order is required", "Content_order es requerido");
+        spanish.Add("Content is required", "Content es requerido");
+        spanish.Add("Subtopic_id does not exist", "Subtopic_id no existe");
+        spanish.Add("You first need to delete the content details and content header in order to delete this item", "Primero debe eliminar los detalles de contenido y el encabezado de contenido para eliminar este elemento");
+        spanish.Add("No content found for Content_id:", "No se encontró contenido para Content_id:");
+        spanish.Add("No Subtopic found for Subtopic_id:", "No se encontró subtema para Subtopic_id:");
+        spanish.Add("No Topic found for Topic_id:", "No se encontró tema para Topic_id:");
+        spanish.Add("Search is required", "Search es requerido");
+        spanish.Add("No groups found", "No se encontraron grupos");
+        spanish.Add("User does not have permission to edit", "El usuario no tiene permiso para editar");   
+        spanish.Add("File is required", "File es requerido");
+        spanish.Add("You first need to delete the subtopics and content header in order to delete this item", "Primero debe eliminar los subtemas y el encabezado de contenido para eliminar este elemento");
         return "Ok.";
     }
 

@@ -278,8 +278,6 @@ C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\css\responsive.dataTables.css
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\css\sql_commands.css
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\css\styles.css
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\853ca5d8-f131-409b-a250-b6c650b7fa6c\A1_DORE.pdf
-C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\853ca5d8-f131-409b-a250-b6c650b7fa6c\A2_DORE.pdf
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\bootstrap-5.3.0\css\bootstrap-grid.css
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\bootstrap-5.3.0\css\bootstrap-grid.css.map
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\bootstrap-5.3.0\css\bootstrap-grid.min.css
@@ -358,6 +356,8 @@ C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\js\code.jquery.com_jquery-3.7.0.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\js\dataTables.responsive.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\js\HelpDeskGetContent.js
+C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\js\HelpDeskGetContent.zip
+C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\js\helpdesk_translate.js
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\js\index_translate.js
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\js\jquery.dataTables.min.js
 C:\Desarrollo\AngelNET\AngelSQLServer\obj\Release\net7.0\PubTmp\Out\dev\wwwroot\helpdesk\js\main.js

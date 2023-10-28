@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="./prism/prism.css">
     <script src="./prism/prism.js"></script>
 
-    <script src="./js/index_translate.js"></script>
+    <script src="./js/helpdesk_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -36,6 +36,7 @@
 </head>
 
 <body>
+    <hr />    
 
     <div class="container">
 
@@ -84,7 +85,7 @@
                 <div class="col-sm-4">
                     <button type="button" id="ButtonNew" class="btn btn-primary"
                         onclick="showContentDetailDialog('', true)" style="margin-bottom: 20px;;width: 100%;">
-                        <span id="topics_users_new">
+                        <span id="contentdetail_new">
                             New Content (F2)
                         </span>
                     </button>
@@ -93,7 +94,7 @@
                 <div class="col-sm-4">
                     <button type="button" id="ButtonSearch" class="btn btn-secondary" onclick="GetData()"
                         style="margin-bottom: 20px;margin-bottom: 20px;;width: 100%;">
-                        <span id="topics_refresh">
+                        <span id="contentdetail_refresh">
                             Refresh (F4)
                         </span>
                     </button>
@@ -101,9 +102,9 @@
 
                 <div class="col-sm-4">
                     <button type="button" id="button_show_content" class="btn btn-primary"
-                        style="margin-bottom: 20px;width: 100%;">
-                        <span id="open_content">
-                            Open Content
+                        style="margin-bottom: 20px;width: 100%;" onclick="OpenContent()">
+                        <span id="contentdetail_open">
+                            Open Content Url
                         </span>
                     </button>
                 </div>
@@ -118,6 +119,8 @@
 
         </div>
     </div>
+
+    <hr />    
 
     <dialog id="myDialog" class="dialog-box">
         <h1 id="dialogTittle">Title</h1>
@@ -149,55 +152,77 @@
             <div class="col-md-12">
 
                 <div class="form-group">
-                    <label for="id" id="ContentDetail_label_id">Id</label>
+                    <label for="id" id="contentdetail_label_id">Id</label>
                     <input type="text" class="form-control" id="id" name="id">
                 </div>
 
                 <div class="row">
                     <div class="col-sm-6">
-                        <label for="file_upload" id="ContentDetail_label_file">Upload File</label>
+                        <label for="file_upload" id="contentdetail_label_file">Upload File</label>
                         <input type="file" class="form-control" id="file_upload" name="file_upload">
                     </div>
                     <div class="col-sm-6">
                         <button type="button" class="btn btn-primary" "
                             style=" text-align: right; margin-top: 20px; width: 100%;" onclick="UploadFile()">
-                            <span id="ContentDetail_button_upload_now">
+                            <span id="contentdetail_button_upload_now">
                                 Upload Now
                             </span>
                         </button>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="ContentText" id="ContentDetail_label">Content</label>
-                    <textarea id="ContentText" name="ContentText" class="form-control" rows="7">
-                    </textarea>
+                <div class="row">
+
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <label for="ContentText" id="contentdetail_content_label">Content</label>
+                            <textarea id="ContentText" name="ContentText" class="form-control" rows="7">
+                            </textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="PasteImage" id="contentdetail_pasteimage_label">Clipboard Image</label>
+                            <img id="PasteImage" name="PasteImage" class="form-control" height="150px"
+                                style="width: 100%;">
+                        </div>
+
+                        <div class="form-group">
+                            <button id="button_paste" name="button_paste" class="btn btn-primary form-control"
+                                onclick="Paste_Image()">
+                                <span id="contentdetail_button_paste">
+                                    Paste Image
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="Content_type" id="ContentDetail_label_content_type">Content type</label>
+                <div class=" form-group">
+                    <label for="Content_type" id="dontentdetail_label_content_type">Content type</label>
                     <select class="form-control" id="Content_type" name="Content_type">
                         <option value=""></option>
-                        <option value="Text">Text</option>
-                        <option value="Title1">Title 1</option>
-                        <option value="Title2">Title 2</option>
-                        <option value="Title3">Title 3</option>
-                        <option value="VisualBasic">Visual Basic Code</option>
-                        <option value="C#">C# Code</option>
-                        <option value="Python">Python Code</option>
-                        <option value="JavaScript">Java Script Code</option>
-                        <option value="HTML">HTML Code</option>
-                        <option value="CSS">CSS Code</option>
-                        <option value="SQLServerQuery">SQL Server Query</option>
-                        <option value="AngelSQLQuery">AngelSQL Query</option>
-                        <option value="Image">Image</option>
-                        <option value="Video">Video</option>
-                        <option value="Url">Link</option>
+                        <option value="Text" id="contentdetail_option_text">Text</option>
+                        <option value="Title1" id="contentdetail_option_tittle1">Title 1</option>
+                        <option value="Title2" id="contentdetail_option_tittle2">Title 2</option>
+                        <option value="Title3" id="contentdetail_option_tittle3">Title 3</option>
+                        <option value="VisualBasic" id="contentdetail_option_visualbasic">Visual Basic Code</option>
+                        <option value="C#" id="contentdetail_option_csharp">C# Code</option>
+                        <option value="Python" id="contentdetail_option_python">Python Code</option>
+                        <option value="JavaScript" id="contentdetail_option_javascript">Java Script Code</option>
+                        <option value="HTML" id="contentdetail_option_html">HTML Code</option>
+                        <option value="CSS" id="contentdetail_option_css">CSS Code</option>
+                        <option value="SQLServerQuery" id="contentdetail_option_sqlserver">SQL Server Query</option>
+                        <option value="AngelSQLQuery" id="contentdetail_option_angelsqlquery">AngelSQL Query</option>
+                        <option value="Image" id="contentdetail_option_image">Image</option>
+                        <option value="Video" id="contentdetail_option_video">Video</option>
+                        <option value="Url" id="contentdetail_option_url">Link</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="content_order" id="ContentDetail_label_content_order">Order</label>
+                    <label for="content_order" id="contentdetail_label_content_order">Order</label>
                     <input type="text" class="form-control" id="content_order" name="content_order">
                 </div>
 
@@ -207,7 +232,7 @@
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-primary" "
                         style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveData()">
-                        <span id="ContentDetail_button_save">
+                        <span id="contentdetail_button_save">
                             Save
                         </span>
                     </button>
@@ -217,7 +242,7 @@
                     <button type="button" class="btn btn-danger"
                         style="text-align: right; margin-top: 20px; width: 100%;"
                         onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the ContentDetail?', DeleteData)">
-                        <span id="ContentDetail_button_delete">
+                        <span id="contentdetail_button_delete">
                             Delete
                         </span>
                     </button>
@@ -229,7 +254,7 @@
                     <button id="closeSkuEdit" class="btn btn-secondary"
                         style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeContentDetailDialog()"
                         style="text-align: right;">
-                        <span id="users_button_close">
+                        <span id="contentdetail_button_close">
                             Close
                         </span>
                     </button>
@@ -266,6 +291,7 @@
                 let responce_query = JSON.parse(query);
                 showDialog("Attention", "File Uploaded: " + responce_query.FileName);
                 document.getElementById('ContentText').value = responce_query.Url;
+                document.getElementById('Content_type').value = "Link";
 
             });
         }
@@ -295,10 +321,47 @@
             });
         }
 
+        function Paste_Image() {
+            navigator.clipboard.read().then(clipboardItems => {
+                for (let clipboardItem of clipboardItems) {
+                    for (let type of clipboardItem.types) {
+                        if (type === 'image/png' || type === 'image/jpeg') {
+                            clipboardItem.getType(type).then(blob => {
+                                const url = URL.createObjectURL(blob);
+                                document.getElementById('PasteImage').src = url;
+
+
+                                const file = new File([blob], "new.png", { type: blob.type });
+
+                                var data_result = SendFileToDownload(Token.username, Token.token, file, { Content_id: Content_id });
+
+                                data_result.then(function (query) {
+
+                                    if (query.startsWith("Error:")) {
+                                        showDialog("Attention", query);
+                                        console.log(query);
+                                        return;
+                                    }
+
+                                    let responce_query = JSON.parse(query);
+                                    showDialog("Attention", "File Uploaded: " + responce_query.FileName);
+                                    document.getElementById('ContentText').value = responce_query.Url + "\n" + "width: 500px;"
+                                    document.getElementById('Content_type').value = "Image";
+
+                                });
+
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
         function showContentDetailDialog(Id, new_topic = false) {
 
             document.getElementById('id').value = "";
             document.getElementById('id').readOnly = true;
+            document.getElementById('PasteImage').src = "";
 
             if (new_topic) {
                 var dialog = document.getElementById("ContentDetail_dialog");
@@ -404,14 +467,54 @@
 
         }
 
-        function addContentDetail(Id, Content, Content_type, element, editFunction) {
+        function formatText(text) {
+            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            return formattedText;
+        }
+
+        function addHorizontalRule(text) {
+            let lines = text.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].trim() === '---') {
+                    lines[i] = '<hr>';
+                }
+            }
+            return lines.join('\n');
+        }
+
+        function identifyLinks(text) {
+            // Expresión regular básica para identificar URLs
+            const urlRegex = /https?:\/\/[^\s]+/g;
+            let links = text.match(urlRegex);
+            return links;
+        }
+
+        function createAnchors(text, links) {
+            let anchoredText = text;
+
+            if (links == null || links == undefined || links.length == 0)
+                return anchoredText;
+
+            links.forEach(link => {
+                const anchor = `<a href="${link}" target="_blank">${link}</a>`;
+                anchoredText = anchoredText.replace(link, anchor);
+            });
+            return anchoredText;
+        }
+
+
+        async function addContentDetail(Id, Content, Content_type, element, editFunction) {
             // Crear el elemento h1
 
             var html_block;
 
             if (Content_type == "Text") {
                 html_block = document.createElement('p');
-                html_block.textContent = Content;
+                let formattedContent = formatText(Content);
+                formattedContent = addHorizontalRule(formattedContent);
+                const links = identifyLinks(formattedContent);
+                formattedContent = createAnchors(formattedContent, links);
+                html_block.innerHTML = formattedContent;
             }
             else if (Content_type == "Title1") {
                 html_block = document.createElement('h1');
@@ -571,11 +674,16 @@
 
         document.addEventListener('keydown', function (event) {
 
+            if (event.key === "F2") {
+                showContentDetailDialog('', true);
+            }
+
             if (event.key === "F4") {
                 GetData();
             }
 
         });
+
 
         var tabla;
 
@@ -614,20 +722,17 @@
                     account = Token.username.split("@")[1];
                 }
 
-                var open_content = document.getElementById('open_content');
-
-                open_content.addEventListener('click', function () {
-                    window.open("get.html?account=" + account + "&content_id=" + Content_id, '_blank');
-                });
-
-
-
             });
 
             GetData();
-            translate_topics(language);
+            translate_contentdetail(language);
 
         });
+
+
+        function OpenContent() {
+            window.open("get.html?account=" + account + "&content_id=" + Content_id, '_blank');
+        }
 
     </script>
 

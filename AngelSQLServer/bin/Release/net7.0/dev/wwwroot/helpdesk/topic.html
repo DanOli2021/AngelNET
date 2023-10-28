@@ -16,7 +16,7 @@
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
 
-    <script src="./js/index_translate.js"></script>
+    <script src="./js/helpdesk_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -53,8 +53,8 @@
 
             <div class="row" style="margin-bottom: 10px;">
                 <div class="col-sm-12">
-                    <h1 id="topics_title">
-                        Topics
+                    <h1 id="topic_title">
+                        Topics_title
                     </h1>
                 </div>
             </div>
@@ -64,14 +64,14 @@
             <div class="row" style="margin-bottom: 10px;">
                 <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
                     onclick="showSubTopicDialog('', true)" style="margin-bottom: 20px;">
-                    <span id="topics_users_new">
+                    <span id="topic_new">
                         New Topic (F2)
                     </span>
                 </button>
 
                 <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
                     onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
-                    <span id="topics_refresh">
+                    <span id="topic_refresh">
                         Refresh (F4)
                     </span>
                 </button>
@@ -104,6 +104,23 @@
         <button id="closeButton" class="btn btn-warning" style="width: 100%;" onclick="closeDialog()">Close</button>
     </dialog>
 
+    <dialog id="DialogAcceptCancel" class="dialog-box">
+
+        <h1 id="dialogTittleAcceptCancel">Title</h1>
+        <p id="dialogMessageAcceptCancel">Message</p>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <button id="accept" onclick="closeDialogAcceptCancelDialog()" class="btn btn-danger"
+                    style="width: 100%;">Accept</button>
+            </div>
+
+            <div class="col-sm-6">
+                <button id="cancel" onclick="closeDialogAcceptCancelDialog()" class="btn btn-primary"
+                    style="width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </dialog>
 
     <dialog id="subtopic_dialog" style="width: 90%;">
         <div class="row">
@@ -114,6 +131,12 @@
                     <input type="text" class="form-control" id="id" name="id">
                 </div>
 
+                <div class=" form-group" id="subtopics_topic_group">
+                    <label for="subtopics_topic" id="subtopics_label_list">Topic Asociated</label>
+                    <select class="form-control" id="subtopics_topic" name="subtopics_topic">
+                    </select>
+                </div>
+                
                 <div class="form-group">
                     <label for="subtopic" id="subtopics_label_topic">Sub Topic</label>
                     <input type="text" class="form-control" id="subtopic" name="subtopic">
@@ -123,6 +146,7 @@
                     <label for="description" id="subtopics_label_description">Description</label>
                     <input type="text" class="form-control" id="description" name="description">
                 </div>
+
             </div>
 
             <div class="row">
@@ -138,7 +162,7 @@
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-danger"
                         style="text-align: right; margin-top: 20px; width: 100%;"
-                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Sub Topic?', DeleteUserData)">
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Sub Topic?', DeleteData)">
                         <span id="subtopics_button_delete">
                             Delete
                         </span>
@@ -151,7 +175,7 @@
                     <button id="closeSkuEdit" class="btn btn-secondary"
                         style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeSubTopicsDialog()"
                         style="text-align: right;">
-                        <span id="users_button_close">
+                        <span id="subtopics_button_close">
                             Close
                         </span>
                     </button>
@@ -172,7 +196,7 @@
 
             closeDialogAcceptCancelDialog();
 
-            var data_result = DeleteTopic(Token.username, Token.token, id);
+            var data_result = DeleteSubTopic(Token.username, Token.token, id);
 
             data_result.then(function (query) {
 
@@ -184,7 +208,7 @@
                     return;
                 }
 
-                showDialog("Attention", "Topic " + id + " deleted successfully");
+                showDialog("Attention", "Subtopic " + id + " deleted successfully");
                 closeUsersDialog();
                 GetData();
                 return;
@@ -194,14 +218,51 @@
 
         function showSubTopicDialog(Topic_data, new_topic = false) {
 
+            let select = document.getElementById('subtopics_topic');
+
+            while (select.options.length > 0) {
+                select.remove(0);
+            }
+
+            var topics_data = GetTopics(Token.username, Token.token);
+
+            topics_data.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                let topics = JSON.parse(responce_query.result);
+
+                for (let index = 0; index < topics.length; index++) {
+                    const element = topics[index];
+                    var option = document.createElement("option");
+                    option.text = element.Topic;
+                    option.value = element.id;
+
+                    if (new_topic) {
+                        option.selected = (element.id == topic_id);
+                    } else {
+                        option.selected = (element.id == Topic_data.Topic_id);
+                    }
+                    
+                    select.add(option);
+                }
+
+            });
+
             if (new_topic) {
                 var dialog = document.getElementById("subtopic_dialog");
-                dialog.showModal();
                 document.getElementById('id').value = "";
                 document.getElementById('id').readOnly = true;
                 document.getElementById('subtopic').value = "";
                 document.getElementById('description').value = "";
                 document.getElementById('subtopic').focus();
+                dialog.showModal();
                 return;
             }
 
@@ -226,9 +287,12 @@
                 document.getElementById('id').value = SubTopic.Id;
                 document.getElementById('subtopic').value = SubTopic.Subtopic;
                 document.getElementById('description').value = SubTopic.Description;
+                document.getElementById('subtopics_topic').selectedIndex = SubTopic.Topic_id;
+                console.log(SubTopic.Topic_id);
                 document.getElementById('subtopic').focus();
 
             });
+
 
         }
 
@@ -240,13 +304,13 @@
         function SaveSubTopicData() {
             let subtopic = {};
 
-            if( topic_id == null || topic_id == undefined || topic_id == ""){
+            if (topic_id == null || topic_id == undefined || topic_id == "") {
                 showDialog("Error:", "Topic id not found");
-                return; 
+                return;
             }
 
             subtopic.Id = document.getElementById('id').value;
-            subtopic.Topic_id = topic_id;
+            subtopic.Topic_id = document.getElementById('subtopics_topic').value;
             subtopic.Subtopic = document.getElementById('subtopic').value;
             subtopic.Description = document.getElementById('description').value;
 
@@ -291,6 +355,10 @@
         }
 
         document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F2") {
+                showSubTopicDialog('', true);
+            }
 
             if (event.key === "F4") {
                 GetData();
@@ -365,13 +433,14 @@
                 }
 
 
-                var topic = JSON.parse(responce_query.result); 
-                document.getElementById('topics_title').innerHTML = topic.Topic + " - " + topic.Description; 
+                var topic = JSON.parse(responce_query.result);
+                document.getElementById('topic_title').innerHTML = topic.Topic + " - " + topic.Description;
+
 
             });
 
             GetData();
-            translate_topics(language);
+            translate_topic(language);
 
         });
 

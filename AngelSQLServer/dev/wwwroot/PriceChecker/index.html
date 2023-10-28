@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MyBusinessPOS Price Checker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../bootstrap-5.3.0/css/bootstrap.min.css">
+    <script src="./js/main.js"></script>
+
+    <style>
+        #fullScreenContainer {
+            height: 80vh; /* Altura completa de la ventana */
+        }
+    
+        #productImage {
+            max-width: 80%; /* Asegura que la imagen no sobrepase el contenedor */
+            max-height: 80%;
+            object-fit: contain; /* Mantiene proporciones y se ajusta al contenedor */
+        }
+    </style>
+
+    
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Sku" id="sku" style="margin-top: 20px;" required>
+        </div>
+
+        <div class="form-group text-center" id="sku_info">
+            <h1 id="sku_description" style="margin-top: 20px;">
+            </h1>
+
+            <h1 id="sku_price" style="margin-top: 20px;">
+            </h1>
+
+        </div>
+
+<div id="fullScreenContainer" class="d-flex align-items-center justify-content-center">
+    <img id="productImage" src="./images/logo.webp" alt="Product Image">
+</div>
+
+    </div>
+
+    <dialog id="myDialog">
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
+    </dialog>
+
+    <script>
+
+        let tiempoSinActividad = 0;
+
+        // Función que se ejecutará cada minuto para verificar la inactividad
+        function verificarInactividad() {
+            tiempoSinActividad += 1;
+            if (tiempoSinActividad >= 2) { // 5 minutos de inactividad
+                document.getElementById("sku").focus();
+                location.reload(); // recarga la página                
+            }
+        }
+
+        // Reinicia el contador de inactividad cada vez que hay actividad en la página
+        function reiniciarContador() {
+            tiempoSinActividad = 0;
+        }
+
+        // Eventos que reinician el contador
+        document.addEventListener('mousemove', reiniciarContador);
+        document.addEventListener('keydown', reiniciarContador);
+        document.addEventListener('click', reiniciarContador);
+
+        // Verificar inactividad cada minuto
+        setInterval(verificarInactividad, 60000); // 60000 milisegundos = 1 minuto
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("sku").focus();
+        });
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+        document.getElementById("sku").addEventListener("keydown", function (event) {
+            if (event.keyCode === 13) {  // 13 es el código para la tecla ENTER
+                // Aquí va tu código para manejar el evento
+                var sku_data = GetSkuInfo(document.getElementById("sku").value);
+
+                sku_data.then(function (result) {
+                    if (result != null) {
+
+                        if (result.startsWith("Error")) {
+                            showDialog("Error:", sku_info.result);
+                            return;
+                        }
+
+                        var sku_info = JSON.parse(result);
+
+                        if (sku_info.result.startsWith("Error")) {
+                            showDialog("Error:", sku_info.result);
+                            return;
+                        }
+
+                        var sku = JSON.parse(sku_info.result);
+                        document.getElementById("sku_description").innerHTML = sku.description;
+                        document.getElementById("sku_price").innerHTML = sku.price;
+                        //document.getElementById("sku_info").innerHTML = result;
+
+                        if (sku.image == null || sku.image == "") {
+                            document.getElementById("productImage").src = "./images/logo.webp";
+                        }
+                        else {
+                            document.getElementById("productImage").src = "./images/" + sku.image;
+                        }
+
+                        document.getElementById("sku").value = "";
+                        document.getElementById("sku").focus();
+                    }
+                    else {
+                        document.getElementById("sku_info").innerHTML = "";
+                        document.getElementById("productImage").src = "./images/logo.webp";
+                    }
+                });
+
+            }
+        });
+
+    </script>
+
+    <script src="../bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

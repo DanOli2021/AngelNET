@@ -44,10 +44,6 @@ public class HelpdeskContent
 public class HelpdeskContentDetails
 {
     public string Id { get; set; }
-    public string Topic_id { get; set; }
-    public string Topic_description { get; set; }
-    public string Subtopic_id { get; set; }
-    public string Subtopic_description { get; set; }
     public string Content_id { get; set; }
     public string Content_title { get; set; }
     public string Content { get; set; }

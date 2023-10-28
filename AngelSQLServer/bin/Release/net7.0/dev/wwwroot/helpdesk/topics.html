@@ -16,7 +16,7 @@
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
     <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
 
-    <script src="./js/index_translate.js"></script>
+    <script src="./js/helpdesk_translate.js"></script>
     <script src="./js/main.js"></script>
 
     <script>
@@ -75,7 +75,7 @@
                         <th id="topics_id">Id</th>
                         <th id="topics_topic">Topic</th>
                         <th id="topics_description">Description</th>
-                        <th id="topics_description">Sub topics</th>
+                        <th id="topics_subtopic">Sub topics</th>
                         <th id="topics_createdby">Created By</th>
                         <th id="topics_createdat">Created At</th>
                         <th id="topics_updatedby">Updated By</th>
@@ -95,6 +95,26 @@
     </dialog>
 
 
+    <dialog id="DialogAcceptCancel" class="dialog-box">
+
+        <h1 id="dialogTittleAcceptCancel">Title</h1>
+        <p id="dialogMessageAcceptCancel">Message</p>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <button id="accept" onclick="closeDialogAcceptCancelDialog()" class="btn btn-danger"
+                    style="width: 100%;">Accept</button>
+            </div>
+
+            <div class="col-sm-6">
+                <button id="cancel" onclick="closeDialogAcceptCancelDialog()" class="btn btn-primary"
+                    style="width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+
+
     <dialog id="topics_dialog" style="width: 90%;">
         <div class="row">
             <div class="col-md-12">
@@ -110,16 +130,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="phone" id="users_label_description">Description</label>
+                    <label for="phone" id="topics_label_description">Description</label>
                     <input type="text" class="form-control" id="description" name="description">
                 </div>
+
             </div>
 
             <div class="row">
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-primary" "
                         style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveTopicData()">
-                        <span id="users_button_save">
+                        <span id="topics_button_save">
                             Save
                         </span>
                     </button>
@@ -128,8 +149,8 @@
                 <div class="col-sm-6">
                     <button type="button" class="btn btn-danger"
                         style="text-align: right; margin-top: 20px; width: 100%;"
-                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Topic?', DeleteUserData)">
-                        <span id="users_button_delete">
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Topic?', DeleteData)">
+                        <span id="topics_button_delete">
                             Delete
                         </span>
                     </button>
@@ -141,7 +162,7 @@
                     <button id="closeSkuEdit" class="btn btn-secondary"
                         style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeTopicsDialog()"
                         style="text-align: right;">
-                        <span id="users_button_close">
+                        <span id="topics_button_close">
                             Close
                         </span>
                     </button>
@@ -252,7 +273,7 @@
 
         function GetData() {
 
-            var datos = GetTopicsFromUser(Token.username, Token.token);
+            var datos = GetTopics(Token.username, Token.token);
 
             datos.then(function (query) {
 
@@ -271,6 +292,10 @@
         }
 
         document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F2") {
+                showTopicDialog('', true);
+            }
 
             if (event.key === "F4") {
                 GetData();
@@ -323,8 +348,7 @@
                     // Aquí se ejecuta el código al hacer clic en la tercera columna
                 }
 
-                if( index == 4) 
-                {
+                if (index == 4) {
                     var datosFila = tabla.row($(this).parents('tr')).data();
                     window.open("topic.html?topic_id=" + datosFila.id, "_self");
                 }

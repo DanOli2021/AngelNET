@@ -265,6 +265,22 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
     };
     groups.Add(g);
 
+    g = new UsersGroup
+    {
+        id = "HELPDESK",
+        Name = "HELPDESK",
+        Permissions = ""
+    };
+    groups.Add(g);
+
+    g = new UsersGroup
+    {
+        id = "HELPDESK_ADMIN",
+        Name = "HELPDESK_ADMIN",
+        Permissions = ""
+    };
+    groups.Add(g);
+
     result = db.Prompt("UPSERT INTO usersgroup VALUES " + JsonConvert.SerializeObject(groups));
     if (result.StartsWith("Error:")) return "Error: insert group ADMINISTRATIVE " + result.Replace("Error:", "");
 
@@ -273,7 +289,7 @@ string CreateNewAccount(AngelDB.DB server_db, AngelApiOperation api)
         Id = d.User.ToString(),
         Name = d.Name.ToString(),
         Password = d.Password.ToString(),
-        UserGroups = "AUTHORIZERS, SUPERVISORS, PINSCONSUMER, ADMINISTRATIVE, CASHIER",
+        UserGroups = "AUTHORIZERS, SUPERVISORS, PINSCONSUMER, ADMINISTRATIVE, CASHIER, HELPDESK, HELPDESK_ADMIN",
         Organization = "",
         Email = my_pin.User,
         Phone = "",

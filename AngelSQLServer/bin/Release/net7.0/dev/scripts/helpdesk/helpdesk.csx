@@ -8,7 +8,7 @@
 // 2023-05-19
 
 #load "translations.csx"
-#load "HelpdeskTopics.csx"
+#load "HelpdeskTopics.csx" 
 
 using System;
 using Newtonsoft.Json;
@@ -22,10 +22,10 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Net.Mail;
 using System.Net;
-using System.Text.RegularExpressions;
+using System.Text.RegularExpressions; 
 using System.Net.Http;
 using System.Xml.Linq;
-using System.Text;
+using System.Text; 
 
 public class AngelApiOperation
 {
@@ -65,10 +65,12 @@ return api.OperationType switch
 {
     "UpsertTopic" => UpsertTopic(api, translation),
     "GetTopicsFromUser" => GetTopicsFromUser(api, translation),
+    "GetTopics" => GetTopics(api, translation),
     "GetTopic" => GetTopic(api, translation),
     "UpsertSubTopic" => UpsertSubTopic(api, translation),
     "GetSubTopicsFromTopic" => GetSubTopicsFromTopic(api, translation),
     "GetSubTopic" => GetSubTopic(api, translation),
+    "DeleteSubTopic" => DeleteSubTopic(api, translation),
     "GetContentFromSubTopic" => GetContentFromSubTopic(api, translation),
     "UpsertContent" => UpsertContent(api, translation),
     "GetContent" => GetContent(api, translation),
@@ -82,13 +84,14 @@ return api.OperationType switch
     "SearchInfo" => SearchInfo(api, translation),
     "GetContentTitles" => GetContentTitles(api, translation),
     "GetPublicContent" => GetPublicContent(api, translation),
+    "DeleteTopic" => DeleteTopic(api, translation),
     _ => $"Error: No service found {api.OperationType}",
 };
 
 string UpsertTopic(AngelApiOperation api, Translations translation)
 {
 
-    string result = IsUserValid(api, translation);
+    string result = IsUserValid(api, translation, "HELPDESK_ADMIN");
 
     if (result.StartsWith("Error:"))
     {
@@ -190,7 +193,7 @@ string UpsertTopic(AngelApiOperation api, Translations translation)
 string UpsertSubTopic(AngelApiOperation api, Translations translation)
 {
 
-    string result = IsUserValid(api, translation);
+    string result = IsUserValid(api, translation, "HELPDESK_ADMIN");
 
     if (result.StartsWith("Error:"))
     {
@@ -518,10 +521,6 @@ string UpsertContentDetail(AngelApiOperation api, Translations translation)
         Content_id = d.Content_id,
         Content_type = d.Content_type,
         Content_order = d.Content_order,
-        Topic_id = topic,  
-        Topic_description = topic_description,
-        Subtopic_id = subtopic,
-        Subtopic_description = subtopic_description,
         Content_title = content_title,
         IsPublic = d.IsPublic
     };
@@ -540,14 +539,14 @@ string UpsertContentDetail(AngelApiOperation api, Translations translation)
         contentDetail.UpdatedAt = DateTime.Now.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fffffff");
     }
 
-    result = db.UpsertInto("HelpdeskContentDetails", contentDetail, subtopic);
+    result = db.UpsertInto("HelpdeskContentDetails", contentDetail, contentDetail.Content_id.ToString()[..2]);
 
     if (result.StartsWith("Error:"))
     {
         return result;
     }
 
-    result = db.UpsertInto("HelpdeskContentDetails_search", contentDetail, subtopic);
+    result = db.UpsertInto("HelpdeskContentDetails_search", contentDetail, contentDetail.Content_id.ToString()[..2]);
 
     return result;
 
@@ -575,6 +574,29 @@ string GetTopicsFromUser(AngelApiOperation api, Translations translation)
     return result;
 
 }
+
+
+string GetTopics(AngelApiOperation api, Translations translation)
+{
+    string result = IsUserValid(api, translation);
+
+    if (result.StartsWith("Error:"))
+    {
+        return result;
+    }
+
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    result = db.Prompt("SELECT * FROM HelpdeskTopics ORDER BY topic ASC", true);
+    return result;
+
+}
+
 
 
 string GetSubTopicsFromTopic(AngelApiOperation api, Translations translation)
@@ -627,7 +649,7 @@ string GetContentFromSubTopic(AngelApiOperation api, Translations translation)
 
 string GetSubTopic(AngelApiOperation api, Translations translation)
 {
-    string result = IsUserValid(api, translation);
+    string result = IsUserValid(api, translation, "HELPDESK_ADMIN");
 
     if (result.StartsWith("Error:"))
     {
@@ -800,6 +822,83 @@ string DeleteContent(AngelApiOperation api, Translations translation)
 }
 
 
+string DeleteSubTopic(AngelApiOperation api, Translations translation)
+{
+    string result = IsUserValid(api, translation);
+
+    if (result.StartsWith("Error:"))
+    {
+        return result;
+    }
+
+    dynamic d = api.DataMessage;
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    if (d.Id == null)
+    {
+        return "Error: " + translation.Get(language, "Id is required");
+    }
+
+    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Subtopic_id = '" + d.Id + "'", true);
+
+    if (result != "[]")
+    {
+        return "Error: " + translation.Get("You first need to delete the content details and content header in order to delete this item", language);
+    }
+
+    result = db.Prompt("SELECT * FROM HelpdeskContent WHERE Subtopic_id = '" + d.Id + "'", true);
+
+    if (result != "[]")
+    {
+        return "Error: " + translation.Get("You first need to delete the content details and content header in order to delete this item", language);
+    }
+
+    db.Prompt("DELETE FROM HelpdeskSubTopics PARTITION KEY main WHERE id = '" + d.Id + "'", true);
+    return "Ok.";
+
+}
+
+
+string DeleteTopic(AngelApiOperation api, Translations translation)
+{
+    string result = IsUserValid(api, translation);
+
+    if (result.StartsWith("Error:"))
+    {
+        return result;
+    }
+
+    dynamic d = api.DataMessage;
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    if (d.Id == null)
+    {
+        return "Error: " + translation.Get(language, "Id is required");
+    }
+
+    result = db.Prompt("SELECT * FROM HelpdeskSubTopics WHERE Topic_id = '" + d.Id + "'", true);
+
+    if (result != "[]")
+    {
+        return "Error: " + translation.Get("You first need to delete the subtopics and content header in order to delete this item", language);
+    }
+
+    db.Prompt("DELETE FROM HelpdeskTopics PARTITION KEY main WHERE id = '" + d.Id + "'", true);
+    return "Ok.";
+
+}
+
+
 string DeleteContentDetail(AngelApiOperation api, Translations translation)
 {
     string result = IsUserValid(api, translation);
@@ -825,7 +924,7 @@ string DeleteContentDetail(AngelApiOperation api, Translations translation)
     if( d.Content_id == null )
     {
         return "Error: " + translation.Get(language, "Content_id is required");
-    }   
+    }    
 
     result = db.Prompt("SELECT * FROM helpdeskcontentdetails WHERE id = '" + d.Id + "'", true);
 
@@ -843,8 +942,8 @@ string DeleteContentDetail(AngelApiOperation api, Translations translation)
 
     DataRow rContent = db.GetDataRow(result);
 
-    db.Prompt($"DELETE FROM helpdeskcontentdetails PARTITION KEY {rContent["Subtopic_id"]} WHERE id = '" + d.Id + "'", true);
-    db.Prompt($"DELETE FROM helpdeskcontentdetails_search PARTITION KEY {rContent["Subtopic_id"]} WHERE id = '" + d.Id + "'", true);
+    db.Prompt($"DELETE FROM helpdeskcontentdetails PARTITION KEY {d.Content_id.ToString().Substring(0,2)} WHERE id = '" + d.Id + "'", true);
+    db.Prompt($"DELETE FROM helpdeskcontentdetails_search PARTITION KEY {d.Content_id.ToString().Substring(0,2)} WHERE id = '" + d.Id + "'", true);
     return "Ok.";
 
 }
@@ -874,7 +973,14 @@ private string GetContentDetail(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Content_id is required", language);
     }
 
-    return db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' ORDER BY Content_order", true);
+    result = db.Prompt($"SELECT * FROM HelpdeskContentDetails PARTITION KEY { d.Content_id.ToString().Substring(0,2) } WHERE Content_id = '" + d.Content_id + "' ORDER BY Content_order", true);
+
+    if( result == "[]") 
+    {
+        result = db.Prompt($"SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' ORDER BY Content_order", true);
+    }
+
+    return result;
 
 }
 
@@ -896,7 +1002,14 @@ private string GetPublicContent(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get("Content_id is required", language);
     }
 
-    return db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' AND IsPublic = 'true' ORDER BY Content_order", true);
+    string result = db.Prompt($"SELECT * FROM HelpdeskContentDetails PARTITION KEY {d.Content_id.ToString().Substring(0,2)} WHERE Content_id = '" + d.Content_id + "' AND IsPublic = 'true' ORDER BY Content_order", true);
+
+    if (result == "[]")
+    {
+        result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' AND IsPublic = 'true' ORDER BY Content_order", true);
+    }
+
+    return result;
 
 }
 
@@ -1053,11 +1166,17 @@ private string GetContentDetailItem(AngelApiOperation api, Translations translat
         Id = d.Id
     };
 
-    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE id = '" + d.Id + "'", true);
+    result = db.Prompt($"SELECT * FROM HelpdeskContentDetails PARTITION KEY {d.Id.ToString().Substring(0,2)} WHERE id = '" + d.Id + "'", true);
 
     if (result == "[]")
     {
-        return "Error: " + translation.Get("No content found for Id:", language) + " " + d.Id;
+
+        result = db.Prompt($"SELECT * FROM HelpdeskContentDetails WHERE id = '" + d.Id + "'", true);
+
+        if( result == "[]") 
+        {
+            return "Error: " + translation.Get("No content found for Id:", language) + " " + d.Id;
+        }        
     }
 
     DataRow rContentDetail = db.GetDataRow(result);
@@ -1120,12 +1239,12 @@ string IsUserValid(AngelApiOperation api, Translations translation, string group
 
     if (user_data.groups == null)
     {
-        return translation.Get(api.UserLanguage, "No groups found");
+        return "Error: " + translation.Get("No groups found", api.UserLanguage);
     }
 
     if (!user_data.groups.ToString().Contains(group))
     {
-        return translation.Get(api.UserLanguage, "User does not have permission to edit topics");
+        return "Error: " + translation.Get("User does not have permission to edit", api.UserLanguage );
     }
 
     return "Ok.";
@@ -1166,6 +1285,11 @@ string UploadFile(AngelApiOperation api, Translations translation)
     if( api.File == null ) 
     {
         return "Error: " + translation.Get("File is required", language);
+    }
+
+    if( api.File == "new.png" ) 
+    {
+        api.File = Guid.NewGuid().ToString() + ".png";
     }
 
     FileUploadInfo file = new()

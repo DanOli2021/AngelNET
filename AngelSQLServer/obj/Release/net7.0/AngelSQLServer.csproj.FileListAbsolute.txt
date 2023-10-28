@@ -1538,8 +1538,6 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\scripts\helpdesk\he
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\scripts\helpdesk\HelpdeskTopics.csx
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\scripts\helpdesk\translations.csx
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\scripts\kiosk\Clients.csx
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\853ca5d8-f131-409b-a250-b6c650b7fa6c\A1_DORE.pdf
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\853ca5d8-f131-409b-a250-b6c650b7fa6c\A2_DORE.pdf
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\bootstrap-5.3.0\css\bootstrap-grid.css
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\bootstrap-5.3.0\css\bootstrap-grid.css.map
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\bootstrap-5.3.0\css\bootstrap-grid.min.css
@@ -1627,3 +1625,5 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\pr
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\topic.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\topics.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\Kiosk\images\kiosk.zip
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\js\HelpDeskGetContent.zip
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\dev\wwwroot\helpdesk\js\helpdesk_translate.js

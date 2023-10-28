@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ozNPOxXGZk3jxVdUe5SfM38am76vqSOFor1CG6Tp5L8=",
+  "Hash": "WZi0d4aQc3rN8hgp0At9DWGAVDpGLJ1csCPSxGzV3E0=",
   "Source": "AngelSQLServer",
   "BasePath": "_content/AngelSQLServer",
   "Mode": "Default",
@@ -15,5 +15,23 @@
       "Pattern": "**"
     }
   ],
-  "Assets": []
+  "Assets": [
+    {
+      "Identity": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\Empty.txt",
+      "SourceId": "AngelSQLServer",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\",
+      "BasePath": "_content/AngelSQLServer",
+      "RelativePath": "Empty.txt",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Empty.txt"
+    }
+  ]
 }

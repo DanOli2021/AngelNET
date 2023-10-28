@@ -46,8 +46,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\publish\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Desarrollo2030\AngelSQL\AngelSQLInstaller\dotnet-runtime-7.0.5-win-x64.exe"; DestDir: "{app}\netruntime"; Flags: ignoreversion 
-Source: "C:\Desarrollo2030\AngelSQL\AngelSQLInstaller\aspnetcore-runtime-7.0.5-win-x64.exe"; DestDir: "{app}\netruntime"; Flags: ignoreversion 
+Source: "C:\Desarrollo\AngelNET\AngelSQLInstaller\dotnet-runtime-7.0.5-win-x64.exe"; DestDir: "{app}\netruntime"; Flags: ignoreversion 
+Source: "C:\Desarrollo\AngelNET\AngelSQLInstaller\aspnetcore-runtime-7.0.5-win-x64.exe"; DestDir: "{app}\netruntime"; Flags: ignoreversion 
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
