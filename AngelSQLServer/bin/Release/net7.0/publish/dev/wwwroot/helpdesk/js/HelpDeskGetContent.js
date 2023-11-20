@@ -87,17 +87,22 @@ function createAnchors(text, links) {
 }
 
 
-async function addContentDetail(Id, Content, Content_type, element) {
+async function addContentDetail(Id, Content, Content_type, element, editFunction = null) {
     // Crear el elemento h1
+
+    if (Content_type == "CSS" && editFunction == null)  
+    {
+        return;
+    }
 
     var html_block;
 
     if (Content_type == "Text") {
-        html_block = document.createElement('p');
         let formattedContent = formatText(Content);
         formattedContent = addHorizontalRule(formattedContent);
         const links = identifyLinks(formattedContent);
-        formattedContent = createAnchors(formattedContent, links);
+        formattedContent = createAnchors(formattedContent, links);    
+        html_block = document.createElement('p');
         html_block.innerHTML = formattedContent;
     }
     else if (Content_type == "Title1") {
@@ -152,7 +157,7 @@ async function addContentDetail(Id, Content, Content_type, element) {
         code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
         html_block.appendChild(code_block);
     }
-    else if (Content_type == "HTML") {
+    else if (Content_type == "HTML_Code") {
         html_block = document.createElement('pre');
         html_block.className = 'line-numbers language-html';
         var code_block = document.createElement('code');
@@ -160,13 +165,20 @@ async function addContentDetail(Id, Content, Content_type, element) {
         code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
         html_block.appendChild(code_block);
     }
+    else if (Content_type == "HTML") {
+        html_block = document.createElement('div');
+        html_block.innerHTML = Content;  // Utiliza textContent para evitar la interpretación de HTML
+    }
     else if (Content_type == "CSS") {
-        html_block = document.createElement('pre');
-        html_block.className = 'line-numbers language-css';
-        var code_block = document.createElement('code');
-        code_block.className = 'line-numbers language-css';
-        code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-        html_block.appendChild(code_block);
+        if (editFunction != null && editFunction != undefined) 
+        {
+            html_block = document.createElement('pre');
+            html_block.className = 'line-numbers language-css';
+            var code_block = document.createElement('code');
+            code_block.className = 'line-numbers language-css';
+            code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
+            html_block.appendChild(code_block);    
+        } 
     }
     else if (Content_type == "Python") {
         html_block = document.createElement('pre');
@@ -181,8 +193,9 @@ async function addContentDetail(Id, Content, Content_type, element) {
         var urlBlock = document.createElement('a');
         urlBlock.textContent = Content;
         urlBlock.href = Content;
+        urlBlock.style = "margin-bottom:20px; margin-top:20px; font-size: 20px; font-weight: bold;";
         urlBlock.target = "_blank";
-        urlBlock.className = "btn btn-primary form-control";
+        urlBlock.className = "btn btn-link form-control";
         html_block.appendChild(urlBlock);
     }
     else if (Content_type == "Video") {
@@ -232,6 +245,20 @@ async function addContentDetail(Id, Content, Content_type, element) {
     }
 
     var mydiv = document.getElementById(element);
+
+    if (editFunction != null && editFunction != undefined) {
+        // Crear el botón de editar
+        var editButton = document.createElement('button');
+        editButton.textContent = 'Edit: ' + Id;
+        editButton.addEventListener('click', function () {
+            editFunction(Id, false);
+        });
+
+        editButton.classList = "btn btn-secondary";
+        mydiv.appendChild(editButton);
+
+    }
+
     mydiv.appendChild(html_block);
     Prism.highlightAll();
 
@@ -240,14 +267,20 @@ async function addContentDetail(Id, Content, Content_type, element) {
 
 
 async function GetPublicContent(account, Content_id) {
-    return sendToAngelPOST("helpdesk/helpdesk", "GetPublicContent", { Content_id: Content_id }, account);
+    return sendToAngelSQL("helpdesk/helpdesk", "GetPublicContent", { Content_id: Content_id }, account);
 }
 
 async function GetContentTitles(account, Content_id) {
-    return sendToAngelPOST("helpdesk/helpdesk", "GetContentTitles", { Content_id: Content_id }, account);
+    return sendToAngelSQL("helpdesk/helpdesk", "GetContentTitles", { Content_id: Content_id }, account);
 }
 
-async function sendToAngelPOST(api_name, OperationType, object_data, account) {
+async function GetContentDetailCSS(account, Content_id) {
+    return sendToAngelSQL("helpdesk/helpdesk", "GetContentDetailCSS", { Content_id: Content_id }, account);
+}
+
+
+
+async function sendToAngelSQL(api_name, OperationType, object_data, account) {
 
     var api = {
         api: api_name,

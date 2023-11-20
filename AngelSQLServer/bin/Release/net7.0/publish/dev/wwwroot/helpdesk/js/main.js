@@ -182,7 +182,6 @@ async function DeleteTopic(user, token, id) {
   return sendToAngelPOST(user, "helpdesk/helpdesk", token, "DeleteTopic", { Id: id });
 }
 
-
 async function sendToAngelPOST(user, api_name, token, OperationType, object_data) {
 
   account = "";

@@ -46,8 +46,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\publish\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Desarrollo\AngelNET\AngelSQLServer\bin\Release\net7.0\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Desarrollo\AngelNET\AngelSQLInstaller\dotnet-runtime-7.0.5-win-x64.exe"; DestDir: "{app}\netruntime"; Flags: ignoreversion 
-Source: "C:\Desarrollo\AngelNET\AngelSQLInstaller\aspnetcore-runtime-7.0.5-win-x64.exe"; DestDir: "{app}\netruntime"; Flags: ignoreversion 
+Source: "C:\Desarrollo\AngelNET\AngelSQLInstaller\dotnet-runtime-8.0.0-win-x64.exe"; DestDir: "{app}\netruntime"; Flags: ignoreversion 
+Source: "C:\Desarrollo\AngelNET\AngelSQLInstaller\aspnetcore-runtime-8.0.0-win-x64.exe"; DestDir: "{app}\netruntime"; Flags: ignoreversion 
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -66,8 +66,8 @@ Name: "{autoprograms}\AngelDB"; Filename: "{app}\db.exe"
 Name: "{autodesktop}\AngelDB"; Filename: "{app}\db.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\netruntime\dotnet-runtime-7.0.5-win-x64.exe"; Parameters: "/passive /norestart"; Description: "Install dotnet runtime 7.0.0"; Flags: shellexec waituntilterminated
-Filename: "{app}\netruntime\aspnetcore-runtime-7.0.5-win-x64.exe"; Parameters: "/passive /norestart"; Description: "Install aspnetcore 7.0.0"; Flags: shellexec waituntilterminated
+Filename: "{app}\netruntime\dotnet-runtime-8.0.0-win-x64.exe"; Parameters: "/passive /norestart"; Description: "Install dotnet runtime 8.0.0"; Flags: shellexec waituntilterminated
+Filename: "{app}\netruntime\aspnetcore-runtime-8.0.0-win-x64.exe"; Parameters: "/passive /norestart"; Description: "Install aspnetcore 8.0.0"; Flags: shellexec waituntilterminated
 
 
 [Code]

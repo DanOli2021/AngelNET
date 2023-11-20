@@ -1,0 +1,273 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AngelSQL Command Interface</title>
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/monokai.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+
+    <script src="js/AngelSQL.js"></script>
+
+    <link href="css/sql_commands.css" rel="stylesheet" />
+
+    <script>
+
+        let result = sessionStorage.getItem("AngelSQLToken");
+
+        if (result == null) {
+            window.location.href = "index.html";
+        }
+
+        let db = new AngelSQL("", "", window.location.protocol + '//' + window.location.host + "/AngelSQL");
+        db.SetToken(result);
+
+    </script>
+
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-block-color: #96D4D4;
+        }
+
+
+    </style>
+
+</head>
+
+<body>
+    <h1>AngelSQL Command Interface</h1>
+
+    <textarea rows="5" id="sqlCommand">
+    </textarea>
+
+    <div class="btn-container">
+        <button class="btn" onclick="executeAngelSQLCommand()">Execute (F2)</button>
+    </div>
+
+    <br />
+
+    <div id="resultsContainer"></div>
+
+    <script>
+
+        function autoResizeTextArea(textArea) {
+            setTimeout(() => {
+                textArea.style.height = 'auto';
+                textArea.style.height = textArea.scrollHeight + 'px';
+            }, 0);
+        }
+
+        function isValidHTML(html) {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+        }
+
+        function executeAngelSQLCommand() {
+            const sqlCommand = document.getElementById("sqlCommand").value;
+
+            const currentDate = new Date();
+            const dateString = currentDate.toLocaleString();
+
+            const resultBlock = document.createElement("div");
+            resultBlock.classList.add("resultBlock");
+
+            const resultDate = document.createElement("div");
+            resultDate.classList.add("resultDate");
+            resultDate.textContent = `Date: ${dateString}`;
+
+            const resultCommand = document.createElement("textarea");
+            resultCommand.classList.add("resultCommand");
+            resultCommand.setAttribute("rows", "1");
+            resultCommand.value = sqlCommand;
+            resultCommand.readOnly = true;
+
+            const commandCopyBtn = document.createElement("button");
+            commandCopyBtn.textContent = "\uD83D\uDCCB Copy command";
+            commandCopyBtn.addEventListener("click", function () {
+                copyToClipboard(sqlCommand);
+            });
+            resultCommand.after(commandCopyBtn);
+
+            const resultOutput = document.createElement("div");
+            resultOutput.classList.add("resultOutput");
+            resultOutput.textContent = "Thinking...";
+
+            result = db.prompt("BATCH " + sqlCommand + " SHOW IN CONSOLE");
+
+            let dotCount = 0;
+            const dotInterval = setInterval(() => {
+                resultOutput.textContent += '.';
+                dotCount++;
+                if (dotCount >= 5) {
+                    resultOutput.textContent = "Thinking";
+                    dotCount = 0;
+                }
+            }, 500); // Añade un punto cada 500 milisegundos
+
+            result.then(function (value) {
+                clearInterval(dotInterval); // Detenemos la animación
+
+                setTimeout(function () { // Añadimos el retraso
+                    resultOutput.textContent = ""
+
+                    const codeBlockRegex = /```([a-z]*)\n([\s\S]*?)```/g;  // Regex para detectar bloques de código y lenguaje
+                    let match;
+                    let lastIndex = 0;
+
+                    while ((match = codeBlockRegex.exec(value)) !== null) {
+                        const beforeCode = value.slice(lastIndex, match.index);
+                        const language = match[1]; // Aquí obtenemos el lenguaje
+                        const code = match[2]; // Y aquí obtenemos el código
+                        lastIndex = codeBlockRegex.lastIndex;
+
+                        if (beforeCode.trim()) {
+                            const beforeCodeDiv = document.createElement("div");
+                            beforeCodeDiv.textContent = beforeCode;
+                            beforeCodeDiv.style.fontFamily = 'Arial';
+                            beforeCodeDiv.style.fontSize = '11pt';
+                            beforeCodeDiv.style.fontWeight = 'bold';
+                            beforeCodeDiv.style.whiteSpace = 'pre-wrap';
+                            beforeCodeDiv.style.overflowWrap = 'break-word';
+
+                            const beforeCodeCopyBtn = document.createElement("button");
+                            beforeCodeCopyBtn.textContent = "\uD83D\uDCCB"; // Emoji de portapapeles
+
+                            beforeCodeCopyBtn.classList.add("copyBtn");
+                            beforeCodeCopyBtn.addEventListener("click", function () {
+                                copyToClipboard(beforeCode);
+                            });
+                            beforeCodeDiv.appendChild(beforeCodeCopyBtn);
+
+                            resultOutput.appendChild(beforeCodeDiv);
+                        }
+
+                        const codeDiv = document.createElement("div");
+
+                        if (isValidHTML(code)) {
+                            // Esto es HTML válido, establecemos innerHTML
+                            codeDiv.innerHTML = code;
+                        } else {
+                            // Esto no es HTML válido, establecemos textContent
+                            codeDiv.textContent = code;
+                        }
+
+                        hljs.highlightBlock(codeDiv);
+
+                        const codeCopyBtn = document.createElement("button");
+                        codeCopyBtn.textContent = "\uD83D\uDCCB Copy code"; // Emoji de portapapeles
+
+                        codeCopyBtn.style.fontFamily = 'Arial';
+                        codeCopyBtn.style.fontSize = '11pt';
+                        codeCopyBtn.style.fontWeight = 'bold';
+                        codeCopyBtn.style.backgroundColor = 'white';
+                        codeCopyBtn.style.position = "relative";
+                        codeCopyBtn.style.float = "left";
+
+                        codeCopyBtn.classList.add("copyBtn");
+                        codeCopyBtn.addEventListener("click", function () {
+                            copyToClipboard(code);
+                        });
+                        codeDiv.appendChild(codeCopyBtn);
+
+                        resultOutput.appendChild(codeDiv);
+                    }
+
+                    const afterCode = value.slice(lastIndex);
+
+                    if (afterCode.trim()) {
+
+                        const afterCodeDiv = document.createElement("div");
+                        afterCodeDiv.textContent = afterCode;
+
+                        if (isValidHTML(afterCode)) {
+                            // Esto es HTML válido, establecemos innerHTML
+                            afterCodeDiv.innerHTML = afterCode;
+                        } else {
+                            // Esto no es HTML válido, establecemos textContent
+                            afterCodeDiv.textContent = afterCode;
+                        }
+
+                        console.log(isValidHTML(afterCode));
+
+                        afterCodeDiv.style.fontFamily = 'Arial';
+                        afterCodeDiv.style.fontSize = '11pt';
+                        afterCodeDiv.style.fontWeight = 'bold';
+                        afterCodeDiv.style.whiteSpace = 'pre-wrap';
+                        afterCodeDiv.style.overflowWrap = 'break-word';
+
+                        const afterCodeCopyBtn = document.createElement("button");
+                        afterCodeCopyBtn.textContent = "\uD83D\uDCCB"; // Emoji de portapapeles
+                        afterCodeCopyBtn.classList.add("copyBtn");
+                        afterCodeCopyBtn.addEventListener("click", function () {
+                            copyToClipboard(afterCode);
+                        });
+                        afterCodeDiv.appendChild(afterCodeCopyBtn);
+
+                        resultOutput.appendChild(afterCodeDiv);
+                    }
+
+                }, 500);
+
+            }).catch(function (error) {
+                clearInterval(dotInterval); // Detenemos la animación
+                resultOutput.textContent = "Error: " + error;
+            });
+
+            autoResizeTextArea(resultCommand);
+
+            resultBlock.appendChild(resultDate);
+            resultBlock.appendChild(resultCommand);
+            resultBlock.appendChild(resultOutput);
+
+            const resultsContainer = document.getElementById("resultsContainer");
+            resultsContainer.insertBefore(resultBlock, resultsContainer.firstChild);
+
+            document.getElementById("sqlCommand").value = "";
+            document.getElementById("sqlCommand").focus();
+
+            resultsContainer.scrollTop = 0;
+        }
+
+
+        function copyToClipboard(text) {
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = text;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+        }
+
+        // Asegúrate de que se ejecute la función cuando se carga la página y cuando el contenido del textarea cambia
+        document.addEventListener('DOMContentLoaded', () => {
+            const textArea = document.getElementById('sqlCommand');
+
+            if (textArea) {
+                // Evento para ajustar el tamaño cuando el contenido del textarea cambia
+                textArea.addEventListener('input', () => {
+                    autoResizeTextArea(textArea);
+                });
+
+                // Ajustar el tamaño inicial al cargar la página
+                autoResizeTextArea(textArea);
+            }
+        });
+
+
+        document.addEventListener('keydown', function (event) {
+            // El identificador de tecla para F2 es "F2"
+            if (event.key === "F2") {
+                executeAngelSQLCommand();
+            }
+        });
+
+        document.getElementById("sqlCommand").focus();
+
+    </script>
+
+
+
+</body>
+</html>

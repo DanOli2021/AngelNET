@@ -92,12 +92,13 @@ async function addContentDetail(Id, Content, Content_type, element) {
 
     var html_block;
 
+    let formattedContent = formatText(Content);
+    formattedContent = addHorizontalRule(formattedContent);
+    const links = identifyLinks(formattedContent);
+    formattedContent = createAnchors(formattedContent, links);
+
     if (Content_type == "Text") {
         html_block = document.createElement('p');
-        let formattedContent = formatText(Content);
-        formattedContent = addHorizontalRule(formattedContent);
-        const links = identifyLinks(formattedContent);
-        formattedContent = createAnchors(formattedContent, links);
         html_block.innerHTML = formattedContent;
     }
     else if (Content_type == "Title1") {
@@ -106,11 +107,11 @@ async function addContentDetail(Id, Content, Content_type, element) {
     }
     else if (Content_type == "Title2") {
         html_block = document.createElement('h2');
-        html_block.textContent = Content;
+        html_block.textContent = formattedContent;
     }
     else if (Content_type == "Title3") {
         html_block = document.createElement('h3');
-        html_block.textContent = Content;
+        html_block.textContent = formattedContent;
     }
     else if (Content_type == "VisualBasic") {
         html_block = document.createElement('pre');
@@ -181,10 +182,11 @@ async function addContentDetail(Id, Content, Content_type, element) {
         var urlBlock = document.createElement('a');
         urlBlock.textContent = Content;
         urlBlock.href = Content;
+        urlBlock.style = "margin-bottom:20px; margin-top:20px; font-size: 20px; font-weight: bold;";
         urlBlock.target = "_blank";
-        urlBlock.className = "btn btn-primary form-control";
+        urlBlock.className = "btn btn-link form-control";
         html_block.appendChild(urlBlock);
-    }
+}
     else if (Content_type == "Video") {
         var videoId = Content.split('v=')[1];  // Suponiendo que Content contiene la URL completa del video de YouTube
         var ampersandPosition = videoId.indexOf('&');

@@ -476,86 +476,37 @@ namespace AngelDBTools
 
         }
 
-        public static string ToCSVString(this DataTable dtDataTable)
+        public static string ToCSVString(this DataTable dataTable)
         {
-            System.Text.StringBuilder sw = new System.Text.StringBuilder();
-            //headers    
+            var result = new StringBuilder();
 
-            int n = 0;
-            Dictionary<string, int> d = new Dictionary<string, int>();
-
-            foreach (DataRow r in dtDataTable.Rows)
+            // Encerrar los nombres de las columnas en comillas dobles
+            for (int i = 0; i < dataTable.Columns.Count; i++)
             {
-                ++n;
+                result.AppendFormat("\"{0}\"", dataTable.Columns[i].ColumnName);
+                result.Append(i == dataTable.Columns.Count - 1 ? "\n" : ",");
+            }
 
-                foreach (DataColumn c in dtDataTable.Columns)
+            // Encerrar los datos de tipo string en comillas dobles
+            foreach (DataRow row in dataTable.Rows)
+            {
+                for (int i = 0; i < dataTable.Columns.Count; i++)
                 {
-                    if (!d.ContainsKey(c.ColumnName))
+                    string dataString = row[i].ToString();
+                    if (dataTable.Columns[i].DataType == typeof(string))
                     {
-                        if (r[c.ColumnName].GetType() == typeof(string))
-                        {
-                            d.Add(c.ColumnName, c.ColumnName.Length + 2);
-                        }
-                        else
-                        {
-                            d.Add(c.ColumnName, c.ColumnName.Length);
-                        }
-
+                        dataString = dataString.Contains("\"") ? dataString.Replace("\"", "\"\"") : dataString;
+                        result.AppendFormat("\"{0}\"", dataString);
                     }
-
-                    if (r[c.ColumnName].ToString().Length > d[c.ColumnName])
+                    else
                     {
-                        d[c.ColumnName] = r[c.ColumnName].ToString().Length;
+                        result.Append(dataString);
                     }
-
-                }
-
-                if (n == 20)
-                {
-                    break;
+                    result.Append(i == dataTable.Columns.Count - 1 ? "\n" : ",");
                 }
             }
 
-            for (int i = 0; i < dtDataTable.Columns.Count; i++)
-            {
-                sw.Append(dtDataTable.Columns[i].ColumnName.PadRight(d[dtDataTable.Columns[i].ColumnName]));
-                if (i < dtDataTable.Columns.Count - 1)
-                {
-                    sw.Append(",");
-                }
-            }
-
-            sw.AppendLine();
-
-            foreach (DataRow dr in dtDataTable.Rows)
-            {
-                for (int i = 0; i < dtDataTable.Columns.Count; i++)
-                {
-                    if (!Convert.IsDBNull(dr[i]))
-                    {
-
-                        string value = dr[i].ToString()!;
-
-                        if (dr[i].GetType().Name == "String")
-                        {
-                            value = String.Format("\"{0}\"", value).PadRight(d[dtDataTable.Columns[i].ColumnName]);
-                            sw.Append(value);
-                        }
-                        else
-                        {
-                            sw.Append(dr[i].ToString().PadRight(d[dtDataTable.Columns[i].ColumnName]));
-                        }
-                    }
-                    if (i < dtDataTable.Columns.Count - 1)
-                    {
-                        sw.Append(",");
-                    }
-                }
-                sw.AppendLine();
-            }
-
-            return sw.ToString();
-
+            return result.ToString();
         }
 
 

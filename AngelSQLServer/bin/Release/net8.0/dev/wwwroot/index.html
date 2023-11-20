@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AngelSQL</title>
+    <link href="./css/styles.css" rel="stylesheet" />
+    <script src="./js/AngelSQL.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <img src="images/AngelSQL.png" alt="AngelSQL" class="centered-image" />
+
+        <h2 class="slogan_text">
+            AngelSQL is a database server, web server,
+            and development environment all in one so you only need to install it to start developing applications,
+            its main purpose is to be simple.
+            <br />
+            A small tool to manage large volumes of data.
+        </h2>
+
+        <script src="./js/index.js"></script>
+
+        <form>
+            <label for="username">Usuario</label>
+            <input type="text" id="username" name="username" placeholder="User" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <button type="button" onclick="login()">Start Session</button>
+        </form>
+
+    </div>
+
+    <div class="overlay hidden" id="overlay">
+        <div class="dialog">
+            <h2>Alert</h2>
+            <p id="dialog_message"></p>
+            <button id="acceptButton" onclick="hideDialog()">Accept</button>
+        </div>
+    </div>
+
+    <script>
+        const overlay = document.getElementById("overlay");
+
+        function showDialog() {
+            overlay.classList.remove("hidden");
+        }
+
+        function hideDialog() {
+            overlay.classList.add("hidden");
+        }
+
+        function login() {
+
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            var angelSql = new AngelSQL(username, password, window.location.protocol + '//' + window.location.host + "/AngelSQL");
+            var result_promise = angelSql.start();
+
+            result_promise.then(result => {
+
+                if (result.startsWith("Error:")) { 
+                    console.log('Start Result:', result);
+                    document.getElementById("dialog_message").innerHTML = result;
+                    showDialog();
+                    return;
+                }
+
+                angelSql.Gettoken().then(result => {
+                    sessionStorage.setItem('AngelSQLToken', result);
+                    window.location = "sql_commands.html";
+                });
+
+            }).catch(error => console.error('Error: Login() When getting the result:', error));
+
+        }
+
+        document.getElementById("username").focus();
+
+
+    </script>
+</body>
+</html>

@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="./prism/prism.css">
     <script src="./prism/prism.js"></script>
-
+    <script src="./js/HelpDeskGetContent.js"></script>
     <script src="./js/helpdesk_translate.js"></script>
     <script src="./js/main.js"></script>
 
@@ -31,12 +31,35 @@
         const language = getSelectedLanguage();
         const Token = JSON.parse(sessionStorage.getItem("Token"));
 
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        var Content_id = params.get('content_id');
+        var Account = Token.username.split("@")[1];
+
+        var datos = GetContentDetailCSS(Account, Content_id);
+
+        datos.then(function (query) {
+
+            let responce_query = JSON.parse(query);
+
+            if (responce_query.result.startsWith("Error:")) {
+                console.log(responce_query.result);
+                return;
+            }
+
+            var css = JSON.parse(responce_query.result)[0];
+            const style = document.createElement('style');
+            style.textContent = css.Content;
+            document.head.append(style);
+        });
+
+
     </script>
 
 </head>
 
 <body>
-    <hr />    
+    <hr />
 
     <div class="container">
 
@@ -120,7 +143,7 @@
         </div>
     </div>
 
-    <hr />    
+    <hr />
 
     <dialog id="myDialog" class="dialog-box">
         <h1 id="dialogTittle">Title</h1>
@@ -211,7 +234,8 @@
                         <option value="C#" id="contentdetail_option_csharp">C# Code</option>
                         <option value="Python" id="contentdetail_option_python">Python Code</option>
                         <option value="JavaScript" id="contentdetail_option_javascript">Java Script Code</option>
-                        <option value="HTML" id="contentdetail_option_html">HTML Code</option>
+                        <option value="HTML" id="contentdetail_option_html">HTML</option>
+                        <option value="HTML_Code" id="contentdetail_option_html_code">HTML Code</option>
                         <option value="CSS" id="contentdetail_option_css">CSS Code</option>
                         <option value="SQLServerQuery" id="contentdetail_option_sqlserver">SQL Server Query</option>
                         <option value="AngelSQLQuery" id="contentdetail_option_angelsqlquery">AngelSQL Query</option>
@@ -265,10 +289,6 @@
 
 
     <script>
-
-        var url = new URL(window.location.href);
-        var params = new URLSearchParams(url.search);
-        var Content_id = params.get('content_id');
 
         function UploadFile() {
             if (document.getElementById('file_upload').files.length == 0) {
@@ -345,11 +365,10 @@
 
                                     let responce_query = JSON.parse(query);
                                     showDialog("Attention", "File Uploaded: " + responce_query.FileName);
-                                    document.getElementById('ContentText').value = responce_query.Url + "\n" + "width: 500px;"
+                                    document.getElementById('ContentText').value = responce_query.Url + "\n" + "width: auto;"
                                     document.getElementById('Content_type').value = "Image";
 
                                 });
-
                             });
                         }
                     }
@@ -467,210 +486,6 @@
 
         }
 
-        function formatText(text) {
-            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            return formattedText;
-        }
-
-        function addHorizontalRule(text) {
-            let lines = text.split('\n');
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].trim() === '---') {
-                    lines[i] = '<hr>';
-                }
-            }
-            return lines.join('\n');
-        }
-
-        function identifyLinks(text) {
-            // Expresión regular básica para identificar URLs
-            const urlRegex = /https?:\/\/[^\s]+/g;
-            let links = text.match(urlRegex);
-            return links;
-        }
-
-        function createAnchors(text, links) {
-            let anchoredText = text;
-
-            if (links == null || links == undefined || links.length == 0)
-                return anchoredText;
-
-            links.forEach(link => {
-                const anchor = `<a href="${link}" target="_blank">${link}</a>`;
-                anchoredText = anchoredText.replace(link, anchor);
-            });
-            return anchoredText;
-        }
-
-
-        async function addContentDetail(Id, Content, Content_type, element, editFunction) {
-            // Crear el elemento h1
-
-            var html_block;
-
-            if (Content_type == "Text") {
-                html_block = document.createElement('p');
-                let formattedContent = formatText(Content);
-                formattedContent = addHorizontalRule(formattedContent);
-                const links = identifyLinks(formattedContent);
-                formattedContent = createAnchors(formattedContent, links);
-                html_block.innerHTML = formattedContent;
-            }
-            else if (Content_type == "Title1") {
-                html_block = document.createElement('h1');
-                html_block.textContent = Content;
-            }
-            else if (Content_type == "Title2") {
-                html_block = document.createElement('h2');
-                html_block.textContent = Content;
-            }
-            else if (Content_type == "Title3") {
-                html_block = document.createElement('h3');
-                html_block.textContent = Content;
-            }
-            else if (Content_type == "VisualBasic") {
-                html_block = document.createElement('pre');
-                html_block.className = 'line-numbers language-vbnet';
-                var code_block = document.createElement('code');
-                code_block.className = 'line-numbers language-vbnet';
-                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-                html_block.appendChild(code_block);
-            }
-            else if (Content_type == "C#") {
-                html_block = document.createElement('pre');
-                html_block.className = 'line-numbers language-csharp';
-                var code_block = document.createElement('code');
-                code_block.className = 'line-numbers language-csharp';
-                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-                html_block.appendChild(code_block);
-            }
-            else if (Content_type == "SQLServerQuery") {
-                html_block = document.createElement('pre');
-                html_block.className = 'line-numbers language-sql';
-                var code_block = document.createElement('code');
-                code_block.className = 'line-numbers language-sql';
-                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-                html_block.appendChild(code_block);
-            }
-            else if (Content_type == "AngelSQLQuery") {
-                html_block = document.createElement('pre');
-                html_block.className = 'line-numbers language-sql';
-                var code_block = document.createElement('code');
-                code_block.className = 'line-numbers language-sql';
-                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-                html_block.appendChild(code_block);
-            }
-            else if (Content_type == "JavaScript") {
-                html_block = document.createElement('pre');
-                html_block.className = 'line-numbers language-javascript';
-                var code_block = document.createElement('code');
-                code_block.className = 'line-numbers language-javascript';
-                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-                html_block.appendChild(code_block);
-            }
-            else if (Content_type == "HTML") {
-                html_block = document.createElement('pre');
-                html_block.className = 'line-numbers language-html';
-                var code_block = document.createElement('code');
-                code_block.className = 'line-numbers language-html';
-                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-                html_block.appendChild(code_block);
-            }
-            else if (Content_type == "CSS") {
-                html_block = document.createElement('pre');
-                html_block.className = 'line-numbers language-css';
-                var code_block = document.createElement('code');
-                code_block.className = 'line-numbers language-css';
-                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-                html_block.appendChild(code_block);
-            }
-            else if (Content_type == "Python") {
-                html_block = document.createElement('pre');
-                html_block.className = 'line-numbers language-python';
-                var code_block = document.createElement('code');
-                code_block.className = 'line-numbers language-python';
-                code_block.textContent = Content;  // Utiliza textContent para evitar la interpretación de HTML
-                html_block.appendChild(code_block);
-            }
-            else if (Content_type == "Url") {
-                html_block = document.createElement('div');
-                var urlBlock = document.createElement('a');
-                urlBlock.textContent = Content;
-                urlBlock.href = Content;
-                urlBlock.target = "_blank";
-                urlBlock.className = "btn btn-primary form-control";
-                html_block.appendChild(urlBlock);
-            }
-            else if (Content_type == "Video") {
-                var videoId = Content.split('v=')[1];  // Suponiendo que Content contiene la URL completa del video de YouTube
-                var ampersandPosition = videoId.indexOf('&');
-                if (ampersandPosition != -1) {
-                    videoId = videoId.substring(0, ampersandPosition);
-                }
-
-                html_block = document.createElement('div');
-                html_block.className = "row justify-center";
-                var videoBlock = document.createElement('iframe');
-                videoBlock.className = "embed-responsive embed-responsive-16by9";
-                videoBlock.style = "margin-bottom:20px; margin-top:20px;";
-                videoBlock.width = "560";  // Ancho del video, puedes ajustarlo según tus necesidades
-                videoBlock.height = "315";  // Altura del video, puedes ajustarlo según tus necesidades
-                videoBlock.src = "https://www.youtube.com/embed/" + videoId;
-                videoBlock.title = "YouTube video player";
-                videoBlock.frameborder = "0";
-                videoBlock.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-                videoBlock.allowFullscreen = true;
-                html_block.appendChild(videoBlock);
-            }
-            else if (Content_type == "Image") {
-                var lines = Content.split('\n');
-                if (lines.length >= 2) {
-                    var html_block = document.createElement('div');
-                    html_block.className = "row justify-ContentDetail-center";
-                    var imageBlock = document.createElement('img');
-                    imageBlock.className = "img-fluid mx-auto d-block";
-                    imageBlock.src = lines[0];  // Primera línea para la fuente de la imagen
-                    imageBlock.style = lines[1];  // Segunda línea para el estilo
-                    html_block.appendChild(imageBlock);
-                }
-                else {
-                    var html_block = document.createElement('div');
-                    html_block.className = "row justify-ContentDetail-center";
-                    var imageBlock = document.createElement('img');
-                    imageBlock.className = "img-fluid mx-auto d-block";
-                    html_block.src = Content;  // Primera línea para la fuente de la imagen
-                    html_block.appendChild(imageBlock);
-                }
-            }
-            else {
-                html_block = document.createElement('p');
-                html_block.textContent = Content;
-            }
-
-            // Crear el botón de editar
-            var editButton = document.createElement('button');
-            editButton.textContent = 'Edit: ' + Id;
-            editButton.addEventListener('click', function () {
-                editFunction(Id, false);
-
-                //var newText = prompt('Editar texto:', html_block.textContent);
-                //if (newText) {
-                //  html_block.textContent = newText;
-                //}
-
-            });
-
-            editButton.classList = "btn btn-secondary";
-
-            var mydiv = document.getElementById(element);
-
-            // Añadir los elementos al cuerpo de la página
-            mydiv.appendChild(editButton);
-            mydiv.appendChild(html_block);
-
-            Prism.highlightAll();
-
-        }
 
         document.addEventListener('keydown', function (event) {
 

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Generated Pins</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/responsive.dataTables.css">
+    <script src="./js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+    <script src="./js/dataTables.responsive.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
+
+    <script src="./js/index_translate.js"></script>
+    <script src="./js/main.js"></script>
+
+    <script>
+
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const language = getSelectedLanguage();
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                <a class="btn btn-primary btn-block" href="menu.html" id="nav_link" style="width: 100%;">
+                    <span style="float: left;">
+                        <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                    </span>
+                    <span id="pins_menu">
+                        Menu
+                    </span>
+                </a>
+            </div>
+            
+            <div class="row" style="margin-bottom: 10px; margin-top: 10px;">
+                <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 100%;"
+                    onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    <span id="pins_refresh">
+                        Refresh (F4)
+                    </span>
+                </button>
+            </div>
+            <br />
+            <table id="dataTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Pin</th>
+                        <th>Status</th>
+                        <th id="pins_authorizer">Autohrizer</th>
+                        <th id="pins_branch_store">Branch Store</th>
+                        <th id="pins_date">Date</th>
+                        <th id="pins_expiry_time">Expiry Time</th>
+                        <th id="pins_permission">Permission</th>
+                        <th id="pins_confirmated_date">Confirmated Date</th>
+                        <th id="pins_user">User</th>
+                        <th id="pins_expired">Expired</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <dialog id="myDialog" class="dialog-box">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton" class="btn btn-warning" style="width: 100%;" onclick="closeDialog()">Close</button>
+    </dialog>
+
+    <script>
+
+        function GetData() {
+
+            var datos = GetPinsFromUser(Token.username, Token.token);
+
+            datos.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                tabla.clear().rows.add(JSON.parse(responce_query.result)).draw();
+                tabla.columns.adjust().draw();
+
+            });
+
+        }
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F4") {
+                GetData();
+            }
+
+        });
+
+        function convertToDate(dateString) {
+            var parts = dateString.split(' ');
+            var dateParts = parts[0].split('-');
+            var timeParts = parts[1].split(':');
+            var milliseconds = parseFloat(timeParts[2]) * 1000; // Convertir segundos y milisegundos en milisegundos totales
+            return new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], milliseconds / 1000, milliseconds % 1000));
+        }
+
+        var tabla;
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var datos = [];
+
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: true,
+                dom: 'Bfrtip',
+                buttons: ['print'],
+                columns: [
+                    { data: 'id' },
+                    { data: 'Pin_number' },
+                    { data: 'Status' },
+                    { data: 'Authorizer' },
+                    { data: 'Branch_store' },
+                    {
+                        data: 'Date',
+                        render: function (data, type, row) {
+                            var localDate = convertToDate(data).toLocaleString();
+                            return localDate;
+                        }
+                    },
+                    {
+                        data: 'Expirytime',
+                        render: function (data, type, row) {
+                            var localExpiry = convertToDate(data).toLocaleString();
+                            return localExpiry;
+                        }
+                    },
+                    { data: 'Permissions' },
+                    { data: 'Confirmed_date' },
+                    { data: 'User' },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            var currentDate = convertToDate(row.ServerDate);
+                            var expiryDate = convertToDate(row.Expirytime);
+                            var diffTime = currentDate - expiryDate;
+                            var diffMinutes = Math.ceil(diffTime / (1000 * 60));
+
+                            if (row.status == "pending") {
+                                if (diffMinutes > 0) {
+                                    return "Expired";
+                                } else {
+                                    return "";
+                                }
+                            } else {
+                                return "";
+                            }
+                        }
+                    }
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    var currentDate = convertToDate(data.ServerDate);
+                    var expiryDate = convertToDate(data.Expirytime);
+                    var diffTime =  currentDate - expiryDate;
+                    var diffMinutes = Math.ceil(diffTime / (1000 * 60));
+
+                    if (diffMinutes > 0) {
+                        $(row).css('background-color', '#FFC0C0'); // Rojo claro
+                    }
+                }
+            });
+
+            GetData();
+            translate_pins_user(language);            
+
+        });
+
+    </script>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

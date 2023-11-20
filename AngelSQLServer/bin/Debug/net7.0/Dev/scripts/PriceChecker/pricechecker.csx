@@ -36,7 +36,7 @@ private Dictionary<string, string> parameters = JsonConvert.DeserializeObject<Di
 private Translations translation = new();
 translation.SpanishValues();
 
-string ConnectionString = @"Data Source=.\MYBUSINESSPOS;Initial catalog=MyBusiness20;User Id=sa;Password=12345678;Persist Security Info=True;";
+string ConnectionString = GetVariable("ANGELSQL_MYBUSINESSPOS", @"Data Source=.\MYBUSINESSPOS;Initial catalog=MyBusiness20;User Id=sa;Password=12345678;Persist Security Info=True;");
 
 // This is the main function that will be called by the API
 return api.OperationType switch
@@ -53,7 +53,7 @@ string GetSkuInfo(AngelApiOperation api, Translations translation)
 
     db.Prompt($@"SQL SERVER CONNECT {ConnectionString} ALIAS local", true);
 
-    string result = db.Prompt($"SQL SERVER QUERY SELECT articulo, descrip, precio1, imagen FROM prods WHERE articulo = '{data.sku.ToString().Trim()}' CONNECTION ALIAS local", true);
+    string result = db.Prompt($"SQL SERVER QUERY SELECT articulo, descrip, precio1, impuesto, imagen FROM prods WHERE articulo = '{data.sku.ToString().Trim()}' CONNECTION ALIAS local", true);
 
     if( result.StartsWith("Error:") ) return result;
 
@@ -75,6 +75,19 @@ string GetSkuInfo(AngelApiOperation api, Translations translation)
 
         decimal price = Convert.ToDecimal(dr["precio1"]);
 
+        result = db.Prompt($"SQL SERVER QUERY SELECT * FROM impuestos WHERE impuesto = '{dr["impuesto"].ToString()}' CONNECTION ALIAS local", true); 
+
+        if( result.StartsWith("Error:") ) return result;
+
+        decimal impuesto = 0;
+
+        if( result != "[]" ) 
+        {
+            DataRow dr_impuesto = db.GetDataRow(result);
+            impuesto = Convert.ToDecimal(dr_impuesto["valor"]) / 100;
+        };
+
+        price = price + (price * impuesto);  
         sku.price = price.ToString("C", CultureInfo.CreateSpecificCulture("en-US"));
 
         if( File.Exists(dr["imagen"].ToString().Trim()) ) 
@@ -99,6 +112,13 @@ string GetSkuInfo(AngelApiOperation api, Translations translation)
     return db.GetJson(sku);
 }
  
+string GetVariable(string name, string default_value)
+{
+    if (Environment.GetEnvironmentVariable(name) == null) return default_value;    
+    Console.WriteLine($"Variable {name} found");
+    return Environment.GetEnvironmentVariable(name);
+}
+
 
 class sku_data 
 {
@@ -107,3 +127,5 @@ class sku_data
     public string price = "";
     public string image = "";
 }
+
+

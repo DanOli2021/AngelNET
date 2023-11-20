@@ -3,6 +3,7 @@
 using AngelDB;
 using AngelSQLServer;
 using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using Newtonsoft.Json;
@@ -877,6 +878,7 @@ app.MapPost("/AngelUpload", async (HttpContext httpContext) =>
     try
     {
 
+        httpContext.Features.Get<IHttpMaxRequestBodySizeFeature>().MaxRequestBodySize = 100_000_000;
         var form = await httpContext.Request.ReadFormAsync();
 
         var file = form.Files.FirstOrDefault();

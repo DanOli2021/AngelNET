@@ -10,6 +10,33 @@
     <script src="./prism/prism.js"></script>
     <script src="./js/HelpDeskGetContent.js"></script>
 
+    <script>
+
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        var Content_id = params.get('content_id');
+        var Account = params.get('account');
+        var datos = GetContentDetailCSS(Account, Content_id);
+
+        datos.then(function (query) {
+
+            let responce_query = JSON.parse(query);
+
+            if (responce_query.result.startsWith("Error:")) {
+                console.log(responce_query.result);
+                return;
+            }
+
+            var css = JSON.parse(responce_query.result)[0];
+            const style = document.createElement('style');
+            style.textContent = css.Content;
+            document.head.append(style);
+        });
+
+
+    </script>
+
+    
 </head>
 
 <body>
@@ -40,11 +67,6 @@
     </div>
 
     <script>
-
-        var url = new URL(window.location.href);
-        var params = new URLSearchParams(url.search);
-        var Content_id = params.get('content_id');
-        var Account = params.get('account');
 
         document.addEventListener("DOMContentLoaded", function () {
             GetContentData(Account, Content_id);

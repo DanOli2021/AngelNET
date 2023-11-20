@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Send PIN for registration</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/index_translate.js"></script>
+    <script src="./js/main.js"></script>
+
+    <script>
+        const language = getSelectedLanguage();
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <img src="./images/permissions.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px; width: 30%">
+            <h1 class="text-center" id="auth_title">MyBusiness POS Authorizer</h1>
+            <p class="text-center" id="auth_send_pin">Send PIN for registration</p>            
+            <div class="col-md-12">
+                <form action="/login" method="post">
+                    <div class="form-group">
+                        <label for="username"><b>Email</b></label>
+                        <input type="text" class="form-control" placeholder="Enter your email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="button" class="btn btn-primary btn-lg form-control" onclick="RequestPin()" value="Request PIN" style="margin-bottom: 20px;" id="auth_button_send_pin">    
+                    </div>
+                </form>    
+            </div>
+        </div>
+    </div>
+
+    <dialog id="myDialog">
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
+    </dialog>
+
+    <dialog id="myMessage">
+        <div class="form-group">
+            <h1 id="dialogTittle1" class="form-group">Title</h1>
+            <h3 id="dialogMessage1" class="form-group">Message</h3>
+        </div>
+    </dialog>
+
+    <script>
+
+        function RequestPin() {
+
+            var email = document.getElementById("email").value;
+
+            let responce = SendPinToEmail(email)
+
+            showDialogMessage("Alert", "Wait for the email to arrive.");
+
+            responce.then(function (query) {
+
+                if (query.startsWith("Error:")) 
+                {
+                    showDialog("Alert", query);
+                    return;
+                }
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Alert", responce_query.result);
+                } 
+                else 
+                {
+                    if( responce_query.result.includes("Ok.") != true )
+                    {
+                        showDialog("Alert", responce_query.result);
+                    } 
+                    else 
+                    {
+
+                        sessionStorage.setItem('email', email);
+
+                        if( responce_query.result.includes("Pin") ) 
+                        {
+                            sessionStorage.setItem('email', email);
+                            window.location.href = "register.html?pin=" + responce_query.result.split("->")[2];
+                        } 
+                        else 
+                        {
+                            window.location.href = "register.html";
+                        }
+
+                    }
+                }
+
+            });
+
+        }
+
+        function showDialog(title, message) {
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+            document.getElementById('myDialog').showModal();
+        }
+
+        function showDialogMessage(title, message) {
+            document.getElementById('dialogTittle1').innerText = title;
+            document.getElementById('dialogMessage1').innerText = message;
+            document.getElementById('myMessage').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        function gotoRegister() {
+            window.location.href = "register.html";
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+        document.addEventListener("DOMContentLoaded", function () 
+        {
+            translate_sendpin(language);            
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "F2") {
+                RequestPin();
+            }
+        });
+
+
+        document.getElementById("email").focus();
+
+    </script>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

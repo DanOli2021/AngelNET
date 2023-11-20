@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Users Groups</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/responsive.dataTables.css">
+    <script src="./js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+    <script src="./js/dataTables.responsive.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
+
+    <script src="./js/index_translate.js"></script>
+    <script src="./js/main.js"></script>
+
+    <script>
+
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const language = getSelectedLanguage();
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+            <a class="btn btn-primary btn-block" href="menu.html" style="width: 100%;">
+                <span style="float: left;">
+                    <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                </span>
+                <span id="users_groups_menu">
+                    Menu
+                </span>
+
+            </a>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="row">
+                <a href="#">
+                    <span style="float: left;">
+                        <img src="images/icons/golden_educationicons_classmate_128.png" alt="logo" class="logo"
+                            style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
+                    </span>
+                    <h2 id="users_groups_user_groups">Users Groups</h2>
+                </a>
+            </div>
+            <br />
+            
+            <div class="row" style="margin-bottom: 10px;">
+                <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
+                    onclick="showGroupDialog('', true)" style="margin-bottom: 20px;">
+                    <span id="users_groups_new">
+                        New Group (F2)
+                    </span>
+                </button>
+
+                <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
+                    onclick="GetData()()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    <span id="users_groups_refresh">
+                        Refresh (F4)
+                    </span>
+                </button>
+            </div>
+
+            <br />
+
+            <table id="dataTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th id="users_groups_group">Group</th>
+                        <th id="users_groups_name">Name</th>
+                        <th id="users_groups_permissions">Permissions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <dialog id="myDialog" class="dialog-box">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton" onclick="closeDialog()">Close</button>
+    </dialog>
+
+    <dialog id="DialogAcceptCancel" class="dialog-box">
+
+        <h1 id="dialogTittleAcceptCancel">Title</h1>
+        <p id="dialogMessageAcceptCancel">Message</p>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <button id="accept" onclick="closeDialogAcceptCancelDialog()" class="btn btn-danger"
+                    style="width: 100%;">Accept</button>
+            </div>
+
+            <div class="col-sm-6">
+                <button id="cancel" onclick="closeDialogAcceptCancelDialog()" class="btn btn-primary"
+                    style="width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="group_dialog" style="width: 90%;">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="form-group">
+                    <label for="id">Group</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Permissions</label>
+                    <input type="text" class="form-control" id="permissions" name="permissions">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary" "
+                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveGroupData()">
+                        Save
+                    </button>
+                </div>
+
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-danger"
+                        style="text-align: right; margin-top: 20px; width: 100%;"
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the User Group?', DeleteGroupData)">
+                        Delete
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <button id="closeSkuEdit" class="btn btn-secondary"
+                        style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeUsersGroupDialog()"
+                        style="text-align: right;">
+                        Close
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </dialog>
+
+    <script>
+
+        function DeleteGroupData() {
+            var id = document.getElementById('id').value;
+
+            closeDialogAcceptCancelDialog();
+
+            var data_result = DeleteGroup(Token.username, Token.token, id);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Attention", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Attention", "Group " + id + " deleted successfully");
+                closeUsersGroupDialog();
+                GetData();
+                return;
+
+            });
+        }
+
+        function showGroupDialog(User_data, new_Group = false) {
+
+            if (new_Group) {
+                var dialog = document.getElementById("group_dialog");
+                dialog.showModal();
+
+                document.getElementById('id').value = "";
+                document.getElementById('id').readOnly = false;
+                document.getElementById('name').value = "";
+                document.getElementById('permissions').value = "";
+                return;
+            }
+
+            var data_result = GetGroup(Token.username, Token.token, User_data.id);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                let Groups = JSON.parse(responce_query.result);
+                let Group = Groups[0];
+
+                var dialog = document.getElementById("group_dialog");
+                dialog.showModal();
+
+                let id = document.getElementById('id');
+                id.readOnly = true;
+
+                document.getElementById('id').value = Group.id;
+                document.getElementById('name').value = Group.Name;
+                document.getElementById('permissions').value = Group.Permissions;
+
+                let description = document.getElementById('name');
+                description.focus();
+
+            });
+
+        }
+
+        function closeUsersGroupDialog() {
+            var dialog = document.getElementById("group_dialog");
+            dialog.close();
+        }
+
+        function SaveGroupData() {
+            let group = {};
+
+            group.UserGroup = document.getElementById('id').value;
+            group.Name = document.getElementById('name').value;
+            group.Permissions = document.getElementById('permissions').value;
+
+            var data_result = SaveGroup(Token.username, Token.token, group);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Error:", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Success:", "Group Saved");
+                GetData();
+
+            });
+
+        }
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === "F2") {
+                showGroupDialog('', true);
+            }
+
+            if (event.key === "F4") {
+                GetData();
+            }
+
+
+        });
+
+        var tabla;
+
+        function GetData() {
+
+            var datos = GetGroups(Token.username, Token.token);
+
+            datos.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                tabla.clear().rows.add(JSON.parse(responce_query.result)).draw(); // Borramos los datos antiguos, añadimos los nuevos y redibujamos la tabla
+                tabla.columns.adjust().draw();
+
+            });
+
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var datos = [];
+
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'print'
+                ],
+                columns: [
+                    {
+                        // Columna de botón
+                        data: null,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary">+</button>';
+                        }
+                    },
+                    { data: 'id' },
+                    { data: 'Name' },
+                    { data: 'Permissions' },
+                ]
+            });
+
+            $('#dataTable').on('click', 'td:first-child', function () {
+                var datosFila = tabla.row($(this).parents('tr')).data();
+                showGroupDialog(datosFila);
+                // Aquí se ejecuta el código al hacer doble clic en la columna de botón
+            });
+
+            translate_users_groups(language);     
+            GetData();
+        });
+
+
+    </script>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

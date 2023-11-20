@@ -1,0 +1,39 @@
+{
+  "Version": 1,
+  "Hash": "qbnyS/oVpreylU3Y+A3x+LZS05zH7D348LqHTiI5+hw=",
+  "Source": "AngelSQLServer",
+  "BasePath": "_content/AngelSQLServer",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "AngelSQLServer\\wwwroot",
+      "Source": "AngelSQLServer",
+      "ContentRoot": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\",
+      "BasePath": "_content/AngelSQLServer",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\Empty.txt",
+      "SourceId": "AngelSQLServer",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\",
+      "BasePath": "_content/AngelSQLServer",
+      "RelativePath": "Empty.txt",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Empty.txt"
+    }
+  ]
+}

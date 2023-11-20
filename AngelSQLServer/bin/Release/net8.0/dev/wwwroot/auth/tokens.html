@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tokens</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="./css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/responsive.dataTables.css">
+    <script src="./js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="./js/jquery.dataTables.min.js"></script>
+    <script src="./js/dataTables.responsive.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_dataTables.buttons.min.js"></script>
+    <script src="./js/cdn.datatables.net_buttons_2.4.0_js_buttons.print.min.js"></script>
+
+    <script src="./js/index_translate.js"></script>
+    <script src="./js/main.js"></script>
+
+    <script>
+
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const language = getSelectedLanguage();
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+            <a class="btn btn-primary btn-block" href="menu.html" style="width: 100%;">
+                <span style="float: left;">
+                    <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                </span>
+                <span id="tokens_menu">
+                    Menu
+                </span>
+            </a>
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="row">
+                <a href="#">
+                    <span style="float: left;">
+                        <img src="images/icons/golden_networking_net_admin_128.png" alt="logo" class="logo"
+                            style="width: 94px; margin-right: 20px; margin-bottom: 20px;">
+                    </span>
+                    <h2 id="tokens_admin_tokens">Admin Tokens</h2>
+                </a>
+            </div>
+
+            <br />
+
+            <div class="row" style="margin-bottom: 10px;">
+                <button type="button" id="ButtonNew" class="btn btn-primary" style="width: 50%;"
+                    onclick="showTokenDialog('', true)" style="margin-bottom: 20px;">
+                    <span id="tokens_new">
+                        New Token (F2)
+                    </span>
+                </button>
+
+                <button type="button" id="ButtonSearch" class="btn btn-secondary" style="width: 50%;"
+                    onclick="GetData()" style="margin-bottom: 20px;margin-bottom: 20px;">
+                    <span id="tokens_refresh">
+                        Refresh (F4)
+                    </span>
+                </button>
+            </div>
+
+            <br />
+
+            <table id="dataTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th id="tokens_token">Token</th>
+                        <th id="tokens_user">User</th>
+                        <th id="tokens_date">Creation Time</th>
+                        <th id="tokens_expiry_time">Expiry Time</th>
+                        <th id="tokens_status">Status</th>
+                        <th id="tokens_used_for">Used For</th>
+                        <th id="tokens_observation">Observations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <dialog id="myDialog" class="dialog-box">
+        <h1 id="dialogTittle">Title</h1>
+        <p id="dialogMessage">Message</p>
+        <button id="closeButton" onclick="closeDialog()">Close</button>
+    </dialog>
+
+    <dialog id="DialogAcceptCancel" class="dialog-box">
+
+        <h1 id="dialogTittleAcceptCancel">Title</h1>
+        <p id="dialogMessageAcceptCancel">Message</p>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <button id="accept" onclick="closeDialogAcceptCancelDialog()" class="btn btn-danger"
+                    style="width: 100%;">Accept</button>
+            </div>
+
+            <div class="col-sm-6">
+                <button id="cancel" onclick="closeDialogAcceptCancelDialog()" class="btn btn-primary"
+                    style="width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="Token_dialog" style="width: 90%;">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="form-group">
+                    <label for="id" id="tokens_dialog_tokens">Token</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+
+                <div class="form-group">
+                    <label for="authorizer" id="tokens_dialog_user">User</label>
+                    <select class="form-select" aria-label="Default select example" id="user" name="user">
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="expirytime" id="tokens_dialog_expiry_time">Expiry Time</label>
+                    <input type="date" class="form-control" id="expirytime" name="expirytime">
+                </div>
+
+                <div class="form-group">
+                    <label for="usedfor" id="tokens_dialog_used_for">Used For</label>
+                    <select class="form-select" aria-label="Default select example" id="usedfor" name="usedfor">
+                        <option value="App Access">
+                            App Access
+                        </option>
+                        <option value="Development">
+                            Development
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="observations" id="tokens_dialog_observations">Observations</label>
+                    <input type="text" class="form-control" id="observations" name="observations">
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-primary" "
+                        style=" text-align: right; margin-top: 20px;; width: 100%;" onclick="SaveTokenData()">
+                        <span id="tokens_dialog_save">
+                            Save
+                        </span>
+                    </button>
+                </div>
+
+                <div class="col-sm-6">
+                    <button type="button" class="btn btn-danger"
+                        style="text-align: right; margin-top: 20px; width: 100%;"
+                        onclick="showAcceptCancelDialog('Attention','Are you sure you want to remove the Token?', DeleteTokenData)">
+                        <span id="tokens_dialog_delete">
+                            Delete
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <button id="closeSkuEdit" class="btn btn-secondary"
+                        style="text-align: right; margin-top: 5px; width: 100%;" onclick="closeTokensDialog()"
+                        style="text-align: right;">
+                        <span id="tokens_dialog_close">
+                            Close
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </dialog>
+
+    <script>
+
+        function DeleteTokenData() {
+            var id = document.getElementById('id').value;
+            var data_result = DeleteToken(Token.username, Token.token, id);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Attention", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Attention", "Token " + id + " deleted successfully");
+                closeTokensDialog();
+                GetData();
+                return;
+
+            });
+        }
+
+
+        function showTokenDialog(Token_data, new_Token = false) {
+
+            let select = document.getElementById('user');
+
+            while (select.options.length > 0) {
+                select.remove(0);
+            }
+
+            let blanck_option = document.createElement('option');
+            blanck_option.value = "";
+            blanck_option.text = "";
+            select.appendChild(blanck_option);
+
+            var users = GetUsers(Token.username, Token.token);;
+
+            users.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                let users_list = JSON.parse(responce_query.result);
+
+                for (let i = 0; i < users_list.length; i++) {
+                    let option = document.createElement('option');
+                    option.value = users_list[i].id;
+                    option.text = users_list[i].Name;
+                    select.appendChild(option);
+                }
+
+                if (new_Token) {
+                    var dialog = document.getElementById("Token_dialog");
+                    dialog.showModal();
+
+                    document.getElementById('id').value = "New";
+                    document.getElementById('id').readOnly = true;
+                    document.getElementById('id').disabled = true;
+                    document.getElementById('user').value = "";
+                    document.getElementById('ExpiryTime').value = "";
+                    document.getElementById('UsedFor').value = "";
+                    document.getElementById('observations').value = "";
+                    //document.getElementById('creationdate').value = "";                
+                    return;
+                }
+
+                var data_result = GetToken(Token.username, Token.token, Token_data.id);
+
+                data_result.then(function (query) {
+
+                    let responce_query = JSON.parse(query);
+
+                    if (responce_query.result.startsWith("Error:")) {
+                        showDialog("Attention", responce_query.result);
+                        console.log(responce_query.result);
+                        return;
+                    }
+
+                    let Token = JSON.parse(responce_query.result);
+
+                    var dialog = document.getElementById("Token_dialog");
+                    dialog.showModal();
+
+                    let id = document.getElementById('id');
+                    id.readOnly = true;
+                    id.disabled = true;
+
+                    document.getElementById('id').value = Token.Id;
+                    document.getElementById('user').value = Token.User;
+                    document.getElementById('expirytime').value = Token.ExpiryTime.substring(0, 10);
+                    document.getElementById('usedfor').value = Token.UsedFor;
+                    document.getElementById('observations').value = Token.Observations;
+                    //let description = document.getElementById('name');
+                    //description.focus();
+
+                });
+            });
+        }
+
+        function closeTokensDialog() {
+            var dialog = document.getElementById("Token_dialog");
+            dialog.close();
+        }
+
+        function SaveTokenData() {
+            let t = {};
+
+            t.id = document.getElementById('id').value;
+            t.User = document.getElementById('user').value;
+            t.ExpiryTime = document.getElementById('expirytime').value;
+            t.UsedFor = document.getElementById('usedfor').value;
+            t.Observations = document.getElementById('observations').value;
+            t.ExpiryTime = document.getElementById('expirytime').value;
+            var data_result = SaveToken(Token.username, Token.token, t);
+
+            data_result.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    showDialog("Error:", responce_query.result);
+                    console.log(responce_query.result);
+                    return;
+                }
+
+                showDialog("Success:", "Token Saved");
+                GetData();
+
+            });
+
+        }
+
+        function GetData() {
+
+            var datos = GetTokens(Token.username, Token.token);
+
+            datos.then(function (query) {
+
+                let responce_query = JSON.parse(query);
+
+                if (responce_query.result.startsWith("Error:")) {
+                    console.log(responce_query.result);
+                    showDialog("Error:", responce_query.result);
+                    return;
+                }
+
+                tabla.clear().rows.add(JSON.parse(responce_query.result)).draw(); // Borramos los datos antiguos, añadimos los nuevos y redibujamos la tabla
+                tabla.columns.adjust().draw();
+
+            });
+
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "F2") {
+                showTokenDialog('', true);
+            }
+            if (event.key === "F4") {
+                GetData();
+            }
+        });
+
+        var tabla;
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var datos = [];
+
+            function parseDate(input) {
+                var parts = input.split(' ');
+                var dateParts = parts[0].split('-');
+                var timeParts = parts[1].split(':');
+                return new Date(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], timeParts[2]);
+            }
+
+            tabla = $('#dataTable').DataTable({
+                responsive: true,
+                data: datos,
+                bFilter: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'print'
+                ],
+                columns: [
+                    {
+                        // Columna de botón
+                        data: null,
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary">+</button>';
+                        }
+                    },
+                    { data: 'id' },
+                    { data: 'User' },
+                    { data: 'CreationTime' },
+                    { data: 'ExpiryTime' },
+                    {
+                        // Columna de estado
+                        data: null,
+                        render: function (data, type, row) {
+                            return parseDate(data.ServerTime) > parseDate(data.ExpiryTime) ? 'Expired' : 'Valid';
+                        }
+                    },
+                    { data: 'UsedFor' },
+                    { data: 'Observations' }
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    if (parseDate(data.CreationTime) > parseDate(data.ExpiryTime)) {
+                        // Aplicar fondo rojo a la fila si la condición se cumple
+                        $(row).css('background-color', '#FF9999');
+                    }
+                }
+            });
+
+            $('#dataTable').on('click', 'td:first-child', function () {
+                var datosFila = tabla.row($(this).parents('tr')).data();
+                showTokenDialog(datosFila);
+                // Aquí se ejecuta el código al hacer doble clic en la columna de botón
+            });
+
+            translate_tokens(language);
+            GetData();
+        });
+
+
+    </script>
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

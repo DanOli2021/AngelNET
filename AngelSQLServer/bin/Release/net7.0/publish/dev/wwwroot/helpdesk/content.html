@@ -321,11 +321,12 @@
             if (new_topic) {
                 var dialog = document.getElementById("content");
                 dialog.showModal();
-                document.getElementById('content_title').value = "";
+                document.getElementById('content_title').value = "";    
                 document.getElementById('description').value = "";
                 document.getElementById('status').value = "";
                 document.getElementById('is_public').value = "";
                 document.getElementById('version').value = "";
+                document.getElementById('id').readOnly = false;
                 document.getElementById('content_title').focus();
                 return;
             }

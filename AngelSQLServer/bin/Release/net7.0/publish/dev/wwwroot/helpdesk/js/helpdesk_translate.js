@@ -143,7 +143,7 @@ function translate_content( language )
         document.getElementById("content_updatedby").innerHTML = "Actualizado por";
         document.getElementById("content_updatedat").innerHTML = "Fecha de Actualización";
 
-        document.getElementById("content_label_title").innerHTML = "Subtema";
+        document.getElementById("content_label_title").innerHTML = "Título del contenido";
         document.getElementById("content_label_description").innerHTML = "Descripción";
         document.getElementById("content_label_version").innerHTML = "Versión";
         document.getElementById("content_label_status").innerHTML = "Estado";

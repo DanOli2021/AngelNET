@@ -76,6 +76,7 @@ return api.OperationType switch
     "GetContent" => GetContent(api, translation),
     "DeleteContent" => DeleteContent(api, translation),
     "GetContentDetail" => GetContentDetail(api, translation),
+    "GetContentDetailCSS" => GetContentDetailCSS(api, translation),
     "GetTitles" => GetTitles(api, translation),
     "UpsertContentDetail" => UpsertContentDetail(api, translation),
     "GetContentDetailItem" => GetContentDetailItem(api, translation),
@@ -514,6 +515,11 @@ string UpsertContentDetail(AngelApiOperation api, Translations translation)
     string topic = dtTopic.Rows[0]["id"].ToString();
     string topic_description = dtTopic.Rows[0]["Description"].ToString();
 
+    if( d.Content_type == "CSS") 
+    {
+        d.Content_order = -1000000;
+    }
+
     HelpdeskContentDetails contentDetail = new()
     {
         Id = d.Id,
@@ -844,13 +850,6 @@ string DeleteSubTopic(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get(language, "Id is required");
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Subtopic_id = '" + d.Id + "'", true);
-
-    if (result != "[]")
-    {
-        return "Error: " + translation.Get("You first need to delete the content details and content header in order to delete this item", language);
-    }
-
     result = db.Prompt("SELECT * FROM HelpdeskContent WHERE Subtopic_id = '" + d.Id + "'", true);
 
     if (result != "[]")
@@ -978,6 +977,34 @@ private string GetContentDetail(AngelApiOperation api, Translations translation)
     if( result == "[]") 
     {
         result = db.Prompt($"SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' ORDER BY Content_order", true);
+    }
+
+    return result;
+
+}
+
+
+private string GetContentDetailCSS(AngelApiOperation api, Translations translation)
+{
+
+    dynamic d = api.DataMessage;
+    string language = "en";
+
+    if (api.UserLanguage != null)
+    {
+        language = api.UserLanguage;
+    }
+
+    if (d.Content_id == null)
+    {
+        return "Error: " + translation.Get("Content_id is required", language);
+    }
+
+    string result = db.Prompt($"SELECT * FROM HelpdeskContentDetails PARTITION KEY {d.Content_id.ToString().Substring(0,2)} WHERE Content_id = '" + d.Content_id + "' AND IsPublic = 'true'  AND Content_type = 'CSS' ORDER BY Content_order", true);
+
+    if (result == "[]")
+    {
+        result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Content_id = '" + d.Content_id + "' AND IsPublic = 'true' AND Content_type = 'CSS' ORDER BY Content_order", true);
     }
 
     return result;

@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Desarrollo\\AngelNET\\AngelSQLServer\\wwwroot\\Empty.txt",
+      "PackagePath": "staticwebassets\\Empty.txt"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.AngelSQLServer.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.AngelSQLServer.props",
+      "PackagePath": "build\\AngelSQLServer.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.AngelSQLServer.props",
+      "PackagePath": "buildMultiTargeting\\AngelSQLServer.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.AngelSQLServer.props",
+      "PackagePath": "buildTransitive\\AngelSQLServer.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

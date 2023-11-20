@@ -22,7 +22,7 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net8.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -30,8 +30,8 @@
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {
               "C:\\Desarrollo\\AngelNET\\DB\\DB.csproj": {
                 "projectPath": "C:\\Desarrollo\\AngelNET\\DB\\DB.csproj"
@@ -46,16 +46,16 @@
         }
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
-              "version": "[7.0.9, )"
+              "version": "[8.0.0, )"
             },
             "Microsoft.Extensions.Hosting.WindowsServices": {
               "target": "Package",
-              "version": "[7.0.1, )"
+              "version": "[8.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -67,15 +67,15 @@
             },
             "System.ServiceModel.Federation": {
               "target": "Package",
-              "version": "[6.0.0, )"
+              "version": "[6.2.0, )"
             },
             "System.ServiceModel.Http": {
               "target": "Package",
-              "version": "[6.0.0, )"
+              "version": "[6.2.0, )"
             },
             "System.ServiceModel.NetTcp": {
               "target": "Package",
-              "version": "[6.0.0, )"
+              "version": "[6.2.0, )"
             },
             "System.ServiceModel.Security": {
               "target": "Package",
@@ -101,7 +101,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
@@ -123,7 +123,7 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net8.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -131,8 +131,8 @@
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -143,24 +143,24 @@
         }
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "Azure.Data.Tables": {
               "target": "Package",
-              "version": "[12.8.1, )"
+              "version": "[12.8.2, )"
             },
             "Azure.Storage.Blobs": {
               "target": "Package",
-              "version": "[12.17.0, )"
+              "version": "[12.19.1, )"
             },
             "Azure.Storage.Common": {
               "target": "Package",
-              "version": "[12.16.0, )"
+              "version": "[12.18.1, )"
             },
             "Azure.Storage.Queues": {
               "target": "Package",
-              "version": "[12.15.0, )"
+              "version": "[12.17.1, )"
             },
             "CsvHelper": {
               "target": "Package",
@@ -176,7 +176,7 @@
             },
             "Microsoft.AspNetCore.SignalR.Client": {
               "target": "Package",
-              "version": "[7.0.10, )"
+              "version": "[8.0.0, )"
             },
             "Microsoft.CSharp": {
               "target": "Package",
@@ -192,11 +192,11 @@
             },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[8.0.0, )"
             },
             "Microsoft.Extensions.DependencyInjection.Abstractions": {
               "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[8.0.0, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -216,15 +216,15 @@
             },
             "System.Drawing.Common": {
               "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[8.0.0, )"
             },
             "System.IO.Packaging": {
               "target": "Package",
-              "version": "[8.0.0-preview.3.23174.8, )"
+              "version": "[8.0.0, )"
             },
             "pythonnet": {
               "target": "Package",
-              "version": "[3.0.1, )"
+              "version": "[3.0.3, )"
             }
           },
           "imports": [
@@ -243,7 +243,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

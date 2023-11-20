@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sales</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./bootstrap-5.3.0/css/bootstrap.min.css">
+
+    <script src="./js/main.js"></script>
+
+    <script>
+        if (sessionStorage.getItem("Token") == null) {
+            window.location.href = "index.html";
+        }
+
+        const Token = JSON.parse(sessionStorage.getItem("Token"));
+
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+
+
+        <div class="row justify-content-center">
+
+            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                <a class="btn btn-primary btn-block" href="menu.html" style="width: 100%;">
+                    <span style="float: left;">
+                        <img src="images/icons/beta_general_back_128.png" alt="logo" style="width:24px">
+                    </span>
+                    Menu
+                </a>
+            </div>
+
+            <img src="./images/icons/brilliant_shopping_departmental_store_128.png" alt="logo" class="img-fluid mx-auto d-block" style="margin-top: 20px; width: 170px">
+            <h1 class="text-center" style="font-size: 40px; font-weight: bolder;">Sales</h1>
+            <div class="col-sm-12" id="buttonszone">
+            </div>
+
+        </div>
+    </div>
+
+    <dialog id="myDialog">
+        <div class="form-group">
+            <h1 id="dialogTittle" class="form-group">Title</h1>
+            <h3 id="dialogMessage" class="form-group">Message</h3>
+            <button id="closeButton" class="btn btn-warning btn-lg form-control">Close</button>
+        </div>
+    </dialog>
+
+
+    <script>
+
+        function showDialog(title, message) {
+
+            document.getElementById('dialogTittle').innerText = title;
+            document.getElementById('dialogMessage').innerText = '⚠️' + message;
+
+            document.getElementById('myDialog').showModal();
+        }
+
+        function closeDialog() {
+            document.getElementById('myDialog').close();
+        }
+
+        document.querySelector('#closeButton').addEventListener('click', function () {
+            document.querySelector('#myDialog').close();
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let response = GetGroupsUsingTocken(Token.username, Token.token);
+
+            response.then(function (query) {
+                let response_query = JSON.parse(query);
+
+                if (response_query.result.startsWith("Error:")) {
+                    showDialog("Alert", response_query.result);
+                } else {
+                    sessionStorage.setItem('user_groups', response_query.result);
+                    generateButtons();
+                }
+            });
+        });
+
+        function generateButtons() {
+
+            if (sessionStorage.getItem("user_groups") != null) {
+                let user_groups = JSON.parse(sessionStorage.getItem("user_groups"));
+
+                if (user_groups.groups.includes("CASHIER")) {
+                    generateButton("pos.html", "beta_accounting_cashbox_128.png", "POS (Point of sale)", "btn btn-primary btn-block btn-lg form-control");
+                    generateButton("kiosk.html", "brilliant_shopping_kiosk_128.png", "Kiosk", "btn btn-info btn-block btn-lg form-control");
+                }
+            }
+        }
+
+    </script>
+
+
+    <script src="./bootstrap-5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

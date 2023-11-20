@@ -1572,7 +1572,6 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\menu
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\topics.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\topic.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\content.html
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\dev.code-workspace
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\dev.code-workspace
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\contentdetail.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\helpdesk\prism\prism.css
@@ -1632,7 +1631,10 @@ C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\bootstrap-5.3
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\bootstrap-5.3.0\js\bootstrap.min.js.map
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\index.html
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\js\main.js
-C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\images\46707.webp
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\images\84d3a682-c253-40ca-bb7a-515614e0f144 (1).webp
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\images\f5c3715a-044f-4fe9-8e4b-ff7570b222d1.webp
 C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\images\logo.webp
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\images\20890943-1600-auto.webp
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\images\41001-1.webp
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\images\helado-de-vainilla-1.jpg
+C:\Desarrollo\AngelNET\AngelSQLServer\bin\Debug\net7.0\dev\wwwroot\PriceChecker\images\61atRoWAQyL._AC_SX679_.jpg

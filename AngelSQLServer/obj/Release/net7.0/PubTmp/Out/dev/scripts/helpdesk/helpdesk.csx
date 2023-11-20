@@ -844,13 +844,6 @@ string DeleteSubTopic(AngelApiOperation api, Translations translation)
         return "Error: " + translation.Get(language, "Id is required");
     }
 
-    result = db.Prompt("SELECT * FROM HelpdeskContentDetails WHERE Subtopic_id = '" + d.Id + "'", true);
-
-    if (result != "[]")
-    {
-        return "Error: " + translation.Get("You first need to delete the content details and content header in order to delete this item", language);
-    }
-
     result = db.Prompt("SELECT * FROM HelpdeskContent WHERE Subtopic_id = '" + d.Id + "'", true);
 
     if (result != "[]")
